@@ -1,0 +1,7 @@
+displayName = Deltarune Mod (Alpha)
+homepage = https://discord.gg/UGE6fMQgBy
+author = Lasthue or Neko, [NS] Minergames YT,Mniam
+hideCode = false
+hideResources = false
+includeSource = true
+version = 0.1.4

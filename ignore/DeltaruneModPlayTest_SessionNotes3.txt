@@ -1,0 +1,162 @@
+Deltarune Terraria Mod v1.3 PlayTest Summary 3
+
+I've finished going through most of the new additions to the mod, and I've recorded my findings here, as well as notes
+on the WIP Boss's Phase 2. I've included some suggestions to implement for the boss, so pleae take a look at them.
+
+Please look through my notes, and if you wish to implement some changes based on my findings, feel free to do so.
+I've also included some grammar fixes to the item descriptions that I felt were necessary.
+
+==========================
+            NPCs
+==========================
+
+Star runner:
+
+-Recommend changing name to [Grammar Fix]:
+ Star Runner
+-Please make it so Star Runner does not drop coins.
+
+froggit:
+
+-Recommend changing name to [Grammar Fix]:
+ Froggit
+-Froggit seems to use Slime AI.
+
+
+==========================
+            Bosses
+==========================
+
+Starwalker:
+
+- Summon works properly
+- Boss AI functions normally.
+- Has balanced damage in phase 1.
+- Drops Lesser Healing Potions when killed
+- Drops about less than 15 Silver Coins
+
+Phase 2 Starwalker:
+
+- Overhead Dash attack executed well.
+- Phase 2 Orbit too fast. Unable to land good hits. Recommend slowing orbit speed.
+ - Recommend changing this attack to a slightly sped up orbit speed, while shooting a single projectile aimed at the player every .25s while orbiting player.
+- Phase 2 Starwalker is moderately difficult, but is easier with Pre-WoF weapons.
+- Recommend reducing Phase 2 Dash damage by 15
+
+==========================
+           Items
+==========================
+
+Short Menacing Ax
+
+- Suggest editing the Item Description [Grammar Fix]:
+Slash attacks inflicts bleeding
+Enemies that are bleeding take more chop damage
+- Axe can chop down trees.
+- Special bleeding effect functions as intended.
+
+
+Tough Glove
+
+- Functions as intended.
+
+
+Dainty Scarf
+
+- Functions as intended.
+
+
+Dark Prince Hat
+
+- Functions as intended.
+
+
+Corrupted Tin & Crimtaned Copper
+
+- Looks cool, doesn't really seem to have a practical use
+- Has the issue of a world having Copper & Corruption, and vice versa
+
+
+Candy
+
+- Suggest editing the Item Description:
+Did you know that most pigs can't talk?
+
+
+Banana
+
+- Suggest editing the Item Description to either:
+A strong energy of potassium eminates from this banana
+             OR
+'Potassium'
+- (The top edit is if you wish to use it for a Queen Boss Summon, the latter for a normal a
+
+
+Sparna Short Spear
+
+- Suggest adding to/editing the Item Description:
+'This. Is. SPARNA.'
+
+
+Bell of Stars
+
+- Suggest editing the Item Description:
+Consumable
+Summons the Original      Starwalker
+'These pixels are pissing me off'
+
+
+Dummy Knockback
+
+- Functions as intended.
+
+
+C H Use Player To String:
+
+- Functions as intended, displays stats in chat.
+
+
+C H Use N P C To String:
+
+- Functions as intended.
+
+
+Susie Plush
+
+- Tile functions as intended.
+
+==========================
+           Notes
+==========================
+
+- I managed to no-hit the boss fight, lol.
+- Background effect are a bit hard on the eyes, may want to add an option to disable.
+  - Background effect also has a noticeable impact on performance.
+- Reduced performance when fighting Saness
+
+==========================
+      Suggestions
+==========================
+
+- Remove the Crimtaned/ Corrupted Ore items
+- Reduce the Defense of Starwalker to about 12
+- Add a recipe involving Bell Shards to craft the Summon Item (Bell Shards can be dropped by Angry Bones occasionally) // done
+- For Expert Mode:
+ - Set Expert Mode HP to about 9800
+ - Come up with an Expert Mode exclusive attack for Phase 2
+ - Come up with an Expert Mode exclusive drop idea
+- Make a Treasure Bag for Starwalker 
+- Add dev items later.
+
+==========================
+        Bugs Found
+==========================
+
+- Text will get cut off if you click the dialogue box enough.
+- Clicking on the dialogue box now causes it to repeat the appearing animation once again.
+- Using Life Crystals / Life Fruits / Mana Crystals causes your TP Gauge to Decrease
+
+====================================================================================
+                                 END OF PLAY TEST 03
+====================================================================================
+

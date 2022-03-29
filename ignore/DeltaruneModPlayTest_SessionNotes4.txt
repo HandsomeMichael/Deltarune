@@ -1,0 +1,122 @@
+Deltarune Terraria Mod v1.3 PlayTest Summary 4
+
+I've finished going through most of the new additions to the mod, and I've recorded my findings here, as well as notes
+on the WIP Boss's Phase 2. I've included some suggestions to implement for the boss, so pleae take a look at them.
+
+Please look through my notes, and if you wish to implement some changes based on my findings, feel free to do so.
+I've also included some grammar fixes to the item descriptions that I felt were necessary.
+
+MAKE ANY NECESSARY GRAMMAR FIXES/ CHANGES BEFORE RELEASING!!!
+
+==========================
+      Extra Features
+==========================
+
+Starting Items (In Char. Creation)
+
+- Starting item feature fully functions as intended, consider downgrading mage weapon to an Emerald Staff for balancing.
+
+
+==========================
+            NPCs
+==========================
+-Froggit seems to use Slime AI.
+
+
+Ralsei
+
+- AI seems to have a bit of trouble getting out of holes.
+- Cannot be butchered.
+- Recommend adding more dialogue and/or a shop.
+- Has some sort of odd Red/Yellow box when you hover cursor over a certain area around Ralsei.
+
+==========================
+            Bosses
+==========================
+
+Starwalker:
+
+- Summon works properly
+- Boss AI functions normally.
+- Has balanced damage in phase 1.
+- Drops Healing Potions when killed
+- Drops about 25 Gold Coins
+==========================
+           Items
+==========================
+
+Short Menacing Ax
+
+- Suggest editing the Item Description [Grammar Fix]:
+Slash attacks inflicts Fatal Bleeding
+Enemies that have Fatal Bleeding bleeding take more chop damage
+Hitting an enemy 10 times will summon a flying axe
+- Axe can chop down trees.
+- Special bleeding effect functions as intended.
+
+Babagun
+
+- Suggest editing the Item Description [Grammar Fix]:
+Shoots a spread of 4 frozen bullets
+Right Click to shoot a bullet tracker
+Bullet tracker will direct bullets towards target
+- Functions as intended.
+- Suggest adding this as one of Starwalkers drops in a future update
+
+
+Corrupted Tin & Crimtaned Copper
+
+- Looks cool, doesn't really seem to have a practical use
+- Has the issue of a world having Copper & Corruption, and vice versa
+
+Banana
+
+Bell of Stars
+
+- Add a crafting recipe for the bell. (MUST DO BEFORE RELEASE v0.1.3!!!)
+
+
+Dummy Knockback 1-3
+
+- All Upgrades function as intended.
+
+
+Sword Bullet
+
+- Functions as intended.
+
+==========================
+           Notes
+==========================
+
+- Text will no longer get cut off if you click the dialogue box several times.
+- Text no longer reappears when clicking the dialogue box.
+- Mainly small fixes only for changes needed.
+
+
+==========================
+      Suggestions
+==========================
+
+- Remove the Crimtaned/ Corrupted Ore item
+- Add a recipe involving Bell Shards to craft the Summon Item 
+- For Expert Mode:
+ - Make the Second Phase trigger in Expert Mode when under 65% HP (sooner).
+ - Set Expert Mode HP to about 9800
+ - Come up with an Expert Mode exclusive attack for Phase 2
+ - Come up with an Expert Mode exclusive drop idea
+- Make a Treasure Bag for Starwalker
+- Find a Music Track to use for the battle
+- Make Starwalker drop about 10 Gold Coins upon defeating it
+- Give Starwalker a Regular Healing Potion drop instead of Lesser Healing Potions
+- Add dev items later.
+
+==========================
+        Bugs Found
+==========================
+
+- Using Life Crystals / Life Fruits / Mana Crystals causes your TP Gauge to Decrease
+
+====================================================================================
+                                 END OF PLAY TEST 04
+====================================================================================

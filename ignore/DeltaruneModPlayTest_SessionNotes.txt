@@ -1,0 +1,196 @@
+Deltarune Terraria Mod v1.3 PlayTest Summary
+
+
+I've finished going through most of the new additions to the mod, and I've recorded my findings here.
+Please look through my notes, and if you wish to implement some changes based on my findings, feel free to do so.
+I've also included some grammar fixes to the item descriptions that I felt were necessary.
+
+==========================
+            NPCs
+==========================
+
+Sanesss:
+
+- Not sure how to summon, if there even is a summon yet.
+- Boss is currently not damagable.
+- Hard to get away from the boss when first spawning, consider adding a short delay before the boss begins to
+move.
+- Has extremely high damage.
+- Very hard to move during fight.
+- Seems to have a similar AI to DCWW
+- Drips Lesser Healing Potions when killed
+- Drops about less than 15 Silver Coins
+
+
+Dangerous Car w/ Wings:
+
+- Currently only shoots one projectile type.
+- Only 1000 HP
+- Drops Lesser Healing Potions when killed
+- Drops about less than 15 Silver Coins
+
+==========================
+           Items
+==========================
+
+Ralsei Dummy
+
+- Suggest editing the Item Description:
+Right Click in hand to explode all Dummies
+Right Click in Inventory to un-equip any dummy attachments
+Any active dummies will not be affected if any changes are made to the active upgrades
+If changes are made to the upgrades, respawn the dummy to enable the changes
+
+
+Dummy Slime AI:
+
+- Recommend editing Description to:
+When equipped, this will make the dummy use the Slime AI.
+Right Click on this item to equip it onto [Ralsei Dummy Image] Ralsei Dummy
+Dummy Attachment
+- Dummy Attachment functions properly. No bugs found.
+
+
+Dummy Eye AI:
+
+-Description Edit needed. Please edit the Description to:
+When equipped, this will make the dummy use the Demon Eye AI
+Right Click on this item to equip it onto [Ralsei Dummy Image] Ralsei Dummy
+Dummy Attachment
+- This item does not change the AI to EoC AI, rather, it changes it to the Demon Eye AI. Eye of Cthulhu has a distinct AI, compared to the Demon Eye.
+- Dummy Attachment functions properly. No bugs found.
+
+
+Dummy Fighter AI:
+
+- Name Edit needed. Please edit name to: Dummy Zombie AI
+- Description Edit needed. Please edit the Description to:
+When equipped, this will make the dummy use the Zombie AI
+Right Click on this item to equip it onto [Ralsei Dummy Image] Ralsei Dummy
+Dummy Attachment
+- This item may need to be re-named to properly convey what it does.
+- Dummy Attachment functions properly. No bugs found.
+
+
+Dummy Damaging Tier I
+
+-Suggest editing description to:
+Increases Ralsei Dummy's damage by 10
+This will damage you on contact with the Dummy!
+Right Click on this item to equip it onto [Ralsei Dummy Image] Ralsei Dummy
+Dummy Attachment
+- Dummy Attachment functions properly. No bugs found.
+
+
+Dummy Damaging Tier II
+
+-Suggest editing description to:
+Increases Ralsei Dummy's damage by 50
+This will damage you on contact with the Dummy!
+Right Click on this item to equip it onto [Ralsei Dummy Image] Ralsei Dummy
+Dummy Attachment
+- Dummy Attachment functions properly. No bugs found.
+
+
+Dummy Damaging Tier III
+
+-Suggest editing description to:
+Increases Ralsei Dummy's damage by 100
+This will damage you on contact with the Dummy!
+Right Click on this item to equip it onto [Ralsei Dummy Image] Ralsei Dummy
+Dummy Attachment
+- Dummy Attachment functions properly. No bugs found.
+
+
+Dummy Shield Tier I
+
+-Suggest editing description to:
+Increases Ralsei Dummy's defense by 2
+Right Click on this item to equip it onto [Ralsei Dummy Image] Ralsei Dummy
+Dummy Attachment
+- Dummy Attachment functions properly. No bugs found.
+
+
+Dummy Shield Tier II
+
+-Suggest editing description to:
+Increases Ralsei Dummy's defense by 5
+Right Click on this item to equip it onto [Ralsei Dummy Image] Ralsei Dummy
+Dummy Attachment
+- Dummy Attachment functions properly. No bugs found.
+
+
+Dummy Shield Tier III
+
+-Suggest editing description to:
+Increases Ralsei Dummy's defense by 15
+Right Click on this item to equip it onto [Ralsei Dummy Image] Ralsei Dummy
+Dummy Attachment
+- Dummy Attachment functions properly. No bugs found.
+
+
+Dummy Shield Tier X
+
+- Suggest changing Item Name to: Dummy Shield Tier IV (will require a re-sprite)
+- Suggest editing description to:
+Increases Ralsei Dummy's defense by 100
+Right Click on this item to equip it onto [Ralsei Dummy Image] Ralsei Dummy
+Dummy Attachment
+- Dummy Attachment functions properly. No bugs found.
+
+
+Candy:
+
+- It's basically useless.
+
+
+C H Battle Background:
+
+- Functions as intended.
+
+
+C H One H P:
+
+- Functions as intended.
+
+
+C H Unlimited T P:
+
+- Functions as intended
+
+
+All weapons added into the mod function properly.
+
+
+==========================
+           Notes
+==========================
+
+- NPC Despawn Bug has been fixed. Town NPCs will no longer despawn randomly when dialogue box/shop is open for an extended period of time.
+- Background effect are a bit hard on the eyes, may want to add an option to disable.
+  - Background effect also has a noticeable impact on performance.
+- Reduced performance when fighting Saness
+
+==========================
+      Suggestions
+==========================
+
+- Maybe add a base for the dummy upgrades as a crafting material
+- Consider giving the Short Menacing Ax and Brave Ax the ability to chop trees, maybe about 65% - 70% Axe Power
+- Add crafting recipies for the various wooden shortswords and other weapons
+- Consider nerfing the Nurse Magik Spell Cooldown to 120s, and to a 50% heal instead of Full Heal (This is for
+balancing purposes, this item is very un-balanced.)
+
+==========================
+        Bugs Found
+==========================
+
+- When hovering over the Spell Bag, the chat is flooded with lines of text containing a single 0.
+- Text sometimes gets cut off in NPC dialogue.
+- Clicking on the dialogue box causes it to repeat the appearing animation.
+- Using Life Crystals / Life Fruits / Mana Crystals causes your TP Gauge to Decrease
+
+
+====================================================================================
+                                 END OF PLAY TEST 01
+====================================================================================

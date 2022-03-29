@@ -1,0 +1,143 @@
+Deltarune Terraria Mod v1.3 PlayTest Summary 2
+
+I've finished going through most of the new additions to the mod, and I've recorded my findings here, as well as notes
+on the new Boss Fight.
+Please look through my notes, and if you wish to implement some changes based on my findings, feel free to do so.
+I've also included some grammar fixes to the item descriptions that I felt were necessary.
+
+==========================
+            Bosses
+==========================
+
+Starwalker:
+
+- Summon works properly
+- Boss AI functions normally.
+- Orbit attack is a tad difficult to dodge.
+- Dash attack easier to dodge with the use of dashes
+- Hover attack is a bit stiff, hard to dodge all projectiles in this attack.
+Recommend making it follow the player just a tiny bit loosely
+- Has balanced damage.
+- Arena is Highly Recommended to be used when fighting against
+- Drops Lesser Healing Potions when killed
+- Drops about less than 15 Silver Coins
+
+==========================
+           Items
+==========================
+
+Tough Glove
+
+- Suggest editing the Item + Item Description:
+Equipable
+2 defense
+Reduces damage taken by 7%
+'It's tough to be around here, take this'
+- Functionality of Defense boost is normal
+- Functionality of "toughness" is questionable
+
+
+Dainty Scarf
+
+- Suggest editing the Item + Item Description:
+Equipable
+Reduces damage taken by 5%
+10% increased damage
+Immunity to Frostburn
+'It feels warm and slightly fuzzy'
+
+
+Dark Prince Hat
+- Suggest editing the Item + Item Description:
+Equipable
+2 defense
+Reduces damage taken by 6%
+Slowly generates TP when wearing
+'It feels somewhat fluffy'
+
+Corrupted Tin & Crimtaned Copper
+- Looks cool, doesn't really seem to have a practical use
+- Has the issue of a world having Copper & Corruption, and vice versa
+
+
+Candy
+- Suggest editing the Item Description:
+Did you know that most pigs can't talk?
+
+
+
+Banana
+- Suggest editing the Item Description to either:
+A strong energy of potassium eminates from this banana
+             OR
+'Potassium'
+- (The top edit is if you wish to use it for a Queen Boss Summon, the latter for a normal a
+
+
+Sparna Short Spear
+- Suggest editing the Item Description:
+'This. Is. SPARNA.'
+
+Bell of Stars
+- Suggest editing the Item Description:
+Consumable
+Summons the Original      Starwalker
+'These pixels are pissing me off'
+
+
+C H Use Restart:
+
+- Starts up another tab of Terraria
+
+
+C H World Gen:
+
+- Unknown Function
+
+
+C H Use Exit:
+
+- Unknown Function
+
+
+==========================
+           Notes
+==========================
+
+- Magic Spell Bag chat spam bug has been fixed.
+- Clicking on the dialogue box no longer causes it to repeat the appearing animation.
+- Background effect are a bit hard on the eyes, may want to add an option to disable.
+  - Background effect also has a noticeable impact on performance.
+- Reduced performance when fighting Saness
+
+==========================
+      Suggestions
+==========================
+
+- Replace the "Toughness" with damage reduction, similar to that of the Worm Scarf
+- Remove the Crimtaned/ Corrupted Ore items
+- Reduce the Defense of Starwalker
+- Increase Starwalker Health to 5500
+- Add a recipe involving Bell Shards to craft the Summon Item (Bell Shards can be dropped by Angry Bones occasionally)
+- For Expert Mode:
+ - Add a Second Phase when under 40% HP, details on that later.
+ - Set Expert Mode HP to about 9800
+ - Make the Starwalker Dash have a faster cooldown (about .75s)
+ - Add 2 new attacks for the Second Phase, details on that later. 
+ - Come up with an Expert Mode exclusive drop idea
+- Make a Treasure Bag for Starwalker
+- Find a Music Track to use for the battle
+- Make Starwalker drop about 5 Gold Coins upon defeating it
+
+==========================
+        Bugs Found
+==========================
+
+- Text sometimes gets cut off in NPC dialogue. (not sure if it's been fixed yet, haven't really done too much testing)
+- Using Life Crystals / Life Fruits / Mana Crystals causes your TP Gauge to Decrease
+
+
+====================================================================================
+                                 END OF PLAY TEST 02
+====================================================================================
+

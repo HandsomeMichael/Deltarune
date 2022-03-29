@@ -1,0 +1,73 @@
+epic notes :
+
+changes :
+murasama - murasan = dash
+
+
+deltarune tutorial
+
+TP / Tension Points :
+Tension Points or TP are points that you get when grazing hostile enemy or projectile
+Grazing can be done by standing close to the hitbox
+Getting damage will reduce your TP
+Max TP is scaled by your max hp
+TP can increase damage by a few percent
+TP can be used for casting spell
+
+Shortswords :
+Shortswords are a melee weapon that you can use to stab enemies
+Stabbing enemies 6 times will trigger stab effect wich tripple the damage
+Triggering stab effect 4 times will activate super crit and double the damage even further
+Some shortswords have a ability that can modify and manipulate this effects
+
+Spell Casting :
+You can cast a spell using spell bag with a cost of TP (Tension points)
+Spell bag requires you to equip some spell in it by rightclicking it
+shift and right click a bag to unequip all equipped spell
+You can craft or obtain spell that can assist you on battle
+Press [hotkey1] [hotkey2] [hotkey3] for casting spells (Can be changed in settings)
+(Please bind your hotkey at Settings/Control)
+
+deltarune planned progression
+
+- king slime
+- eye of cthulhu 
+   - when defefat will attract moonlord  
+- starwalker boss
+- brain of cthulhu / eater of worlds
+- skeletron
+   - to all subject of terrarian
+- queen bee
+- wall of flesh
+
+
+cutscene :
+- moonlord appears after eoc ded  : screen become black, suddenly eye
+- after defeating skeletron : all tile become sand, to all subject of terrarian
+
+starwalker boss attack
+Main = fly towards player head 
+- attack with 3 star
+- creates a giant star. get slower over time and dies
+- dash
+
+whimsun
+atk  5
+def 0
+att = circle butterlfly
+
+froggit
+atk 4
+def 5
+att = fly, att = jump
+
+napstablook
+atk 10
+def 10
+att = cry
+
+Loox
+atk 6
+def 6
+family name = eyewalker
+att = eye ball thing, sin wave, need to cache vector 2 and lerp

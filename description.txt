@@ -1,0 +1,88 @@
+Deltarune Mod is a mod that add deltarune related content to terraria.
+
+this mod is very very alpha release so expect some bug lol :)
+
+if you want to support this mod , join my discord server [ link in mod homepage ]
+there is also a terraria forum thread for this but i am too lazy to link it here
+
+related to "Deltarune Music" mod and "explosion.gif" mod
+
+This mod add :
+
+- 1 Boss
+- 3 Enemies !!
+- 100+ Items !!
+- A New Custom Currency  [ kromer ]
+- Deltarune dialog system
+- Vanity from famous deltarune character such as bob !
+- Make shortsword more epic ( no way )
+- Some uhhh vanilla changes
+- Tension Point (TP) / Grazing system from Deltarune
+- Customizable Ralsei dummy that had dps and knockback counter
+- Customizable Starting items in character creation menu ! 
+- Spell Magic Things with over 10+ spells ( yes , there is a fart spell )
+- tottaly not poorly optimized code
+- Annoying intro ( you can disable in config )
+- some other stuff that i forgor
+- sans
+
+planned feature :
+- More bosses
+- More weapon
+- More enemies
+- More things that make TP more fun
+- Expand kromer
+- society
+
+Note : some item or npcs in here may need a cheat mod to access it
+Extra Note : awawawawawwawawawa i hate coding
+
+credits to toby fox for making an epic game
+
+[ Changelog ]
+
+v0.1.4 
+- Ralsei Now Exist
+- Added Ralsei Guide Book
+- Added secret
+- Added Kromer
+- Added Few Weapons
+- Shortsword are now buffed
+- Reworked code base, more optimized i guess
+- Ralsei Dummy Attachment now obtainable
+
+v0.1.3 
+- Re-Worked Shortswords (Vanilla & Modded)
+- Added 1 New Boss: Starwalker (Post-Skeletron)
+- Made Improvements to Ralsei Dummy
+- Added more Dummy Upgrades
+- Added options for Starting Items in Character Creation Menu
+- New Spell Visuals/Sprites
+- Added More Weapons
+- Added a new accessory
+- Lots of Grammar Fixes
+- Added Deltarune Text Box for Town NPCs
+- Added Options to config
+ - Deltarune Boss Background can now be configured/disabled
+ - Text Appear SFX can now be disabled.
+- Removed Unused NPCs
+
+Bug Fixes:
+
+- Fixed a bug where Town NPCs would despawn randomly while their Dialogue Box is open.
+- Fixed a bug where clicking the dialogue box multiple times would lead to text getting cut off.
+
+v0.1.2
+- Added More Spells
+- Re-Worked Spells
+- Spells are now obtainable
+- Added Ralsei Dummy
+- Added Text Appear SFX for Town NPCs
+- Added additional details to intro
+
+v0.1.1
+- Added Icon
+- Added Sounds
+
+v0.1
+- Initial Mod Release
