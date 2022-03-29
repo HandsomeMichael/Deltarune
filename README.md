@@ -8,3 +8,5 @@ if you want to support this mod , join my discord server : https://discord.gg/UG
 this mod also has a forum thread ! https://forums.terraria.org/index.php?threads/deltarune-mod.110197/
 
 related to "Deltarune Music" mod and "explosion.gif" mod
+
+you can compile this mod by your own by following some tmod wiki guide https://github.com/tModLoader/tModLoader/wiki/Basic-tModLoader-Modding-Guide
