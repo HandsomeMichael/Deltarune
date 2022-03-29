@@ -41,15 +41,15 @@ credits to toby fox for making an epic game
 
 [ Changelog ]
 
-v0.1.4 
-- Ralsei Now Exist
-- Added Ralsei Guide Book
-- Added secret
-- Added Kromer
-- Added Few Weapons
-- Shortsword are now buffed
+v0.1.4  Plans ( may change )
+- Make Ralsei Now Exist
+- Make Ralsei Guide Book
+- Make secret
+- Make Kromer
+- Make Few Weapons
+- Make Shortsword buff
 - Reworked code base, more optimized i guess
-- Ralsei Dummy Attachment now obtainable
+- Make Ralsei Dummy Attachment now obtainable
 
 v0.1.3 
 - Re-Worked Shortswords (Vanilla & Modded)
