@@ -58,6 +58,7 @@ namespace Deltarune.Content
 						npc.damage += npc.damage/2;
 						npc.life *= 2;
 						npc.lifeMax *= 2;
+						Sync();
 					}
 				}
 				NewDefault = true;
@@ -164,6 +165,7 @@ namespace Deltarune.Content
 			}
 		}
 		public override void PostAI(NPC npc) {
+
 			if (hasBell && Main.rand.NextBool(3)) {
 				Dust dust = Main.dust[Dust.NewDust(npc.position, npc.width, npc.height, 87, 0f, 0f, 0, Color.White, 1f)];
 				dust.noGravity = true;
@@ -193,7 +195,18 @@ namespace Deltarune.Content
 			if (textOverhead.active) {textOverhead.Update(npc.boss,npc.position.X,npc.position.Y);}
 			Dialoging(npc);
 			//AdditiveHandler.NPC(npc);
-			
+		}
+		public void Sync() {
+			var packet = GetPacket();
+			packet.Write((byte)NetType.GlobalNPC);
+			SendPacket(packet);
+			packet.Send();
+		}
+		public void SendPacket(BinaryWriter packet) {
+			packet.Write(hasBell);
+		}
+		public void HandlePacket(BinaryReader reader) {
+			hasBell = reader.ReadBoolean();
 		}
 		public int funnyDialog;
 		void Dialoging(NPC npc) {
@@ -292,9 +305,6 @@ namespace Deltarune.Content
 			}
 		}
 		public override void NPCLoot(NPC npc) {
-			if (npc.type == NPCID.SkeletronHead && !MyWorld.downedStarWalker) {
-				Main.NewText("Monsters starting to glow",Color.LightGreen);
-			}
 			if (hasBell) {
 				npc.DropLoot(-1,ModContent.ItemType<Shatterbell>());
 			}

@@ -29,13 +29,13 @@ using Deltarune.Helper;
 
 namespace Deltarune
 {
-	public class CustomEntity : DeltaSystem
+	public class CustomEntity : ILoadable , IPreSaveAndQuit
 	{
 		public static List<BitEntity> bitList;
 
-		public override void PreSaveAndQuit() => Load();
-		public override void Unload() => bitList = null;
-		public override void Load() => bitList = new List<BitEntity>();
+		public void PreSaveAndQuit() => Load();
+		public void Unload() => bitList = null;
+		public void Load() => bitList = new List<BitEntity>();
 
 		public static void New(BitEntity entity, Vector2 position, int timeLeft) {
 			entity.timeLeft = timeLeft;
@@ -132,7 +132,7 @@ namespace Deltarune
 			Main.PlaySound(Deltarune.GetSound("badexplosion"),position);
 		}
 	}
-	// Bit Entity are entity but uses less stuff
+	// Bit Entity are entity but only has 2 property
 	public abstract class BitEntity
 	{
 		public Vector2 position;

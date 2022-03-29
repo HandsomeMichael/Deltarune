@@ -11,7 +11,7 @@ namespace Deltarune
 
     //a system based ones, requires tons of reworks
     
-    public class ItemUseGlow : DeltaSystem
+    public class ItemUseGlow : ILoadable
     {
         public class ItemGlow
         {
@@ -36,10 +36,10 @@ namespace Deltarune
             return null;
         }
 
-        public override void Load() {
+        public void Load() {
             useGlow = new List<ItemGlow>();
         }
-        public override void Unload() {
+        public void Unload() {
             useGlow = null;
         }
 

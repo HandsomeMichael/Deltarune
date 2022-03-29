@@ -31,9 +31,9 @@ using Microsoft.Xna.Framework.Input;
 namespace Deltarune
 {
 	//haha unorginazed code go brrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr
-	public class Hacc : DeltaSystem
+	public class Hacc : ILoadable
 	{
-		public override void Load() {
+		public void Load() {
 			On.Terraria.Main.DoDraw += drawAdd;
 			IL.Terraria.Main.UpdateAudio += Music_Patch;
 			IL.Terraria.Main.UpdateAudio += Music_Autodisable_Patch;
@@ -47,7 +47,7 @@ namespace Deltarune
 			On.Terraria.Main.DrawInterface_35_YouDied += YouDiedPatch;
 			On.Terraria.Main.DrawTiles += DrawTilesPatch;
 		}
-		public override void Unload() {
+		public void Unload() {
 			On.Terraria.Main.DoDraw -= drawAdd;
 			IL.Terraria.Main.UpdateAudio -= Music_Patch;
 			IL.Terraria.Main.UpdateAudio -= Music_Autodisable_Patch;

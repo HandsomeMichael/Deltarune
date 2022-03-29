@@ -26,38 +26,50 @@ namespace Deltarune
 	{
 		Player,
 		Teleport,
-		KillRalsei
+		KillRalsei,
+		GlobalNPC
 	}
 	public class NetCode
 	{
-		static ModPacket GetPacket() {
-			return ModContent.GetInstance<Deltarune>().GetPacket();
-		}
+		public static ModPacket GetPacket() => Deltarune.get.GetPacket();
+
 		public static void Send(NetType net) {
 			var netMessage = GetPacket();
 			netMessage.Write((byte)net);
 			netMessage.Send();
 		}
+
 		public static void HandlePacket(BinaryReader reader, int whoAmI) {
 			NetType msgType = (NetType)reader.ReadByte();
 			switch (msgType) {
 				case NetType.Player:
 					Main.player[reader.ReadByte()].GetDelta().HandlePacket(reader);
 					break;
+				case NetType.GlobalNPC:
+					// honestly idk what am doing
+					int index = reader.ReadByte();
+					Main.npc[index].GetDelta().HandlePacket(reader);
+					if (Main.netMode == NetmodeID.Server) {
+						var packet = GetPacket();
+						packet.Write((byte)NetType.GlobalNPC);
+						Main.npc[index].GetDelta().SendPacket(packet);
+						packet.Send(-1, whoAmI);
+					}
+					break;
 				case NetType.Teleport:
 					int playernumber = reader.ReadByte();
 					Player player = Main.player[playernumber];
 					player.position.X = reader.ReadSingle();
 					player.position.Y = reader.ReadSingle();
-					// Unlike SyncPlayer, here we have to relay/forward these changes to all other connected clients
-					//if (Main.netMode == NetmodeID.Server) {
-					//	var packet = GetPacket();
-					//	packet.Write((byte)NetType.Teleport);
-					//	packet.Write(playernumber);
-					//	packet.Write(player.position.X);
-					//	packet.Write(player.position.Y);
-					//	packet.Send(-1, playernumber);
-					//}
+					//Unlike SyncPlayer, here we have to relay/forward these changes to all other connected clients
+					if (Main.netMode == NetmodeID.Server) {
+						var packet = GetPacket();
+						packet.Write((byte)NetType.Teleport);
+						packet.Write(playernumber);
+						packet.Write(player.position.X);
+						packet.Write(player.position.Y);
+						packet.Send(-1, playernumber);
+					}
 					break;
 				case NetType.KillRalsei:
 					if (Main.netMode == NetmodeID.Server){

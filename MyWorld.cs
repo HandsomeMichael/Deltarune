@@ -21,23 +21,35 @@ namespace Deltarune
 	{
 		public static bool downedStarWalker;
 		public static bool hadRalsei;
+		public static bool downedBoss3Mod;
+
 		public override void NetSend(BinaryWriter writer) {
 			writer.Write(downedStarWalker);
 			writer.Write(hadRalsei);
+			writer.Write(downedBoss3Mod);
 		}
 		public override void NetReceive(BinaryReader reader) {
 			downedStarWalker = reader.ReadBoolean();
 			hadRalsei = reader.ReadBoolean();
+			downedBoss3Mod = reader.ReadBoolean();
 		}
 		public override TagCompound Save() {
 			TagCompound tag = new TagCompound();
 			tag.Add(nameof(downedStarWalker),downedStarWalker);
 			tag.Add(nameof(hadRalsei),hadRalsei);
+			tag.Add(nameof(downedBoss3Mod),downedBoss3Mod);
 			return tag;
 		}
 		public override void Load(TagCompound tag) {
 			downedStarWalker = tag.GetBool(nameof(downedStarWalker));
 			hadRalsei = tag.GetBool(nameof(hadRalsei));
+			downedBoss3Mod = tag.GetBool(nameof(downedBoss3Mod));
+		}
+		public override void PostUpdate() {
+			if (!downedBoss3Mod && NPC.downedBoss3) {
+				Main.NewText("Monsters starting to glow",Color.LightGreen);
+				downedBoss3Mod = true;
+			}
 		}
 		public override void PostWorldGen() {
 			//funny world gen bc why not

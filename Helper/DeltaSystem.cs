@@ -20,26 +20,49 @@ using Deltarune.Content;
 
 namespace Deltarune.Helper
 {
-    public abstract class DeltaSystem 
-    {
-        public string Name;
-        public virtual bool Autoload(ref string name) => true;
-        public virtual void PreSaveAndQuit() {}
-        public virtual void Load() {}
-        public virtual void Unload() {}
-    }
+    // interfaces implemented, reject abstract classes return to interfaces
+    public interface IPreSaveAndQuit{void PreSaveAndQuit();}
+    public interface ILoadOnly{void Load();}
+    public interface ILoadable {void Load();void Unload();}
+
     public static class DeltaSystemLoader
     {
-        public static List<DeltaSystem> systems = new List<DeltaSystem>();
+        // the caches , used for Unload and other hook
+        public static List<ILoadable> systems = new List<ILoadable>();
+
         public static void Load(Mod mod) {
+            // this is required
             if (mod.Code == null)
 				return;
 
-            //guh i forgor
-            systems = new List<DeltaSystem>();
+            //intialize systems
+            systems = new List<ILoadable>();
+            // loop over mod.Code
             foreach (Type type in mod.Code.GetTypes().OrderBy(type => type.FullName))
 			{
+                // dont do anything with abstract classes
 				if (type.IsAbstract){continue;}
+
+                // load ILoadable and cache it at systems
+                if (type.GetInterfaces().Contains(typeof(ILoadable))) {
+                    var instance = (ILoadable)Activator.CreateInstance(type);
+                    mod.Logger.InfoFormat($"{mod.Name} Loading System : {type.Name}");
+                    instance.Load();
+                    systems.Add(instance);
+                    continue;
+                }
+
+                // load ILoadOnly once
+                if (type.GetInterfaces().Contains(typeof(ILoadOnly))) {
+                    var instance = (ILoadOnly)Activator.CreateInstance(type);
+                    mod.Logger.InfoFormat($"{mod.Name} Load Only System : {type.Name}");
+                    instance.Load();
+                }
+
+                /*
+
+                Old DeltaSystem
+
 				if (type.GetConstructor(Type.EmptyTypes) != null && type.IsSubclassOf(typeof(DeltaSystem)))
 				{
 					var system = (DeltaSystem)Activator.CreateInstance(type);
@@ -51,12 +74,16 @@ namespace Deltarune.Helper
                         systems.Add(system);
                     }
 				}
+                */
                 
 			}
         }
         public static void PreSaveAndQuit() {
             foreach (var item in systems){
-                item.PreSaveAndQuit();
+                if (item is IPreSaveAndQuit hook) {
+                    Deltarune.get.Logger.InfoFormat($"{mod.Name} PreSaveQuit System : {hook.GetType().Name}");
+                    hook.PreSaveAndQuit();
+                }
             }
         }
         public static void Unload() {

@@ -21,14 +21,14 @@ using Deltarune.Content.Spell;
 
 namespace Deltarune
 {
-	public class TextureCache : DeltaSystem
+	public class TextureCache : ILoadable
 	{
 		public static Texture2D logo1;
 		public static Texture2D logo2;
 		public static Texture2D chatBack;
 		public static DynamicSpriteFont fontMouseText;
 
-		public override void Load() {
+		public void Load() {
 			if (!Main.dedServ) {
 				logo1 = Main.logoTexture;
 				logo2 = Main.logo2Texture;
@@ -39,7 +39,7 @@ namespace Deltarune
 				}
 			}
 		}
-		public override void Unload() {
+		public void Unload() {
 			if (!Main.dedServ) {
 				Main.logoTexture = logo1;
 				Main.logo2Texture = logo2;
