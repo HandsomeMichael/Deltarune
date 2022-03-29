@@ -111,10 +111,11 @@ namespace Deltarune.Content.NPCs.Boss
 			potionType = ItemID.HealingPotion;
 		}
 		public override void NPCLoot() {
+			
 			if (!MyWorld.downedStarWalker) {
 				Main.NewText("Monster are starting to be normal",Color.LightGreen);
 			}
-			
+
 			Gore.NewGore(npc.position, npc.velocity, mod.GetGoreSlot("Gores/starwalk0"), 1f);
 			Gore.NewGore(npc.position, npc.velocity, mod.GetGoreSlot("Gores/starwalk1"), 1f);
 			Gore.NewGore(npc.position, npc.velocity, mod.GetGoreSlot("Gores/starwalk2"), 1f);

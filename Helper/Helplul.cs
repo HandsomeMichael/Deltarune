@@ -630,9 +630,7 @@ namespace Deltarune.Helper
 		/// <summary>
 		/// a shorter short hand for calling Vector2.Distance ( i am the most lazy coder ever )
 		/// </summary>
-		public static float Distance(this Vector2 pos,Vector2 to) {
-			return Vector2.Distance(pos,to);
-		}
+		public static float Distance(this Vector2 pos,Vector2 to) => Vector2.Distance(pos,to);
 		/// <summary>
 		/// Delete item from player inventory
 		/// </summary>
