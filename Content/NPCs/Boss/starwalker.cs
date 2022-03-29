@@ -114,6 +114,14 @@ namespace Deltarune.Content.NPCs.Boss
 			if (!MyWorld.downedStarWalker) {
 				Main.NewText("Monster are starting to be normal",Color.LightGreen);
 			}
+			
+			Gore.NewGore(npc.position, npc.velocity, mod.GetGoreSlot("Gores/starwalk0"), 1f);
+			Gore.NewGore(npc.position, npc.velocity, mod.GetGoreSlot("Gores/starwalk1"), 1f);
+			Gore.NewGore(npc.position, npc.velocity, mod.GetGoreSlot("Gores/starwalk2"), 1f);
+			Gore.NewGore(npc.position, npc.velocity, mod.GetGoreSlot("Gores/starwalk3"), 1f);
+			Gore.NewGore(npc.Center, npc.velocity, mod.GetGoreSlot("Gores/wing1"), 1f);
+			Gore.NewGore(npc.Center, npc.velocity, mod.GetGoreSlot("Gores/wing2"), 1f);
+
 			MyWorld.downedStarWalker = true;
 		}
 
