@@ -54,7 +54,8 @@ namespace Deltarune.Helper
 
 	/// <summary>
 	/// A static class that has many extension method. used in many of my mods.
-	/// you can also use this if you want althought the extension here have little to no documentation about it ( cope with it )
+	/// you can also use this if you want althought the extension here have little to no documentation about it ( cope )
+	/// most stuff in here arent actually used lol
 	/// </summary>
     public static class Helpme
     {
@@ -79,17 +80,6 @@ namespace Deltarune.Helper
             player.GetDelta().cameraShakeForcedTimer = time;
             player.GetDelta().cameraShakeForced = num;
         }
-
-		/// <summary>
-		/// spriteBatch begin but apply color overlay using misc gameshader afterwards
-		/// </summary>
-		/// <param name="end">Wether or not the sprite should be Ended before started.</param>
-		/// <param name="color">the color of the overlay.</param>
-		public static void BeginOverlayShader(this SpriteBatch spriteBatch,Color color, bool end = false,bool ui = false) {
-			if (end) {spriteBatch.End();}
-			spriteBatch.Begin(SpriteSortMode.Immediate, null, null, null, null, null, Main.UIScaleMatrix);
-			GameShaders.Misc["ShaderOverlay"].UseColor(color).Apply();
-		}
 
 		#endregion
 
@@ -212,15 +202,6 @@ namespace Deltarune.Helper
 			}
 			return num;
 		}
-		/// <summary>
-		/// do what it says
-		/// </summary>
-        public static Player GetPlayerByName(string name = "@s") {
-            Player p = null;
-			if (name == "@s") {return Main.LocalPlayer;}
-            for (int i = 0; i < Main.maxPlayers; i++){if (Main.player[i].name == name) {p = Main.player[i];}}
-            return p;
-        }
 
 		/// <summary>
 		/// get rarity color. contains "wall of ifs"
@@ -358,16 +339,6 @@ namespace Deltarune.Helper
 		/// </summary>
 		public static void SaveConfig<T>() where T : ModConfig{
 			typeof(ConfigManager).GetMethod("Save", BindingFlags.Static | BindingFlags.NonPublic).Invoke(null, new object[1] { ModContent.GetInstance<T>()});
-		}
-		public static Vector3 ScreenCoord(this Vector2 vector){
-			//"vector" is a point on the screen... given the zoom is 1x
-			//Let's correct that
-			Vector2 screenCenter = new Vector2(Main.screenWidth / 2f, Main.screenHeight / 2f);
-			Vector2 diff = vector - screenCenter;
-			diff *= Main.GameZoomTarget;
-			vector = screenCenter + diff;
-
-			return new Vector3(-1 + vector.X / Main.screenWidth * 2, (-1 + vector.Y / Main.screenHeight * 2f) * -1, 0);
 		}
 		/// <summary>
 		/// check if player is in forest.
@@ -556,6 +527,19 @@ namespace Deltarune.Helper
 				c[a] = new Color(color.R, color.G, color.B);
 			}
 			texture.SetData(c);
+		}
+
+		/// <summary>
+		/// a shorthand for AddBuff without using ModContent
+		/// </summary>
+		public static void AddBuff<T> (this Player player,int time) where T : ModBuff {
+			player.AddBuff(ModContent.BuffType<T>(),time);
+		}
+		/// <summary>
+		/// a shorthand for AddBuff without using ModContent
+		/// </summary>
+		public static void AddBuff<T> (this NPC player,int time) where T : ModBuff {
+			player.AddBuff(ModContent.BuffType<T>(),time);
 		}
 		
 		/// <summary>

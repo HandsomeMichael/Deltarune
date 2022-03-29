@@ -44,9 +44,10 @@ namespace Deltarune.Content.Projectiles
 			player.direction = projectile.direction;
 			projectile.Center = player.Center;
 			if (projectile.owner == Main.myPlayer) {
-				player.itemRotation = player.AngleTo(Main.MouseWorld);
+				//player.itemRotation = player.AngleTo(Main.MouseWorld);
 				projectile.rotation = projectile.AngleTo(Main.MouseWorld);
 				projectile.velocity = projectile.DirectionTo(Main.MouseWorld)*10f;
+				player.itemRotation = (float)Math.Atan2(projectile.velocity.Y * dir, projectile.velocity.X * dir);
 				projectile.Center += projectile.velocity;
 				projectile.netUpdate = true;
 			}
@@ -62,9 +63,7 @@ namespace Deltarune.Content.Projectiles
 			}
 			Lighting.AddLight(projectile.Center, Color.Cyan.ToVector3() * 0.78f);
 		}
-		public override bool ShouldUpdatePosition() {
-			return false;
-		}
+		public override bool ShouldUpdatePosition() => false;
 		public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor) {
 			SpriteEffects spriteEffects = SpriteEffects.None;
 			if (projectile.direction == -1) {
@@ -83,7 +82,7 @@ namespace Deltarune.Content.Projectiles
 		}
 		public override void OnHitNPC(NPC npc, int damage, float knockback, bool crit) {
 			if (crit) {
-				npc.AddBuff(ModContent.BuffType<fatalbleed>(),60*2);
+				npc.AddBuff<fatalbleed>(60*2);
 				for (int i = 0; i < Main.rand.Next(9,13); i++){
 					Vector2 v = projectile.velocity;
 					v.RotatedByRandom(MathHelper.ToRadians(20));
@@ -92,7 +91,7 @@ namespace Deltarune.Content.Projectiles
 				}
 			}
 			else {
-				npc.AddBuff(ModContent.BuffType<fatalbleed>(),60);
+				npc.AddBuff<fatalbleed>(60);
 				for (int i = 0; i < Main.rand.Next(7,10); i++){
 					Vector2 v = projectile.velocity;
 					v.RotatedByRandom(MathHelper.ToRadians(20));
