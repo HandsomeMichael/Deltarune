@@ -30,216 +30,43 @@ using Microsoft.Xna.Framework.Input;
 
 namespace Deltarune
 {
-	//haha unorginazed code go brrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr
-	public class Hacc : ILoadable
+	// a lot more organized now
+	public class UpdateHook : ILoadable
 	{
 		public void Load() {
-			On.Terraria.Main.DoDraw += drawAdd;
 			IL.Terraria.Main.UpdateAudio += Music_Patch;
 			IL.Terraria.Main.UpdateAudio += Music_Autodisable_Patch;
 			On.Terraria.Main.Update += updateAdd;
-			On.Terraria.Main.DrawBG += newBackground;
-			On_OnChatButtonClicked += PostOnChatButtonClicked;
-			On.Terraria.Main.GUIChatDrawInner += GuiPatch;
-			On_CanUseItem += PostCanUseItem;
 			On.Terraria.Player.AddBuff += AddBuffPatch;
 			On.Terraria.Main.OnCharacterNamed += OnCharacterNamedPatch;
-			On.Terraria.Main.DrawInterface_35_YouDied += YouDiedPatch;
-			On.Terraria.Main.DrawTiles += DrawTilesPatch;
 		}
 		public void Unload() {
-			On.Terraria.Main.DoDraw -= drawAdd;
 			IL.Terraria.Main.UpdateAudio -= Music_Patch;
 			IL.Terraria.Main.UpdateAudio -= Music_Autodisable_Patch;
 			On.Terraria.Main.Update -= updateAdd;
-			On.Terraria.Main.DrawBG -= newBackground;
-			On_OnChatButtonClicked -= PostOnChatButtonClicked;
-			On.Terraria.Main.GUIChatDrawInner -= GuiPatch;
-			On_CanUseItem -= PostCanUseItem;
 			On.Terraria.Player.AddBuff -= AddBuffPatch;
 			On.Terraria.Main.OnCharacterNamed -= OnCharacterNamedPatch;
-			On.Terraria.Main.DrawInterface_35_YouDied -= YouDiedPatch;
-			On.Terraria.Main.DrawTiles -= DrawTilesPatch;
 		}
 		static void updateAdd(On.Terraria.Main.orig_Update orig,Terraria.Main self, GameTime gameTime) {
 			CustomEntity.UpdateAll();
-			if (Deltarune.intro < 0) {
-				UpdateHim();
-			}
-			
+			if (Deltarune.intro < 0) {UpdateHim();}
 			orig(self,gameTime);
 			if (MyConfig.get.showDebug) {UpdateDebug();}
 		}
-		static void drawAdd(On.Terraria.Main.orig_DoDraw orig,global::Terraria.Main self, GameTime gameTime) {
-			orig(self,gameTime);
-			IntroDraw();
-			if (CustomEntity.bitList != null) {
-				CustomEntity.DrawAll();
-			}
-			if (MyConfig.get.showDebug) {DrawDebug();}
-		}
-		static void GuiPatch(On.Terraria.Main.orig_GUIChatDrawInner orig,Main self) {
-			if (MyConfig.get.DialogBackground) {
-				Main.fontMouseText = Deltarune.tobyFont;
-				DrawDialogHead(Main.spriteBatch);
-			}
-			orig(self);
-			if (MyConfig.get.DialogBackground) {Main.fontMouseText = TextureCache.fontMouseText;}
-		}
-		static void DrawDialogHead(SpriteBatch spriteBatch) {
-			if (Main.LocalPlayer.talkNPC > -1 && !Main.playerInventory) {
-				NPC npc = Main.npc[Main.LocalPlayer.talkNPC];
-				Texture2D HeadTexture = null;
-				int getHead = NPC.TypeToHeadIndex(npc.type);
-				float headScale = 2f;
-				bool rotate = true;
-				if (getHead > -1) {HeadTexture = Main.npcHeadTexture[getHead];}
-				GlobeNPC.CustomHeadTexture(npc,ref HeadTexture, ref headScale, ref rotate);
-				if (MyConfig.get.DialogTypewriter) {
-					Vector2 pos2 = new Vector2(0,0);
-					if (Deltarune.chatNPC != null && !Deltarune.chatNPC.Done()) {
-						string text = "Press Space To Skip";
-						pos2 = new Vector2(Main.screenWidth / 2, 86);
-						pos2.X -= Helpme.MeasureString(text,Deltarune.tobyFont).X/2f;
-						ChatManager.DrawColorCodedStringWithShadow(spriteBatch,Deltarune.tobyFont,text,pos2,Color.White, 0, Vector2.Zero, Vector2.One);
-					}
-					if (HeadTexture == null) {
-						return;
-					}
-					pos2 = new Vector2(Main.screenWidth / 2 - Main.chatBackTexture.Width / 2, 86);
-					pos2.X -= Helpme.MeasureString(npc.GivenOrTypeName,Deltarune.tobyFont).X/2f;
-					pos2 += new Vector2(-50,118);
-					ChatManager.DrawColorCodedStringWithShadow(spriteBatch,Deltarune.tobyFont,npc.GivenOrTypeName,pos2,Color.White, 0, Vector2.Zero, Vector2.One);
-				}
-				if (HeadTexture == null) {
-					return;
-				}
-				Vector2 pos = new Vector2(Main.screenWidth / 2 - Main.chatBackTexture.Width / 2, 100f);
-				Texture2D texture = ModContent.GetTexture(Deltarune.textureExtra+"Chat_Small");
-				pos.X += -97;
-				pos.Y += 9;
-				Rectangle hitbox = new Rectangle((int)pos.X,(int)pos.Y,(int)97,(int)97);
-			
-				Main.spriteBatch.Draw(texture, hitbox, Color.White*0.8f);
-				pos.X += 97/2;
-				pos.Y += 97/2;
-				texture = HeadTexture;
-				SpriteEffects spriteEffects = SpriteEffects.None;
-				float rotation = 0f;
-				if (rotate) {
-					if (npc.spriteDirection == 1) {
-						//spriteEffects = SpriteEffects.FlipHorizontally;
-						spriteEffects = SpriteEffects.FlipVertically;
-					}
-					rotation = npc.AngleTo(Main.LocalPlayer.Center);
-					rotation -= MathHelper.ToRadians(180);
-					if (npc.Distance(Main.LocalPlayer.Center) < 10f) {
-						rotation = 0f;
-						if (npc.spriteDirection == 1) {
-							spriteEffects = SpriteEffects.FlipHorizontally;
-							//spriteEffects = SpriteEffects.FlipVertically;
-						}
-					}
-				}
-				spriteBatch.Draw(texture, pos, null, Color.White, rotation, texture.Size()/2f, headScale, spriteEffects, 0);	
-				//spriteBatch.Draw(texture, pos, null, Color.White, 0f, texture.Size()/2f, 1f, SpriteEffects.None, 0);
-				//Main.spriteBatch.Draw(Main.chatBackTexture, new Vector2(Main.screenWidth / 2 - Main.chatBackTexture.Width / 2, 100f), new Rectangle(0, 0, Main.chatBackTexture.Width, (lineAmount + 1) * 30), color, 0f, default(Vector2), 1f, SpriteEffects.None, 0f);
-			}
-		}
-		static void YouDiedPatch(On.Terraria.Main.orig_DrawInterface_35_YouDied orig) {
-			if (!MyConfig.get.newGameOver) {
-				orig();
-				return;
-			}
-			DrawNewGameOver();
-		}
-		static void DrawNewGameOver() {
-			if (Main.player[Main.myPlayer].dead) {
-				Deltarune.deathAlpha += 0.01f;
-				if (Deltarune.deathAlpha > 1f) {Deltarune.deathAlpha = 1f;}
-				float alpha = Deltarune.deathAlpha;
-				if (alpha > 0f) {
-					Rectangle hitbox = new Rectangle(0,0,(int)Main.screenWidth,(int)Main.screenHeight);
-					Main.spriteBatch.Draw(Main.magicPixel, hitbox, Color.Black*(alpha/2f));
-				}
-				//setup all the var needed
-				Texture2D texture = ModContent.GetTexture(Deltarune.textureExtra+"gameoverbuddy");
-				Vector2 size = texture.Size()/2f;
-				string textValue = Deltarune.deathTips;
-				var color = Main.player[Main.myPlayer].GetDeathAlpha(Color.Transparent);
-
-				int num = 30;
-				if (Main.player[Main.myPlayer].lostCoins > 0) {num = 60;}
-
-				//pos for the tip
-				Vector2 pos = new Vector2((float)(Main.screenWidth / 2) 
-				- Helpme.MeasureString(textValue).X / 2f, Main.screenHeight / 2 + num);
-				pos.Y += size.Y;
-
-				//draw
-				Main.spriteBatch.Draw(texture, new Vector2(Main.screenWidth/2,Main.screenHeight/2), null, 
-				Color.White*alpha, 0f, size, 1f, SpriteEffects.None, 0f);
-
-				//ChatManager.DrawColorCodedString(Main.spriteBatch, Deltarune.tobyFont, textValue, pos, Color.White*alpha,0f, Vector2.Zero, Vector2.One);
-
-				Utils.DrawBorderString(Main.spriteBatch, textValue, pos, Color.White*alpha, 1);
-				//funk
-				//DynamicSpriteFontExtensionMethods.DrawString(Main.spriteBatch, Main.fontMouseText,
-				 //textValue, pos, Color.White*alpha, 0f, default(Vector2), 1f, SpriteEffects.None, 0f);
-
-				//draw the coin drop. if had one
-				if (Main.player[Main.myPlayer].lostCoins > 0){
-					
-					textValue = Language.GetTextValue("Game.DroppedCoins", Helpme.coinsText2(Main.player[Main.myPlayer].lostCoins));
-					//text measuring
-					Vector2 messageSize = Helpme.MeasureString(textValue);
-
-					pos = new Vector2((float)(Main.screenWidth / 2) - messageSize.X / 2f, Main.screenHeight / 2 + 30);
-					pos.Y += size.Y;
-
-					//ChatManager.DrawColorCodedString(Main.spriteBatch, Deltarune.tobyFont, textValue, pos, Color.White*alpha,0f, Vector2.Zero, Vector2.One);
-
-					Utils.DrawBorderString(Main.spriteBatch, textValue, pos, Color.White*alpha, 1);
-					//funk
-					//DynamicSpriteFontExtensionMethods.DrawString(Main.spriteBatch, Main.fontMouseText,
-					//textValue, pos, Color.Pink*alpha, 0f, default(Vector2), 1f, SpriteEffects.None, 0f);
-				}
-				textValue = $"{Main.LocalPlayer.respawnTimer/60}";
-				pos = new Vector2((float)(Main.screenWidth / 2) 
-				- Helpme.MeasureString(textValue).X / 2f, Main.screenHeight / 2 + ((float)num*1.5f));
-				pos.Y += size.Y;
-
-				Utils.DrawBorderStringBig(Main.spriteBatch, textValue, pos, Color.White*alpha,1);
-			}
-			else {
-				Deltarune.deathAlpha = 0f;
-			}
-		}
 		static void OnCharacterNamedPatch(On.Terraria.Main.orig_OnCharacterNamed orig, Main self,string text) {
 			Deltarune.selectedMenu = 0;
-			if (MyConfig.get.mainMenu) {
-				Main.PlaySound(Deltarune.get.GetLegacySoundSlot(SoundType.Custom, "Sounds/mus_f_newlaugh"));
-			}
+			if (MyConfig.get.mainMenu) {Main.PlaySound(Deltarune.get.GetLegacySoundSlot(SoundType.Custom, "Sounds/mus_f_newlaugh"));}
 			//mus_f_newlaugh
 			orig(self,text);
 		}
 		static void UpdateHim() {
 			//reflection lets gooo
-			if (!MyConfig.get.mainMenu) {
-				return;
-			}
+			if (!MyConfig.get.mainMenu) {return;}
 			FieldInfo field = Main.instance.GetType().GetField("selectedMenu", BindingFlags.NonPublic | BindingFlags.Instance);
 			int selectedMenu = (int)field.GetValue(Main.instance);
-
-			if (selectedMenu != -1) {
-				Deltarune.selectedMenu = selectedMenu;
-			}
+			if (selectedMenu != -1) {Deltarune.selectedMenu = selectedMenu;}
 			bool him = false;
-
-			if (Main.menuMode == 2 || (Main.menuMode > 16 && Main.menuMode < 25) || Main.menuMode == 222 || (Main.menuMode == 888 && Deltarune.selectedMenu == 6)) {
-				him = true;
-			}
-
+			if (Main.menuMode == 2 || (Main.menuMode > 16 && Main.menuMode < 25) || Main.menuMode == 222 || (Main.menuMode == 888 && Deltarune.selectedMenu == 6)) {him = true;}
 			if (him) {
 				Deltarune.TitleMusic = Deltarune.get.GetSoundSlot(SoundType.Music, "Sounds/Music/AUDIO_ANOTHERHIM");
 				Deltarune.darkenBG += 0.01f;
@@ -255,146 +82,77 @@ namespace Deltarune
 				}
 			}
 		}
-		public static bool ToAllSubjectOfYmir = false;
-		static Tile[,] tileReset;
-		static void DrawTilesPatch(On.Terraria.Main.orig_DrawTiles orig,Main self ,bool solidOnly, int waterStyleOverride) {
-			tileReset = Main.tile;
-			if (ToAllSubjectOfYmir) {
-				solidOnly = true;
-				foreach (Tile item in Main.tile){
-					if (item != null && item.active() && Main.tileSolid[item.type]) {
-						item.type = TileID.Sand;
-					}
-				}
-			}
-			orig(self,solidOnly,waterStyleOverride);
-			if (ToAllSubjectOfYmir) {
-				Main.tile = tileReset;
-			}
-		}
-		static void IntroDraw() {
-
-			//field = Main.GetType().GetField("_characterSelectMenu", BindingFlags.NonPublic | BindingFlags.Instance);
-			//UICharacterSelect selectedMenu = (UICharacterSelect)field.GetValue(Main);
-
-			//Type type = typeof(Main);
-			//FieldInfo info = type.GetField("_characterSelectMenu", BindingFlags.NonPublic | BindingFlags.Static);
-			//Terraria.GameContent.UI.States.UICharacterSelect state = (Terraria.GameContent.UI.States.UICharacterSelect)info.GetValue(null);
-			//This is for a field. For a property, change type.GetField to type.GetProperty. You can also access private methods in a similar fashion.
-
-			//bool nga = false;
-			//if (Main.MenuUI.CurrentState is Terraria.GameContent.UI.States.UICharacterSelect) {
-			//	nga = true;
-			//}
-
-			/*
-			Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, null, null, null, null, Main.UIScaleMatrix);
-			ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, 
-			Main.fontMouseText, $"menu = {Main.menuMode}\nselected menu 1 = {Deltarune.selectedMenu}",
-				new Vector2(Main.screenWidth/2,Main.screenHeight/2) + new Vector2(0,80),
-				Color.White, 0, Vector2.Zero, Vector2.One);
-			Main.spriteBatch.End();
-			*/
-			/*
-			Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, null, null, null, null, Main.UIScaleMatrix);
-			ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, 
-			Main.fontMouseText, $"intro = {Deltarune.intro}",
-				new Vector2(Main.screenWidth/2,Main.screenHeight/2) + new Vector2(0,80),
-				Color.White, 0, Vector2.Zero, Vector2.One);
-			Main.spriteBatch.End();
-			*/
-
-			if (Deltarune.intro < 0 && Deltarune.intro >= -30) {
-				if (Deltarune.intro == -1) {
-					if (MyConfig.get.mainMenu) {
-						MyConfig.get.intro = false;
-						Helpme.SaveConfig<MyConfig>();
-						Explode.BoomScreen();
-						Deltarune.TitleMusic = Deltarune.get.GetSoundSlot(SoundType.Music, "Sounds/Music/lancer");
-						Main.logoTexture = ModContent.GetTexture(Deltarune.textureExtra+"Title"+Main.rand.Next(1,6));
-						Main.logo2Texture = ModContent.GetTexture(Deltarune.textureExtra+"Title"+Main.rand.Next(1,6));
-					}
-				}
-				Deltarune.intro--;
-				int intro = Deltarune.intro*-1;
-
-				if (intro == 30 && MyConfig.get.mainMenu) {
-					Main.PlaySound(Deltarune.get.GetLegacySoundSlot(SoundType.Custom, "Sounds/snd_lancerlaugh"));
-				}
-
-
-				Deltarune.intro = intro*-1;
-			}
-			if (Deltarune.intro > 0) {
-
-				//normal
-				Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, null, null, null, null, Main.UIScaleMatrix);
-
-				Rectangle hitbox = new Rectangle(0,0,(int)Main.screenWidth,(int)Main.screenHeight);
-				//hitbox.Offset((int)-Main.screenPosition.X, (int)-Main.screenPosition.Y);
-
-				Texture2D texture = ModContent.GetTexture(Deltarune.textureExtra+"Logo");
-				Texture2D texture2 = ModContent.GetTexture(Deltarune.textureExtra+"Logo_glow");
-
-				Deltarune.intro++;
-
-
-				if (Deltarune.intro > 300) {
-					
-					float alpha = ((float)Deltarune.intro - 300f)/100f;
-					alpha = 1f - alpha;
-					if (alpha > 1f) {alpha = 1f;}
-					if (alpha < 0f) {alpha = 0f;}
-
-					Main.spriteBatch.Draw(Main.magicPixel, hitbox, Color.Black*alpha);
-
-					Main.spriteBatch.End();
-					//glow
-					Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, null, null, null, null, Main.UIScaleMatrix);
-
-					Main.spriteBatch.Draw(texture2, new Vector2(Main.screenWidth/2,Main.screenHeight/2), null, Color.White*alpha, 0f, texture2.Size()/2, 1f, SpriteEffects.None, 0f);
-					Main.spriteBatch.End();
-					//normal
-					Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, null, null, null, null, Main.UIScaleMatrix);
-
-					Main.spriteBatch.Draw(texture, new Vector2(Main.screenWidth/2,Main.screenHeight/2), null, Color.White*alpha, 0f, texture.Size()/2, 1f, SpriteEffects.None, 0f);
-					if (Deltarune.intro > 600) {
-						LancerIntro.New();
-						Deltarune.intro = 0;
-					}
-				}
-				else {
-					float alpha = (float)Deltarune.intro/100f;
-					if (alpha > 1f) {alpha = 1f;}
-
-					Main.spriteBatch.Draw(Main.magicPixel, hitbox, Color.Black*alpha);
-
-					if (Deltarune.intro > 200) {
-
-						alpha = ((float)Deltarune.intro - 200f)/100f;
-						if (alpha > 1f) {alpha = 1f;}
-
-						Main.spriteBatch.End();
-						//glow
-						Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, null, null, null, null, Main.UIScaleMatrix);
-						Main.spriteBatch.Draw(texture2, new Vector2(Main.screenWidth/2,Main.screenHeight/2), null, Color.White*alpha, 0f, texture2.Size()/2, 1f, SpriteEffects.None, 0f);
-						Main.spriteBatch.End();
-						//normal
-						Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, null, null, null, null, Main.UIScaleMatrix);
-						Main.spriteBatch.Draw(texture, new Vector2(Main.screenWidth/2,Main.screenHeight/2), null, Color.White*alpha, 0f, texture.Size()/2, 1f, SpriteEffects.None, 0f);
-
-					}
-				}
-				//Main.fontMouseText
-				//ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, Deltarune.tobyFont, $"Loading {Deltarune.intro} / 1000", new Vector2(Main.screenWidth/2,Main.screenHeight/2) + new Vector2(0,80), Color.White, 0, Vector2.Zero, Vector2.One);
-				Main.spriteBatch.End();
-			}
-		}
 		static void AddBuffPatch(On.Terraria.Player.orig_AddBuff orig,Player self,int type, int time1, bool quiet = true) {
-			if (type == BuffID.Confused && !self.buffImmune[BuffID.Confused] && !self.HasBuff(BuffID.Confused)) {
-				Main.PlaySound(Deltarune.get.GetLegacySoundSlot(SoundType.Custom, "Sounds/snd_hypnosis"),self.Center);
-			}
+			if (type == BuffID.Confused && !self.buffImmune[BuffID.Confused] && !self.HasBuff(BuffID.Confused)) {Main.PlaySound(Deltarune.GetSound("hypnosis"),self.Center);}
 			orig(self,type,time1,quiet);
+		}
+		static void UpdateDebug() {
+			if (Main.keyState.IsKeyDown(Keys.Up) || Main.keyState.IsKeyDown(Keys.Right)) {Deltarune.debug[Deltarune.debugCur]++;}
+			if (Main.keyState.IsKeyDown(Keys.Down) || Main.keyState.IsKeyDown(Keys.Left)) {Deltarune.debug[Deltarune.debugCur]--;}
+			if (Main.keyState.IsKeyDown(Keys.D1)) {Deltarune.debugCur = 0;}
+			if (Main.keyState.IsKeyDown(Keys.D2)) {Deltarune.debugCur = 1;}
+			if (Main.keyState.IsKeyDown(Keys.D3)) {Deltarune.debugCur = 2;}
+			if (Main.keyState.IsKeyDown(Keys.D4)) {Deltarune.debugCur = 3;}
+			if (Main.keyState.IsKeyDown(Keys.L)) {Deltarune.debug[Deltarune.debugCur] = 0;}
+			if (Deltarune.debugCur < 0) {Deltarune.debugCur = 3;}
+			if (Deltarune.debugCur > 3) {Deltarune.debugCur = 0;}
+		}
+		#region music
+		static void Music_Patch(ILContext il) {
+            ILCursor c = new ILCursor(il);
+            if (!c.TryGotoNext(instr => instr.MatchLdcI4(6) && instr.Next.MatchStfld(typeof(Main).GetField("newMusic")))) {
+                throw new Exception("Could not find instruction to patch (Music_Patch)");
+            }
+            c.Index++;
+            c.EmitDelegate<Func<int, int>>(MusicDelegate);
+        }
+        static int MusicDelegate(int defaultMusic) {
+			return (Deltarune.TitleMusic == 0 ? defaultMusic : Deltarune.TitleMusic);
+        }
+		static int MusicDisableDelegate(int oldValue){
+            return 0;
+        }
+        static void Music_Autodisable_Patch(ILContext il){
+			// ported from red cloud mod
+            ILCursor c = new ILCursor(il);
+            if (!c.TryGotoNext(instr => instr.MatchLdsfld<Main>("musicError") && instr.Next.MatchLdcI4(100))){
+                throw new Exception("Could not find instruction to patch (Music_Patch), haha you had a skill issue");
+            }
+            c.Index++;
+            c.EmitDelegate<Func<int, int>>(MusicDisableDelegate);
+        }
+		#endregion
+	}
+	public class DrawHook : ILoadable
+	{
+		public void Load() {
+			On.Terraria.Main.DoDraw += drawAdd;
+			On.Terraria.Main.DrawBG += newBackground;
+			On.Terraria.Main.GUIChatDrawInner += GuiPatch;
+			On.Terraria.Main.DrawInterface_35_YouDied += YouDiedPatch;
+			//On.Terraria.Main.DrawTiles += DrawTilesPatch;
+		}
+		public void Unload() {
+			On.Terraria.Main.DoDraw -= drawAdd;
+			On.Terraria.Main.DrawBG -= newBackground;
+			On.Terraria.Main.GUIChatDrawInner -= GuiPatch;
+			On.Terraria.Main.DrawInterface_35_YouDied -= YouDiedPatch;
+		}
+		// Reboiled later
+		//static void DrawTilesPatch(On.Terraria.Main.orig_DrawTiles orig,Main self ,bool solidOnly, int waterStyleOverride) {orig(self,solidOnly,waterStyleOverride);}
+		static void drawAdd(On.Terraria.Main.orig_DoDraw orig,global::Terraria.Main self, GameTime gameTime) {
+			orig(self,gameTime);
+			IntroDraw();
+			if (CustomEntity.bitList != null) {CustomEntity.DrawAll();}
+			if (MyConfig.get.showDebug) {DrawDebug();}
+		}
+		static void GuiPatch(On.Terraria.Main.orig_GUIChatDrawInner orig,Main self) {
+			if (MyConfig.get.DialogBackground) {
+				Main.fontMouseText = Deltarune.tobyFont;
+				DrawDialogHead(Main.spriteBatch);
+			}
+			orig(self);
+			if (MyConfig.get.DialogBackground) {Main.fontMouseText = TextureCache.fontMouseText;}
 		}
 		static void newBackground(On.Terraria.Main.orig_DrawBG orig,global::Terraria.Main self) {
 			orig(self);
@@ -550,21 +308,134 @@ namespace Deltarune
 			pos.X -= Helpme.MeasureString(textValue).X/2f;
 			Utils.DrawBorderString(Main.spriteBatch, textValue, pos, Color.White, 1);
 		}
-		static void UpdateDebug() {
-			if (Main.keyState.IsKeyDown(Keys.Up) || Main.keyState.IsKeyDown(Keys.Right)) {
-				Deltarune.debug[Deltarune.debugCur]++;
+		static void DrawDialogHead(SpriteBatch spriteBatch) {
+			if (Main.LocalPlayer.talkNPC > -1 && !Main.playerInventory) {
+				NPC npc = Main.npc[Main.LocalPlayer.talkNPC];
+				Texture2D HeadTexture = null;
+				int getHead = NPC.TypeToHeadIndex(npc.type);
+				float headScale = 2f;
+				bool rotate = true;
+				if (getHead > -1) {HeadTexture = Main.npcHeadTexture[getHead];}
+				GlobeNPC.CustomHeadTexture(npc,ref HeadTexture, ref headScale, ref rotate);
+				if (MyConfig.get.DialogTypewriter) {
+					Vector2 pos2 = new Vector2(0,0);
+					if (Deltarune.chatNPC != null && !Deltarune.chatNPC.Done()) {
+						string text = "Press Space To Skip";
+						pos2 = new Vector2(Main.screenWidth / 2, 86);
+						pos2.X -= Helpme.MeasureString(text,Deltarune.tobyFont).X/2f;
+						ChatManager.DrawColorCodedStringWithShadow(spriteBatch,Deltarune.tobyFont,text,pos2,Color.White, 0, Vector2.Zero, Vector2.One);
+					}
+					if (HeadTexture == null) {
+						return;
+					}
+					pos2 = new Vector2(Main.screenWidth / 2 - Main.chatBackTexture.Width / 2, 86);
+					pos2.X -= Helpme.MeasureString(npc.GivenOrTypeName,Deltarune.tobyFont).X/2f;
+					pos2 += new Vector2(-50,118);
+					ChatManager.DrawColorCodedStringWithShadow(spriteBatch,Deltarune.tobyFont,npc.GivenOrTypeName,pos2,Color.White, 0, Vector2.Zero, Vector2.One);
+				}
+				if (HeadTexture == null) {
+					return;
+				}
+				Vector2 pos = new Vector2(Main.screenWidth / 2 - Main.chatBackTexture.Width / 2, 100f);
+				Texture2D texture = ModContent.GetTexture(Deltarune.textureExtra+"Chat_Small");
+				pos.X += -97;
+				pos.Y += 9;
+				Rectangle hitbox = new Rectangle((int)pos.X,(int)pos.Y,(int)97,(int)97);
+			
+				Main.spriteBatch.Draw(texture, hitbox, Color.White*0.8f);
+				pos.X += 97/2;
+				pos.Y += 97/2;
+				texture = HeadTexture;
+				SpriteEffects spriteEffects = SpriteEffects.None;
+				float rotation = 0f;
+				if (rotate) {
+					if (npc.spriteDirection == 1) {
+						//spriteEffects = SpriteEffects.FlipHorizontally;
+						spriteEffects = SpriteEffects.FlipVertically;
+					}
+					rotation = npc.AngleTo(Main.LocalPlayer.Center);
+					rotation -= MathHelper.ToRadians(180);
+					if (npc.Distance(Main.LocalPlayer.Center) < 10f) {
+						rotation = 0f;
+						if (npc.spriteDirection == 1) {
+							spriteEffects = SpriteEffects.FlipHorizontally;
+							//spriteEffects = SpriteEffects.FlipVertically;
+						}
+					}
+				}
+				spriteBatch.Draw(texture, pos, null, Color.White, rotation, texture.Size()/2f, headScale, spriteEffects, 0);	
+				//spriteBatch.Draw(texture, pos, null, Color.White, 0f, texture.Size()/2f, 1f, SpriteEffects.None, 0);
+				//Main.spriteBatch.Draw(Main.chatBackTexture, new Vector2(Main.screenWidth / 2 - Main.chatBackTexture.Width / 2, 100f), new Rectangle(0, 0, Main.chatBackTexture.Width, (lineAmount + 1) * 30), color, 0f, default(Vector2), 1f, SpriteEffects.None, 0f);
 			}
-			if (Main.keyState.IsKeyDown(Keys.Down) || Main.keyState.IsKeyDown(Keys.Left)) {
-				Deltarune.debug[Deltarune.debugCur]--;
+		}
+		static void YouDiedPatch(On.Terraria.Main.orig_DrawInterface_35_YouDied orig) {
+			if (!MyConfig.get.newGameOver) {
+				orig();
+				return;
 			}
-			if (Main.keyState.IsKeyDown(Keys.D1)) {Deltarune.debugCur = 0;}
-			if (Main.keyState.IsKeyDown(Keys.D2)) {Deltarune.debugCur = 1;}
-			if (Main.keyState.IsKeyDown(Keys.D3)) {Deltarune.debugCur = 2;}
-			if (Main.keyState.IsKeyDown(Keys.D4)) {Deltarune.debugCur = 3;}
-			if (Main.keyState.IsKeyDown(Keys.L)) {Deltarune.debug[Deltarune.debugCur] = 0;}
+			DrawNewGameOver();
+		}
+		static void DrawNewGameOver() {
+			if (Main.player[Main.myPlayer].dead) {
+				Deltarune.deathAlpha += 0.01f;
+				if (Deltarune.deathAlpha > 1f) {Deltarune.deathAlpha = 1f;}
+				float alpha = Deltarune.deathAlpha;
+				if (alpha > 0f) {
+					Rectangle hitbox = new Rectangle(0,0,(int)Main.screenWidth,(int)Main.screenHeight);
+					Main.spriteBatch.Draw(Main.magicPixel, hitbox, Color.Black*(alpha/2f));
+				}
+				//setup all the var needed
+				Texture2D texture = ModContent.GetTexture(Deltarune.textureExtra+"gameoverbuddy");
+				Vector2 size = texture.Size()/2f;
+				string textValue = Deltarune.deathTips;
+				var color = Main.player[Main.myPlayer].GetDeathAlpha(Color.Transparent);
 
-			if (Deltarune.debugCur < 0) {Deltarune.debugCur = 3;}
-			if (Deltarune.debugCur > 3) {Deltarune.debugCur = 0;}
+				int num = 30;
+				if (Main.player[Main.myPlayer].lostCoins > 0) {num = 60;}
+
+				//pos for the tip
+				Vector2 pos = new Vector2((float)(Main.screenWidth / 2) 
+				- Helpme.MeasureString(textValue).X / 2f, Main.screenHeight / 2 + num);
+				pos.Y += size.Y;
+
+				//draw
+				Main.spriteBatch.Draw(texture, new Vector2(Main.screenWidth/2,Main.screenHeight/2), null, 
+				Color.White*alpha, 0f, size, 1f, SpriteEffects.None, 0f);
+
+				//ChatManager.DrawColorCodedString(Main.spriteBatch, Deltarune.tobyFont, textValue, pos, Color.White*alpha,0f, Vector2.Zero, Vector2.One);
+
+				Utils.DrawBorderString(Main.spriteBatch, textValue, pos, Color.White*alpha, 1);
+				//funk
+				//DynamicSpriteFontExtensionMethods.DrawString(Main.spriteBatch, Main.fontMouseText,
+				 //textValue, pos, Color.White*alpha, 0f, default(Vector2), 1f, SpriteEffects.None, 0f);
+
+				//draw the coin drop. if had one
+				if (Main.player[Main.myPlayer].lostCoins > 0){
+					
+					textValue = Language.GetTextValue("Game.DroppedCoins", Helpme.coinsText2(Main.player[Main.myPlayer].lostCoins));
+					//text measuring
+					Vector2 messageSize = Helpme.MeasureString(textValue);
+
+					pos = new Vector2((float)(Main.screenWidth / 2) - messageSize.X / 2f, Main.screenHeight / 2 + 30);
+					pos.Y += size.Y;
+
+					//ChatManager.DrawColorCodedString(Main.spriteBatch, Deltarune.tobyFont, textValue, pos, Color.White*alpha,0f, Vector2.Zero, Vector2.One);
+
+					Utils.DrawBorderString(Main.spriteBatch, textValue, pos, Color.White*alpha, 1);
+					//funk
+					//DynamicSpriteFontExtensionMethods.DrawString(Main.spriteBatch, Main.fontMouseText,
+					//textValue, pos, Color.Pink*alpha, 0f, default(Vector2), 1f, SpriteEffects.None, 0f);
+				}
+				textValue = $"{Main.LocalPlayer.respawnTimer/60}";
+				pos = new Vector2((float)(Main.screenWidth / 2) 
+				- Helpme.MeasureString(textValue).X / 2f, Main.screenHeight / 2 + ((float)num*1.5f));
+				pos.Y += size.Y;
+
+				Utils.DrawBorderStringBig(Main.spriteBatch, textValue, pos, Color.White*alpha,1);
+			}
+			else {
+				Deltarune.deathAlpha = 0f;
+			}
 		}
 		static void DrawDebug() {
 			Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, null, null, null, null, Main.UIScaleMatrix);
@@ -576,6 +447,82 @@ namespace Deltarune
 			Main.fontMouseText, $"playerClassType = {Deltarune.playerClassType}\nplayerClassMisc = {Deltarune.playerClassMisc}\nplayerClass = {Deltarune.playerClass}",
 				new Vector2(Main.screenWidth/2,Main.screenHeight/2) - new Vector2(0,50),Color.White, 0, Vector2.Zero, Vector2.One);
 			Main.spriteBatch.End();
+		}
+		static void IntroDraw() {
+			Vector2 centerScreen = new Vector2(Main.screenWidth/2,Main.screenHeight/2);
+			if (Deltarune.intro < 0 && Deltarune.intro >= -30) {
+				if (Deltarune.intro == -1) {
+					if (MyConfig.get.mainMenu) {
+						MyConfig.get.intro = false;
+						Helpme.SaveConfig<MyConfig>();
+						Explode.BoomScreen();
+						Deltarune.TitleMusic = Deltarune.get.GetSoundSlot(SoundType.Music, "Sounds/Music/lancer");
+						Main.logoTexture = ModContent.GetTexture(Deltarune.textureExtra+"Title"+Main.rand.Next(1,6));
+						Main.logo2Texture = ModContent.GetTexture(Deltarune.textureExtra+"Title"+Main.rand.Next(1,6));
+					}
+				}
+				Deltarune.intro--;
+				int intro = Deltarune.intro*-1;
+				if (intro == 30 && MyConfig.get.mainMenu) {
+					Main.PlaySound(Deltarune.GetSound("lancerlaugh"));
+				}
+				Deltarune.intro = intro*-1;
+			}
+			if (Deltarune.intro > 0) {
+				//normal
+				Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, null, null, null, null, Main.UIScaleMatrix);
+				Rectangle hitbox = new Rectangle(0,0,(int)Main.screenWidth,(int)Main.screenHeight);
+				//hitbox.Offset((int)-Main.screenPosition.X, (int)-Main.screenPosition.Y);
+				Texture2D texture = ModContent.GetTexture(Deltarune.textureExtra+"Logo");
+				Texture2D texture2 = ModContent.GetTexture(Deltarune.textureExtra+"Logo_glow");
+				Deltarune.intro++;
+				if (Deltarune.intro > 300) {
+					float alpha = ((float)Deltarune.intro - 300f)/100f;
+					alpha = 1f - alpha;
+					if (alpha > 1f) {alpha = 1f;}
+					if (alpha < 0f) {alpha = 0f;}
+					Main.spriteBatch.Draw(Main.magicPixel, hitbox, Color.Black*alpha);
+					//glow
+					Main.spriteBatch.BeginGlow(true,true);
+					Main.spriteBatch.Draw(texture2, centerScreen, null, Color.White*alpha, 0f, texture2.Size()/2, 1f, SpriteEffects.None, 0f);
+					//normal
+					Main.spriteBatch.BeginNormal(true,true);
+					Main.spriteBatch.Draw(texture, centerScreen, null, Color.White*alpha, 0f, texture.Size()/2, 1f, SpriteEffects.None, 0f);
+					if (Deltarune.intro > 600) {
+						LancerIntro.New();
+						Deltarune.intro = 0;
+					}
+				}
+				else {
+					float alpha = (float)Deltarune.intro/100f;
+					if (alpha > 1f) {alpha = 1f;}
+					Main.spriteBatch.Draw(Main.magicPixel, hitbox, Color.Black*alpha);
+					if (Deltarune.intro > 200) {
+						alpha = ((float)Deltarune.intro - 200f)/100f;
+						if (alpha > 1f) {alpha = 1f;}
+						//glow
+						Main.spriteBatch.BeginGlow(true,true);
+						Main.spriteBatch.Draw(texture2, centerScreen, null, Color.White*alpha, 0f, texture2.Size()/2, 1f, SpriteEffects.None, 0f);
+						//normal
+						Main.spriteBatch.BeginNormal(true,true);
+						Main.spriteBatch.Draw(texture, centerScreen, null, Color.White*alpha, 0f, texture.Size()/2, 1f, SpriteEffects.None, 0f);
+					}
+				}
+				//Main.fontMouseText
+				//ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, Deltarune.tobyFont, $"Loading {Deltarune.intro} / 1000", new Vector2(Main.screenWidth/2,Main.screenHeight/2) + new Vector2(0,80), Color.White, 0, Vector2.Zero, Vector2.One);
+				Main.spriteBatch.End();
+			}
+		}
+	}
+	public class TmodHook : ILoadable
+	{
+		public void Load() {
+			On_OnChatButtonClicked += PostOnChatButtonClicked;
+			On_CanUseItem += PostCanUseItem;
+		}
+		public void Unload() {
+			On_OnChatButtonClicked -= PostOnChatButtonClicked;
+			On_CanUseItem -= PostCanUseItem;
 		}
 		static void PostOnChatButtonClicked(orig_OnChatButtonClicked orig,bool firstButton) {
 			orig(firstButton);
@@ -605,30 +552,5 @@ namespace Deltarune
 			add => HookEndpointManager.Add<Hook_CanUseItem>(Helpme.GetModMethod("ItemLoader","CanUseItem"), value);
 			remove => HookEndpointManager.Remove<Hook_CanUseItem>(Helpme.GetModMethod("ItemLoader","CanUseItem"), value);
 		}
-		#region music
-		static void Music_Patch(ILContext il) {
-            ILCursor c = new ILCursor(il);
-            if (!c.TryGotoNext(instr => instr.MatchLdcI4(6) && instr.Next.MatchStfld(typeof(Main).GetField("newMusic")))) {
-                throw new Exception("Could not find instruction to patch (Music_Patch)");
-            }
-            c.Index++;
-            c.EmitDelegate<Func<int, int>>(MusicDelegate);
-        }
-        static int MusicDelegate(int defaultMusic) {
-			return (Deltarune.TitleMusic == 0 ? defaultMusic : Deltarune.TitleMusic);
-        }
-		static int MusicDisableDelegate(int oldValue){
-            return 0;
-        }
-        static void Music_Autodisable_Patch(ILContext il){
-			// ported from red cloud mod
-            ILCursor c = new ILCursor(il);
-            if (!c.TryGotoNext(instr => instr.MatchLdsfld<Main>("musicError") && instr.Next.MatchLdcI4(100))){
-                throw new Exception("Could not find instruction to patch (Music_Patch), haha you had a skill issue");
-            }
-            c.Index++;
-            c.EmitDelegate<Func<int, int>>(MusicDisableDelegate);
-        }
-		#endregion
 	}
 }

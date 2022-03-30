@@ -31,22 +31,15 @@ namespace Deltarune.Helper
 		/// </summary>
 		public List<KeyValuePair<Vector2,float>> values;
 
-		/// <summary>
-		/// the update, its internal for scientific reasons
-		/// </summary>
-		internal int update;
-
-		public Trail(int update = 0) {
+		public Trail() {
 			this.values = new List<KeyValuePair<Vector2,float>>();
-			this.update = update;
 		}
 
         /// <summary>
 		/// method to updates the trail
 		/// </summary>
 		public void Update(Vector2 pos,float rot, int maxTrail = 10,int speed = 5) {
-			update++;
-			if (update >= speed) {
+			if (Main.GameUpdateCount % speed == 0) {
 				values.Add(new KeyValuePair<Vector2,float>(pos,rot));
 				if (values.Count > maxTrail) {values.RemoveAt(0);}
 				update = 0;
@@ -58,7 +51,7 @@ namespace Deltarune.Helper
 		/// </summary>
 		public void UpdateWorm(Vector2 pos,float rot = 0f, float intensity = 0.1f,int maxTrail = 10,int speed = 5) {
 			update++;
-			if (update >= speed) {
+			if (Main.GameUpdateCount % speed == 0) {
                 values[values.Count-1] = new KeyValuePair<Vector2,float>(values[values.Count-1].Key,MathHelper.Lerp(values[values.Count-1].Value,values[values.Count-1].Key.AngleTo(pos),intensity));
 				values.Add(new KeyValuePair<Vector2,float>(pos,rot));
 				if (values.Count > maxTrail) {values.RemoveAt(0);}
