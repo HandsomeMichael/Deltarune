@@ -110,18 +110,13 @@ namespace Deltarune.Content.Items
 			NPC.downedMechBoss2 = false; 
 			NPC.downedMechBoss3 = false;
 			MyWorld.downedStarWalker = false;
+			MyWorld.hadRalsei = false;
 		}
 	}
 	public class CHRalsei : CheatItem{
 		public override string tt => "reset ralsei";
 		public override void Update(Player player) {
 			MyWorld.hadRalsei = false;
-		}
-	}
-	public class CHSandTest : CheatItem{
-		public override string tt => "subeteyo ymir tachi";
-		public override void Update(Player player) {
-			Hacc.ToAllSubjectOfYmir = !Hacc.ToAllSubjectOfYmir;
 		}
 	}
 	public class CHSoulExit : CheatItem{
@@ -137,10 +132,9 @@ namespace Deltarune.Content.Items
 		}
 	}
 	public class CHDeath : CheatItem{
-		public override string tt => "kill the player (CRASH)";
+		public override string tt => "kills the player";
 		public override void UpdateUse(Player player) {
-			player.statLife = 0;
-			player.dead = true;
+			player.KillMe(PlayerDeathReason.ByCustomReason(player.name + " tried to change the rules."), 1000.0, 0);
 		}
 	}
 	public class CHWorldGen : CheatItem{
@@ -153,17 +147,6 @@ namespace Deltarune.Content.Items
 		public override string tt => "set battle background to true";
 		public override void Update(Player player) {
 			Deltarune.battleAlpha = MyConfig.get.BattleBackground;
-		}
-	}
-	public class CHUseDebug : CheatItem{
-		public override string tt => "show debug values (removed soon)";
-		public override void Update(Player player) {
-			var p = player.GetDelta();
-			Main.NewText("====[ Debug ]=====");
-			for (int i = 0; i < Deltarune.debug.Length; i++){
-				Main.NewText($"deb{i} = {Deltarune.debug[i]}");
-			}
-			Main.NewText("=================");
 		}
 	}
 	public class CHUsePlayerToString : CheatItem{
@@ -186,16 +169,13 @@ namespace Deltarune.Content.Items
 			if (a > -1) {
 				NPC npc = Main.npc[a];
 				Main.NewText("====[ Stat ]=====");
-				Main.NewText($"name {npc.FullName}",Color.LightGreen);
 				Main.NewText($"def {npc.defense}",Color.LightGreen);
 				Main.NewText($"life {npc.life} / {npc.lifeMax}",Color.LightGreen);
 				Main.NewText($"damage {npc.damage}",Color.LightGreen);
 				Main.NewText($"value {npc.value}",Color.LightGreen);
-				Main.NewText($"ai0 {npc.ai[0]}",Color.LightGreen);
-				Main.NewText($"ai1 {npc.ai[1]}",Color.LightGreen);
-				Main.NewText($"ai2 {npc.ai[2]}",Color.LightGreen);
-				Main.NewText($"localAI0 {npc.localAI[0]}",Color.LightGreen);
-				Main.NewText($"localAI1 {npc.localAI[1]}",Color.LightGreen);
+				Main.NewText($"ai0 {npc.ai[0]} , ai1 {npc.ai[1]} , ai2 {npc.ai[2]}",Color.LightGreen);
+				Main.NewText($"localAI0 {npc.localAI[0]}, localAI1 {npc.localAI[1]}",Color.LightGreen);
+				Main.NewText($"name {npc.FullName}",Color.LightGreen);
 				Main.NewText("=================");
 			}
 		}
