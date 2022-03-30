@@ -39,9 +39,36 @@ namespace Deltarune
 			}
 		}
 
-		public static List<PlayerHitboxData> playerThatHasNoSoulLmao = new List<PlayerHitboxData>();
+		public static List<PlayerHitboxData> playerThatHasNoSoulLmao;
+		public static List<int> needDraw;
+		// something something crashes if you dont make it update atleast once
+		public static bool atLeastUpdatedOnce;
 
+		public static void Draw(SpriteBatch spriteBatch) {
+			if (needDraw != null && needDraw.Count > 0) {
+				Texture2D texture = ModContent.GetTexture(Deltarune.textureExtra+"Heart");
+				foreach (var i in needDraw){
+					Player player = Main.player[i];
+					if (player.active && !player.dead) {
+						Vector2 pos = player.GetDelta().soul;
+						Utils.DrawLine(spriteBatch, player.Center, pos, Color.Red,Color.Red, (pos.Distance(player.Center)/300f)*3f);
+						spriteBatch.Draw(texture, pos - Main.screenPosition, null, Color.White, 0f, texture.Size()/2f, 1f, SpriteEffects.None, 0);
+					}
+				}
+				spriteBatch.BeginGlow(true);
+				texture = ModContent.GetTexture(Deltarune.textureExtra+"Heart_glow1");
+				foreach (var i in needDraw){
+					Player player = Main.player[i];
+					if (player.active && !player.dead) {
+						spriteBatch.Draw(texture, player.GetDelta().soul - Main.screenPosition, null, Color.White, 0f, texture.Size()/2f, 1f, SpriteEffects.None, 0);
+					}
+				}
+				spriteBatch.BeginNormal(true);
+			}
+			needDraw.Clear();
+		}
 		public static void Update() {
+			if (!atLeastUpdatedOnce) return;
 			for (int i = 0; i < Main.maxPlayers; i++){
 				Player player = Main.player[i];
 				if (player.active && !player.dead) {
@@ -56,22 +83,29 @@ namespace Deltarune
 			}
 		}
 		public static void Reset() {
+			if (!atLeastUpdatedOnce) return;
 			// safe code bc imma do it in detour hook
 			if (playerThatHasNoSoulLmao != null && playerThatHasNoSoulLmao.Count > 0) {
 				foreach (var item in playerThatHasNoSoulLmao){
+					needDraw.Add(item.whoAmI);
 					Player player = Main.player[item.whoAmI];
+					//player.Center.DustLine(item.pos,100,true);
 					player.width = item.width;
 					player.height = item.height;
 					player.Center = item.pos;
 				}
 			}
-			playerThatHasNoSoulLmao = new List<PlayerHitboxData>();
+			playerThatHasNoSoulLmao.Clear();
+			atLeastUpdatedOnce = true;
 		}
 		public void Load() {
+			atLeastUpdatedOnce = false;
 			playerThatHasNoSoulLmao = new List<PlayerHitboxData>();
+			needDraw = new List<int>();
 		}
 		public void Unload() {
 			playerThatHasNoSoulLmao = null;
+			needDraw = null;
 		}
 	}
 }

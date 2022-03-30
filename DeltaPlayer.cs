@@ -183,28 +183,23 @@ namespace Deltarune
 			}
 			if (p.spellAnim < 0) {p.spellAnim = 0;}
 		});
-		public static readonly PlayerLayer MiscEffectsFront = new PlayerLayer("Deltarune", "MiscEffectsBack", PlayerLayer.MiscEffectsBack, delegate (PlayerDrawInfo drawInfo) {
+		/*
+		public static readonly PlayerLayer MiscEffectsFront = new PlayerLayer("Deltarune", "MiscEffectsFront", PlayerLayer.MiscEffectsFront, delegate (PlayerDrawInfo drawInfo) {
 			if (drawInfo.shadow != 0f) {return;}
 			Player player = drawInfo.drawPlayer;
 			Mod mod = Deltarune.get;
 			var p = player.GetDelta();
-			if (p != null && p.soulTimer > 0) {
-				Texture2D texture = ModContent.GetTexture(Deltarune.textureExtra+"Heart");
-				Vector2 pos = p.soul - Main.screenPosition;
-				var data = new DrawData(texture, pos, null, Color.White, 0f,texture.Size()/2f, 1f, SpriteEffects.None, 0);
-				Main.playerDrawData.Add(data);
-			}
 		});
+		*/
 
 		public override void ModifyDrawLayers(List<PlayerLayer> layers) {
 			MiscEffectsBack.visible = true;
 			layers.Insert(0, MiscEffectsBack);
-			MiscEffectsFront.visible = true;
-			layers.Add(MiscEffectsFront);
+			//MiscEffectsFront.visible = true;
+			//layers.Add(MiscEffectsFront);
 
 			int itemLayer = layers.FindIndex(PlayerLayer => PlayerLayer.Name.Equals("HeldItem"));
-            if (itemLayer != -1)
-            {
+            if (itemLayer != -1){
                 ItemUseGlow.ItemUseGlowLayer.visible = true;
                 layers.Insert(itemLayer + 1, ItemUseGlow.ItemUseGlowLayer);
             }

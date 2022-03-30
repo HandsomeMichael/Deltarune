@@ -24,7 +24,7 @@ namespace Deltarune.Helper
 	/// A struct for trails that has positions and rotations
 	/// this struct doesnt have any constructor
 	/// </summary>
-	public struct Trail
+	public class Trail
 	{
 		/// <summary>
 		/// the trail data, contains the positions and rotations
@@ -42,7 +42,6 @@ namespace Deltarune.Helper
 			if (Main.GameUpdateCount % speed == 0) {
 				values.Add(new KeyValuePair<Vector2,float>(pos,rot));
 				if (values.Count > maxTrail) {values.RemoveAt(0);}
-				update = 0;
 			}
 		}
 
@@ -50,12 +49,10 @@ namespace Deltarune.Helper
 		/// method to updates the trail
 		/// </summary>
 		public void UpdateWorm(Vector2 pos,float rot = 0f, float intensity = 0.1f,int maxTrail = 10,int speed = 5) {
-			update++;
 			if (Main.GameUpdateCount % speed == 0) {
                 values[values.Count-1] = new KeyValuePair<Vector2,float>(values[values.Count-1].Key,MathHelper.Lerp(values[values.Count-1].Value,values[values.Count-1].Key.AngleTo(pos),intensity));
 				values.Add(new KeyValuePair<Vector2,float>(pos,rot));
 				if (values.Count > maxTrail) {values.RemoveAt(0);}
-				update = 0;
 			}
 		}
 	}

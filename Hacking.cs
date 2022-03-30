@@ -130,6 +130,7 @@ namespace Deltarune
 			On.Terraria.Main.DrawBG += newBackground;
 			On.Terraria.Main.GUIChatDrawInner += GuiPatch;
 			On.Terraria.Main.DrawInterface_35_YouDied += YouDiedPatch;
+			On.Terraria.Main.DrawPlayers += DrawPlayersPatch;
 			//On.Terraria.Main.DrawTiles += DrawTilesPatch;
 		}
 		public void Unload() {
@@ -137,6 +138,13 @@ namespace Deltarune
 			On.Terraria.Main.DrawBG -= newBackground;
 			On.Terraria.Main.GUIChatDrawInner -= GuiPatch;
 			On.Terraria.Main.DrawInterface_35_YouDied -= YouDiedPatch;
+			On.Terraria.Main.DrawPlayers -= DrawPlayersPatch;
+		}
+		static void DrawPlayersPatch(On.Terraria.Main.orig_DrawPlayers orig, Main self) {
+			orig(self);
+			Main.spriteBatch.BeginNormal();
+			SoulHandler.Draw(Main.spriteBatch);
+			Main.spriteBatch.End();
 		}
 		// Reboiled later
 		//static void DrawTilesPatch(On.Terraria.Main.orig_DrawTiles orig,Main self ,bool solidOnly, int waterStyleOverride) {orig(self,solidOnly,waterStyleOverride);}
