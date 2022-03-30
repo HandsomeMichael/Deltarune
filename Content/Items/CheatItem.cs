@@ -124,6 +124,12 @@ namespace Deltarune.Content.Items
 			Hacc.ToAllSubjectOfYmir = !Hacc.ToAllSubjectOfYmir;
 		}
 	}
+	public class CHSoulExit : CheatItem{
+		public override string tt => "Soulless lmao";
+		public override void Update(Player player) {
+			player.GetDelta().soulTimer = 60*5;
+		}
+	}
 	public class CHOneHP : CheatItem{
 		public override string tt => "set hp to one";
 		public override void Update(Player player) {

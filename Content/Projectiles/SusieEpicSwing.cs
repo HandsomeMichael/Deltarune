@@ -47,7 +47,7 @@ namespace Deltarune.Content.Projectiles
 				//player.itemRotation = player.AngleTo(Main.MouseWorld);
 				projectile.rotation = projectile.AngleTo(Main.MouseWorld);
 				projectile.velocity = projectile.DirectionTo(Main.MouseWorld)*10f;
-				player.itemRotation = (float)Math.Atan2(projectile.velocity.Y * dir, projectile.velocity.X * dir);
+				player.itemRotation = (float)Math.Atan2(projectile.velocity.Y * player.direction, projectile.velocity.X * player.direction);
 				projectile.Center += projectile.velocity;
 				projectile.netUpdate = true;
 			}

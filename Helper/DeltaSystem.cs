@@ -81,7 +81,7 @@ namespace Deltarune.Helper
         public static void PreSaveAndQuit() {
             foreach (var item in systems){
                 if (item is IPreSaveAndQuit hook) {
-                    Deltarune.get.Logger.InfoFormat($"{mod.Name} PreSaveQuit System : {hook.GetType().Name}");
+                    Deltarune.get.Logger.InfoFormat($"PreSaveQuit System : {hook.GetType().Name}");
                     hook.PreSaveAndQuit();
                 }
             }

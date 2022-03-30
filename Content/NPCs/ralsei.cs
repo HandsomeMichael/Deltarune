@@ -43,6 +43,10 @@ namespace Deltarune.Content.NPCs
 			npc.DeathSound = SoundID.NPCDeath1;
 			npc.scale = 0.8f;
 		}
+
+		// if you somehow kill ralsei , he will be back with revenge anger emoji skull emoji anger emoji skull emoji
+		public override bool CanTownNPCSpawn(int numTownNPCs, int money) => MyWorld.hadRalsei;
+
 		const float state_reveal = -1;
 		const float state_idle = 0;
 		const float state_walk = 1;
@@ -87,12 +91,9 @@ namespace Deltarune.Content.NPCs
 				}
 			}
 			if (state == state_walk) {
-				int b = npc.NearestNPC();
-				if (npc.velocity.X == 0f && dir != 0f && (timer % 5 == 0)) {
-					if (npc.velocity.Y == 0f) {
-						npc.velocity.Y = -5f;
-					}
-				}
+				int b = npc.NearestNPC(300f);
+				//Collision magik idk
+				Collision.StepUp(ref npc.position, ref npc.velocity, npc.width, npc.height, ref npc.stepSpeed, ref npc.gfxOffY);
 				if (b > -1) {
 					npc.velocity.X = MathHelper.Lerp(npc.velocity.X,(npc.DirectionTo(Main.npc[b].Center)*-3f).X,0.1f);
 				}
@@ -192,12 +193,7 @@ namespace Deltarune.Content.NPCs
 				button = "Ok, i will join u";
 			}
 			if (state == state_needrevive) {
-				foreach (var item in Main.LocalPlayer.inventory){
-					if (item.healLife > 0) {
-						button = "Heal";
-						break;
-					}
-				}
+				button = "Heal";
 			}
 		}
 		public override void OnChatButtonClicked(bool firstButton, ref bool shop) {
@@ -209,23 +205,39 @@ namespace Deltarune.Content.NPCs
 				Main.npcChatText = "Really ? Thanks !! I really appreciate it";
 			}
 			if (state == state_needrevive) {
+				bool flag = false;
 				foreach (var item in Main.LocalPlayer.inventory){
 					if (item.healLife > 0) {
 						if (item.stack > 1) {item.stack--;}
 						else {item.TurnToAir();}
+						flag = true;
 						break;
 					}
 				}
-				expression = 1;
-				npc.rotation = 0f;
-				npc.life = npc.lifeMax;
-				state = state_idle;
-				Main.npcChatText = "Thank you !";
-				healdust.Spawn(npc.Center,8);
-				Main.PlaySound(mod.GetLegacySoundSlot(SoundType.Custom,"Sounds/snd_power"),npc.Center);
-				CombatText.NewText(npc.getRect(),Color.LightGreen,npc.life);
-				var b = mod.GetLegacySoundSlot(SoundType.Custom, "Sounds/snd_txtral");
-				npc.GetDelta().textOverhead = new TypeWriter("Thanks !",b,3);
+				if (flag) {
+					expression = 1;
+					npc.rotation = 0f;
+					npc.life = npc.lifeMax;
+					state = state_idle;
+					Main.npcChatText = "Thank you !";
+					healdust.Spawn(npc.Center,8);
+					Main.PlaySound(mod.GetLegacySoundSlot(SoundType.Custom,"Sounds/snd_power"),npc.Center);
+					CombatText.NewText(npc.getRect(),Color.LightGreen,npc.life);
+					npc.GetDelta().textOverhead = new TypeWriter("Thanks !",Deltarune.GetSound("txtral"),3);
+					DeltaPlayer.RemDialog("ralsei.heal");
+				}
+				else {
+					Main.npcChatText = $"{Main.LocalPlayer.name} seems like you don't have any healing potion again, please come back with one. i'll wait";
+					/*
+					if (DeltaPlayer.HasDialog("ralsei.heal")) {
+						Main.npcChatText = $"{Main.LocalPlayer.name} seems like you don't have any healing potion again, please come back with one. i'll wait";
+					}
+					else {
+						Main.npcChatText = $"{Main.LocalPlayer.name} seems like you don't have any healing potion, please come back with one. i'll wait";
+						DeltaPlayer.AddDialog("ralsei.heal");
+					}
+					*/
+				}
 			}
 		}
 

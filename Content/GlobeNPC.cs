@@ -197,7 +197,7 @@ namespace Deltarune.Content
 			//AdditiveHandler.NPC(npc);
 		}
 		public void Sync() {
-			var packet = GetPacket();
+			var packet = mod.GetPacket();
 			packet.Write((byte)NetType.GlobalNPC);
 			SendPacket(packet);
 			packet.Send();

@@ -92,7 +92,9 @@ namespace Deltarune
 			else {battleAlpha -= 0.01f;}
 			if (battleAlpha > MyConfig.get.BattleBackground) {battleAlpha = MyConfig.get.BattleBackground;}
 			if (battleAlpha < 0f) {battleAlpha = 0f;}
+			SoulHandler.Update();
 		}
+		public override void PostUpdateEverything() => SoulHandler.Reset();
 
 		//DynamicSpriteFont[] font = new DynamicSpriteFont[5];
 
@@ -190,7 +192,7 @@ namespace Deltarune
 			if (MyConfig.get.intro) {
 				Logger.InfoFormat("{0} Intro plays", Name);
 				intro = 1;
-				Main.PlaySound(GetLegacySoundSlot(SoundType.Custom, "Sounds/AUDIO_INTRONOISE"));
+				Main.PlaySound(GetSound("AUDIO_INTRONOISE",false));
 			}
 			else {
 				intro = -1;

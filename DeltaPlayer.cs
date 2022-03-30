@@ -40,6 +40,9 @@ namespace Deltarune
 		public float Shortswordatt;
 		public int Shortswordatt_delay;
 
+		public Vector2 soul;
+		public int soulTimer;
+
 		public int spellAnim;
 		public string spellAnimTex;
 		public bool receiveBag;
@@ -49,6 +52,15 @@ namespace Deltarune
 		public BaseSpell[] spellItem = new BaseSpell[3];
 		public int[] spell = new int[3];
 		public int[] spellTimer = new int[3];
+
+		public List<string> dialogTag = new List<string>();
+		public static bool HasDialog(string dialog) => Main.LocalPlayer.GetDelta().dialogTag.Contains(dialog);
+		public static void AddDialog(string dialog) => Main.LocalPlayer.GetDelta().dialogTag.Add(dialog);
+		public static void RemDialog(string dialog, bool check = true) {
+			if (!check || HasDialog(dialog)) {
+				Main.LocalPlayer.GetDelta().dialogTag.Remove(dialog);
+			}
+		}
 
 		public float moveSpeed;
 
@@ -79,6 +91,17 @@ namespace Deltarune
 			player.accRunSpeed += moveSpeed;
 		}
 		public override void PostUpdate() {
+			//Main.NewText(soulTimer+" : "+soul);
+			if (soulTimer > 0) {
+				// jesse, we need to do math jesse
+				if (player.controlRight) {soul.X += 2f;}
+				if (player.controlLeft) {soul.X -= 2f;}
+				if (player.controlDown) {soul.Y += 2f;}
+				if (player.controlJump || player.controlUp) {soul.Y -= 2f;}
+				player.velocity = Vector2.Zero;
+				player.Center = soul;
+			}
+			else {soul = player.Center;}
 			if (sacredrock) {
 				player.statDefense += (int)((float)player.statDefense * 0.1f);
 			}
@@ -148,23 +171,36 @@ namespace Deltarune
 		public static readonly PlayerLayer MiscEffectsBack = new PlayerLayer("Deltarune", "MiscEffectsBack", PlayerLayer.MiscEffectsBack, delegate (PlayerDrawInfo drawInfo) {
 			if (drawInfo.shadow != 0f) {return;}
 			Player player = drawInfo.drawPlayer;
-			Mod mod = ModContent.GetInstance<Deltarune>();
+			Mod mod = Deltarune.get;
 			var p = player.GetDelta();
 			if (p.spellAnim > 0 && p.spellAnimTex != "") {
 				p.spellAnim -= 3;
 				Texture2D texture = ModContent.GetTexture(p.spellAnimTex);
-				Vector2 center = new Vector2((int)(drawInfo.position.X + player.width / 2f),(int)(drawInfo.position.Y - player.height / 2f));
-				Vector2 pos = center - Main.screenPosition;
+				Vector2 pos = player.Center - Main.screenPosition;
 				pos.Y -= p.spellAnim/2;
 				var data = new DrawData(texture, pos, null, Color.White*((float)p.spellAnim/60f), 0f,texture.Size()/2f, (float)p.spellAnim/60f, SpriteEffects.None, 0);
 				Main.playerDrawData.Add(data);
 			}
 			if (p.spellAnim < 0) {p.spellAnim = 0;}
 		});
+		public static readonly PlayerLayer MiscEffectsFront = new PlayerLayer("Deltarune", "MiscEffectsBack", PlayerLayer.MiscEffectsBack, delegate (PlayerDrawInfo drawInfo) {
+			if (drawInfo.shadow != 0f) {return;}
+			Player player = drawInfo.drawPlayer;
+			Mod mod = Deltarune.get;
+			var p = player.GetDelta();
+			if (p != null && p.soulTimer > 0) {
+				Texture2D texture = ModContent.GetTexture(Deltarune.textureExtra+"Heart");
+				Vector2 pos = p.soul - Main.screenPosition;
+				var data = new DrawData(texture, pos, null, Color.White, 0f,texture.Size()/2f, 1f, SpriteEffects.None, 0);
+				Main.playerDrawData.Add(data);
+			}
+		});
 
 		public override void ModifyDrawLayers(List<PlayerLayer> layers) {
 			MiscEffectsBack.visible = true;
 			layers.Insert(0, MiscEffectsBack);
+			MiscEffectsFront.visible = true;
+			layers.Add(MiscEffectsFront);
 
 			int itemLayer = layers.FindIndex(PlayerLayer => PlayerLayer.Name.Equals("HeldItem"));
             if (itemLayer != -1)
@@ -375,11 +411,13 @@ namespace Deltarune
 			TagCompound tag = new TagCompound();
 			tag.Add("TP",TP);
 			tag.Add("receiveBag",receiveBag);
+			tag.Add("dialogTag",dialogTag);
 			return tag;
 		}
 		public override void Load(TagCompound tag) {
 			receiveBag = tag.GetBool("receiveBag");
 			TP = tag.GetInt("TP");
+			dialogTag = tag.GetList<string>("dialogTag").ToList();
 			//CrystalClass = tag.GetInt("CrystalClass");
 			//DeathAmount = tag.GetInt("DeathAmount");
 			//test = tag.GetFloat("test");
