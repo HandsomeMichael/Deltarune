@@ -94,10 +94,11 @@ namespace Deltarune
 			//Main.NewText(soulTimer+" : "+soul);
 			if (soulTimer > 0) {
 				// jesse, we need to do math jesse
-				if (player.controlRight) {soul.X += 2f;}
-				if (player.controlLeft) {soul.X -= 2f;}
-				if (player.controlDown) {soul.Y += 2f;}
-				if (player.controlJump || player.controlUp) {soul.Y -= 2f;}
+				if (player.controlRight) {soul.X += player.moveSpeed;}
+				if (player.controlLeft) {soul.X -= player.moveSpeed;}
+				if (player.controlDown) {soul.Y += player.moveSpeed;}
+				if (player.controlJump || player.controlUp) {soul.Y -= player.moveSpeed;}
+				player.stepSpeed = 0f;
 				player.velocity = Vector2.Zero;
 				player.Center = soul;
 			}

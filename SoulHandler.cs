@@ -83,9 +83,8 @@ namespace Deltarune
 			}
 		}
 		public static void Reset() {
-			if (!atLeastUpdatedOnce) return;
 			// safe code bc imma do it in detour hook
-			if (playerThatHasNoSoulLmao != null && playerThatHasNoSoulLmao.Count > 0) {
+			if (atLeastUpdatedOnce && playerThatHasNoSoulLmao != null && playerThatHasNoSoulLmao.Count > 0) {
 				foreach (var item in playerThatHasNoSoulLmao){
 					needDraw.Add(item.whoAmI);
 					Player player = Main.player[item.whoAmI];
