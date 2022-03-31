@@ -24,6 +24,7 @@ namespace Deltarune.Helper
     public interface IPreSaveAndQuit{void PreSaveAndQuit();}
     public interface ILoadOnly{void Load();}
     public interface ILoadable {void Load();void Unload();}
+    public interface ILoggable {}
 
     public static class DeltaSystemLoader
     {

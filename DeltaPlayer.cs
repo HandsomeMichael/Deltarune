@@ -41,6 +41,7 @@ namespace Deltarune
 		public int Shortswordatt_delay;
 
 		public Vector2 soul;
+		public Vector2 originalBody;
 		public int soulTimer;
 
 		public int spellAnim;
@@ -90,19 +91,13 @@ namespace Deltarune
 		public override void PostUpdateRunSpeeds() {
 			player.accRunSpeed += moveSpeed;
 		}
+		//public override void SetControls() {}
+		public override void PreUpdate() {
+			SoulHandler.Update(player,this);
+		}
 		public override void PostUpdate() {
-			//Main.NewText(soulTimer+" : "+soul);
-			if (soulTimer > 0) {
-				// jesse, we need to do math jesse
-				if (player.controlRight) {soul.X += player.moveSpeed;}
-				if (player.controlLeft) {soul.X -= player.moveSpeed;}
-				if (player.controlDown) {soul.Y += player.moveSpeed;}
-				if (player.controlJump || player.controlUp) {soul.Y -= player.moveSpeed;}
-				player.stepSpeed = 0f;
-				player.velocity = Vector2.Zero;
-				player.Center = soul;
-			}
-			else {soul = player.Center;}
+			SoulHandler.PositionUpdate(player,this);
+
 			if (sacredrock) {
 				player.statDefense += (int)((float)player.statDefense * 0.1f);
 			}

@@ -131,6 +131,7 @@ namespace Deltarune
 			On.Terraria.Main.GUIChatDrawInner += GuiPatch;
 			On.Terraria.Main.DrawInterface_35_YouDied += YouDiedPatch;
 			On.Terraria.Main.DrawPlayers += DrawPlayersPatch;
+			On.Terraria.GameContent.Events.MoonlordDeathDrama.DrawPieces += PreEntityDraw;
 			//On.Terraria.Main.DrawTiles += DrawTilesPatch;
 		}
 		public void Unload() {
@@ -139,6 +140,13 @@ namespace Deltarune
 			On.Terraria.Main.GUIChatDrawInner -= GuiPatch;
 			On.Terraria.Main.DrawInterface_35_YouDied -= YouDiedPatch;
 			On.Terraria.Main.DrawPlayers -= DrawPlayersPatch;
+			On.Terraria.GameContent.Events.MoonlordDeathDrama.DrawPieces -= PreEntityDraw;
+		}
+		static void PreEntityDraw(On.Terraria.GameContent.Events.MoonlordDeathDrama.orig_DrawPieces orig ,SpriteBatch spriteBatch) {	
+			if (Main.LocalPlayer.active && !Main.LocalPlayer.dead) {
+				SoulHandler.DrawBorder(spriteBatch,Main.LocalPlayer);
+			}
+			orig(spriteBatch);
 		}
 		static void DrawPlayersPatch(On.Terraria.Main.orig_DrawPlayers orig, Main self) {
 			orig(self);
@@ -167,7 +175,6 @@ namespace Deltarune
 			Vector2 centerScreen = new Vector2(Main.screenWidth/2,Main.screenHeight/2);
 			if (Deltarune.darkenBG > 0f) {
 				//me when funky shader
-
 				Main.spriteBatch.End();
 				//float rot = centerScreen.AngleTo(new Vector2(Main.mouseX,Main.mouseY));
 				//float deg = MathHelper.ToDegrees(rot);
@@ -176,7 +183,6 @@ namespace Deltarune
 				Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.LinearClamp, DepthStencilState.None, Main.instance.Rasterizer, null, Main.BackgroundViewMatrix.TransformationMatrix);
 				//GameShaders.Misc["Blurify"].UseColor(Deltarune.darkenTime, blur/1000f, 0).Apply();
 				GameShaders.Misc["WaveWrap"].UseOpacity(Main.GameUpdateCount/500f).Apply();
-
 				//GameShaders.Misc["funky"].UseImage(Deltarune.textureExtra+"Perlin").UseOpacity(0.5f).Apply();
 				Rectangle hitbox = new Rectangle(0,0,(int)Main.screenWidth,(int)Main.screenHeight);
 				Texture2D tex = ModContent.GetTexture(Deltarune.textureExtra+"depth");
@@ -186,49 +192,45 @@ namespace Deltarune
 				Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.LinearClamp, DepthStencilState.None, Main.instance.Rasterizer, null, Main.BackgroundViewMatrix.TransformationMatrix);
 			}
 			if (Main.menuMode == 2){DrawCharacterUI(Main.spriteBatch);}
-			if (Main.LocalPlayer.active && !Main.gameMenu && Deltarune.battleAlpha > 0f) {
-				Rectangle hitbox = new Rectangle((int)Main.screenPosition.X,(int)Main.screenPosition.Y,(int)Main.screenWidth,(int)Main.screenHeight);
-				Main.spriteBatch.Draw(Main.magicPixel, hitbox, Color.Black*Deltarune.battleAlpha);
-				Texture2D texture = ModContent.GetTexture(Deltarune.textureExtra+"battleAnim_glow");//_glow
-				int width = 50;
-				int height = 50;
-				int num = (int)(Main.screenWidth / width) + 3;
-
-				Deltarune.battleFrameCount++;
-				if (Deltarune.battleFrameCount > 3) {
-					Deltarune.battleFrameCount = 0;
-					Deltarune.battleFrame++;
-				}
-				if (Deltarune.battleFrame >= 14) {Deltarune.battleFrame = 0;}
-				//Main.spriteBatch.BeginGlow(true);
-				Main.spriteBatch.End();
-				Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, SamplerState.LinearClamp, DepthStencilState.None, Main.instance.Rasterizer, null, Main.BackgroundViewMatrix.TransformationMatrix);
-				for (int i = 0; i < num; i++)
-				{
-					int num3 = (int)(Main.screenHeight / height) + 3;
-					for (int j = 0; j < num3; j++)
-					{
-						Vector2 pos = new Vector2((i*width),(j*height));
-						Main.spriteBatch.Draw(texture, pos, texture.GetFrame(Deltarune.battleFrame,14), Color.White*Deltarune.battleAlpha, 0f, texture.GetFrame(Deltarune.battleFrame,14).Size() /2f, 1f, SpriteEffects.None, 0);
-						int num2 = (Deltarune.battleFrame-14)*-1;
-						//original alpha = 0.2f
-						float alpha = Deltarune.battleAlpha;
-						if (alpha > 0.2f) {alpha = 0.2f;}
-						Main.spriteBatch.Draw(texture, pos, texture.GetFrame(num2,14), Color.White*alpha, 0f, texture.GetFrame(num2,14).Size() /2f, 1f, SpriteEffects.None, 0);
-						
-					}
-				}
-				Main.spriteBatch.End();
-				Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.LinearClamp, DepthStencilState.None, Main.instance.Rasterizer, null, Main.BackgroundViewMatrix.TransformationMatrix);
+			if (Main.LocalPlayer.active && !Main.gameMenu) {
+				if (Deltarune.battleAlpha > 0f) {DrawBattleBackground();}
 				//if (Helpme.AnyBoss()) {}
 			}
-			//background0
-			//if (!Main.LocalPlayer.active && Main.gameMenu && Deltarune.intro) {
+		}
+		static void DrawBattleBackground() {
+			Rectangle hitbox = new Rectangle(0,0,(int)Main.screenWidth,(int)Main.screenHeight);
+			Main.spriteBatch.Draw(Main.magicPixel, hitbox, Color.Black*Deltarune.battleAlpha);
+			Texture2D texture = ModContent.GetTexture(Deltarune.textureExtra+"battleAnim_glow");//_glow
+			int width = 50;
+			int height = 50;
+			int num = (int)(Main.screenWidth / width) + 3;
 
-			//	Rectangle hitbox = new Rectangle((int)Main.screenPosition.X,(int)Main.screenPosition.Y,(int)Main.screenWidth,(int)Main.screenHeight);
-		
-			//	Main.spriteBatch.Draw(Main.magicPixel, hitbox, Color.Black);
-			//}
+			Deltarune.battleFrameCount++;
+			if (Deltarune.battleFrameCount > 3) {
+				Deltarune.battleFrameCount = 0;
+				Deltarune.battleFrame++;
+			}
+			if (Deltarune.battleFrame >= 14) {Deltarune.battleFrame = 0;}
+			//Main.spriteBatch.BeginGlow(true);
+			Main.spriteBatch.End();
+			Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, SamplerState.LinearClamp, DepthStencilState.None, Main.instance.Rasterizer, null, Main.BackgroundViewMatrix.TransformationMatrix);
+			for (int i = 0; i < num; i++)
+			{
+				int num3 = (int)(Main.screenHeight / height) + 3;
+				for (int j = 0; j < num3; j++)
+				{
+					Vector2 pos = new Vector2((i*width),(j*height));
+					Main.spriteBatch.Draw(texture, pos, texture.GetFrame(Deltarune.battleFrame,14), Color.White*Deltarune.battleAlpha, 0f, texture.GetFrame(Deltarune.battleFrame,14).Size() /2f, 1f, SpriteEffects.None, 0);
+					int num2 = (Deltarune.battleFrame-14)*-1;
+					//original alpha = 0.2f
+					float alpha = Deltarune.battleAlpha;
+					if (alpha > 0.2f) {alpha = 0.2f;}
+					Main.spriteBatch.Draw(texture, pos, texture.GetFrame(num2,14), Color.White*alpha, 0f, texture.GetFrame(num2,14).Size() /2f, 1f, SpriteEffects.None, 0);
+					
+				}
+			}
+			Main.spriteBatch.End();
+			Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.LinearClamp, DepthStencilState.None, Main.instance.Rasterizer, null, Main.BackgroundViewMatrix.TransformationMatrix);
 		}
 		static void DrawCharacterUI(SpriteBatch spriteBatch) {
 			// haha "ui" moment :)
