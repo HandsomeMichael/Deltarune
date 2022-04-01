@@ -41,7 +41,6 @@ namespace Deltarune
 		public int Shortswordatt_delay;
 
 		public Vector2 soul;
-		public Vector2 originalBody;
 		public int soulTimer;
 
 		public int spellAnim;
@@ -350,10 +349,6 @@ namespace Deltarune
 					}
 					if (Deltarune.playerClass > 0 && player.inventory[i].type == ItemID.CopperShortsword) {
 						int type = ItemID.CopperShortsword;
-						//if (Deltarune.playerClass == 1) {texture = Main.itemTexture[ItemID.WarriorEmblem];}
-						//if (Deltarune.playerClass == 2) {texture = Main.itemTexture[ItemID.RangerEmblem];}
-						//if (Deltarune.playerClass == 3) {texture = Main.itemTexture[ItemID.SorcererEmblem];}
-						//if (Deltarune.playerClass == 4) {texture = Main.itemTexture[ItemID.SummonerEmblem];}
 						if (Deltarune.playerClass == 1) {
 							int[] pick = new int[] {ItemID.CopperBroadsword,ItemID.TinBroadsword,ItemID.IronBroadsword,ItemID.LeadBroadsword,ItemID.SilverBroadsword,ItemID.TungstenBroadsword};
 							type = pick[Deltarune.playerClassType];

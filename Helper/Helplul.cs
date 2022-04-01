@@ -528,7 +528,13 @@ namespace Deltarune.Helper
 			}
 			texture.SetData(c);
 		}
-
+		/// <summary>
+		/// Pick something from an array, a perfect replacement for if statement
+		/// </summary>
+		public static T ArrayPick<T>(int index,params T[] args) {
+			if (index > args.Length || index == -1) {return args[0];}
+			return args[index];
+		}
 		/// <summary>
 		/// a shorthand for AddBuff without using ModContent
 		/// </summary>

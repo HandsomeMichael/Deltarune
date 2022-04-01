@@ -22,23 +22,31 @@ using Deltarune.Content.Spell;
 namespace Deltarune
 {
 	// This is where hitbox got manipulated 
-	public class SoulHandler : ILoadable , IPreSaveAndQuit
+	public class SoulHandler : ILoadable , IPreSaveAndQuit , ILoggable
 	{
+		public void Log(Action<string> log) {
+			foreach (var item in playerThatHasNoSoulLmao){
+				log("SoulHandler , soul :"+item.ToString());
+			}
+			log("SoulHandler , draw alpha :"+drawAlpha);
+		}
+
 		public struct PlayerHitboxData
 		{
 			public int whoAmI;
 			public int width;
 			public int height;
 			public Vector2 pos;
-			public Vector2 velocity;
 			public float gfxOffY;
-			public PlayerHitboxData(int whoAmI,int width,int height,Vector2 pos,float gfxOffY,Vector2 velocity) {
+			public override string ToString() {
+				return "index : "+whoAmI+", width : "+width+", height : "+height+", pos : "+pos+", gfxOff : "+gfxOffY;
+			}
+			public PlayerHitboxData(int whoAmI,int width,int height,Vector2 pos,float gfxOffY) {
 				this.whoAmI = whoAmI;
 				this.width = width;
 				this.height = height;
 				this.pos = pos;
 				this.gfxOffY = gfxOffY;
-				this.velocity = velocity;
 			}
 		}
 
@@ -48,6 +56,7 @@ namespace Deltarune
 
 		public static void DrawBorder(SpriteBatch spriteBatch,Player player) {
 			if (drawAlpha <= 0f) return;
+			float rotation;
 			int length = 200;
 			drawAlpha += 0.1f;
 			int borderLength = (int)((float)length*drawAlpha);
@@ -99,7 +108,7 @@ namespace Deltarune
 						player.Center.DustLine(p.soul,114,true);
 					}
 					p.originalBody = player.Center;
-					playerThatHasNoSoulLmao.Add(new PlayerHitboxData(player.whoAmI,player.width,player.height,player.Center,player.gfxOffY,player.velocity));
+					playerThatHasNoSoulLmao.Add(new PlayerHitboxData(player.whoAmI,player.width,player.height,player.Center,player.gfxOffY));
 					player.width = 10;
 					player.height = 10;
 					player.Center = p.soul;
@@ -135,7 +144,6 @@ namespace Deltarune
 					player.width = item.width;
 					player.height = item.height;
 					player.Center = item.pos;
-					player.velocity = item.velocity;
 				}
 			}
 			playerThatHasNoSoulLmao.Clear();

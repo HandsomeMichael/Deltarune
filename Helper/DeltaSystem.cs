@@ -24,7 +24,7 @@ namespace Deltarune.Helper
     public interface IPreSaveAndQuit{void PreSaveAndQuit();}
     public interface ILoadOnly{void Load();}
     public interface ILoadable {void Load();void Unload();}
-    public interface ILoggable {}
+    public interface ILoggable {string Log(Action<string> log);}
 
     public static class DeltaSystemLoader
     {
@@ -59,23 +59,7 @@ namespace Deltarune.Helper
                     mod.Logger.InfoFormat($"{mod.Name} Load Only System : {type.Name}");
                     instance.Load();
                 }
-
-                /*
-
-                Old DeltaSystem
-
-				if (type.GetConstructor(Type.EmptyTypes) != null && type.IsSubclassOf(typeof(DeltaSystem)))
-				{
-					var system = (DeltaSystem)Activator.CreateInstance(type);
-					var name = type.Name;
-					if (system.Autoload(ref name)) {
-                        system.Name = name;
-                        mod.Logger.InfoFormat($"{mod.Name} Loading System : {name}");
-                        system.Load();
-                        systems.Add(system);
-                    }
-				}
-                */
+                //type.GetConstructor(Type.EmptyTypes)
                 
 			}
         }
@@ -93,43 +77,17 @@ namespace Deltarune.Helper
             }
             systems = null;
         }
-    }
-    /*
-    public static class DeltaSystemLoader
-    {
-        public static List<ILoadable> loader;
-
-        public static void Load(Mod mod) {
-            if (mod.Code == null)
-				return;
-
-            //guh i forgor
-            loader = new List<ILoadable>();
-
-            foreach (Type type in mod.Code.GetTypes().OrderBy(type => type.FullName))
-			{
-                if (type.IsAbstract) {continue;}
-                if (type is ILoadable load) {
-                    mod.Logger.InfoFormat($"{mod.Name} Loading System : {type.Name}");
-                    var foo = (ILoadable)Activator.CreateInstance(load);
-                    loader.Load();
-                    loader.Add(foo);
+        public static void LogAll() {
+            foreach (var item in systems){
+                if (item is ILoggable hook) {
+                    void CreateLog(string log) {
+                        Deltarune.get.Logger.InfoFormat(log);
+                        Main.NewText(log);
+                    }
+                    Action<string> log = CreateLog;
+                    hook.Log(log);
                 }
-                
-			}
-        }
-        public static void PreSaveAndQuit() {
-            foreach (var item in loader){
-                item.PreSaveAndQuit();
             }
-        }
-        public static void Unload() {
-            foreach (var item in loader){
-                item.Unload();
-            }
-            musicLoad = null;
-            loader = null;
         }
     }
-    */
 }

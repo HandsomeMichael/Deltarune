@@ -14,7 +14,7 @@ namespace Deltarune.Content.Items
 	{
 		public override void SetStaticDefaults() {
 			DisplayName.SetDefault("Sacred rock");
-			Tooltip.SetDefault("Increases damage by 10%\nMultiply armor by 10%\namongus\n*insert vine boom sound effect*");
+			Tooltip.SetDefault("Increases damage by 8%\nMultiply armor by 70%\namongus\n*insert vine boom sound effect*");
 		}
 		public override void SetDefaults() {
             item.width = 14;
@@ -24,7 +24,7 @@ namespace Deltarune.Content.Items
 			item.expert = true;
 		}
 		public override void UpdateAccessory(Player player,bool hide) {
-			player.allDamage += 0.1f;
+			player.allDamage += 0.08f;
 			player.GetDelta().sacredrock = true;
 		}
 		public static bool hovering;
@@ -67,8 +67,8 @@ namespace Deltarune.Content.Items
 			}
 			if (line.mod == "Terraria" && line.text.Contains("amongus")) {
 				string amongus = "TP";
-				string text1 = "Regenerate";
-				string text2 = "when hitting enemy";
+				string text1 = "Regenerate ";
+				string text2 = " when hitting enemy";
 				Vector2 Size = text1.MeasureString();
 				Vector2 Size2 = amongus.MeasureString() + Size;
 				line.Draw(text1,null,Colors.AlphaDarken(Color.White));
