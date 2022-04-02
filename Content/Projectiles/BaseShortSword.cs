@@ -135,11 +135,10 @@ namespace Deltarune.Content.Projectiles
 		public override void ModifyHitNPC(NPC target, ref int damage, ref float knockback, ref bool crit, ref int hitDirection) {
 			Player player = Main.player[projectile.owner];
 			damage /= 2;
-			damage += (int)((float)damage*(player.GetDelta().Shortswordatt/10f));
+			damage += (int)((float)damage*(player.GetDelta().Shortswordatt/5f));
 			player.GetDelta().Shortswordatt += 1f;
-			player.GetDelta().Shortswordatt_delay = 0;
-			if (player.GetDelta().Shortswordatt > 10f) {
-				player.GetDelta().Shortswordatt = 10f;
+			if (player.GetDelta().Shortswordatt > 5f) {
+				player.GetDelta().Shortswordatt = 5f;
 			}
 			ItemLoader.ModifyHitNPC(player.HeldItem,player,target,ref damage, ref knockback, ref crit);
 		}

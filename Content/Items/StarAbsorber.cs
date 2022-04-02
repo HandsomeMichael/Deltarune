@@ -4,6 +4,7 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 using System;
+using Deltarune.Helper;
 
 namespace Deltarune.Content.Items
 {
@@ -48,44 +49,56 @@ namespace Deltarune.Content.Items
 			projectile.timeLeft = 60;
 			projectile.tileCollide = false;
 			projectile.extraUpdates = 1;
-			projectile.scale = 1.5f;
 		}
 
 		public float Charge {get => projectile.ai[0];set => projectile.ai[0] = value;}
+		const float MaxCharge = 120f;
 		public override void AI(){
 			Player player = Main.player[projectile.owner];
 
-			if (player.active || player.dead || player.noItems || player.CCed || !player.channel) {
+			if (!player.active || player.dead || player.noItems || player.CCed || !player.channel) {
 				projectile.Kill();
 				return;
 			}
 			UpdateGraphic(player);
-			if (projectile.owner == Main.myPlayer){
-				projectile.velocity = player.RotatedRelativePoint(player.MountedCenter, true).DirectionTo(Main.MouseWorld)*3f;
-				projectile.netUpdate = true;
-			}
 			Charge += 1f;
-			projectile.timeLeft = 2;
-			if (Charge > 120f) {
-				Charge = 120f;
+			projectile.timeLeft = 5;
+			float num = (Charge/(MaxCharge/2f))+1f;
+			if (num > 1.5f) {num = 1.5f;}
+			projectile.scale = num;
+			if (Charge > MaxCharge) {
+				Charge = MaxCharge;
 			}
 		}
 
 		void UpdateGraphic(Player player){
-			projectile.Center = player.RotatedRelativePoint(player.MountedCenter, true);
-			projectile.rotation = projectile.velocity.ToRotation();
-			projectile.spriteDirection = projectile.direction;
-			player.ChangeDir(projectile.direction);
 			player.heldProj = projectile.whoAmI;
 			player.itemTime = 2;
 			player.itemAnimation = 2;
-			player.itemRotation = (projectile.velocity * projectile.direction).ToRotation();
-
+			player.direction = projectile.direction;
+			projectile.Center = player.Center;
+			if (projectile.owner == Main.myPlayer) {
+				projectile.rotation = projectile.AngleTo(Main.MouseWorld);
+				projectile.velocity = projectile.DirectionTo(Main.MouseWorld)*10f;
+				player.itemRotation = (float)Math.Atan2(projectile.velocity.Y * player.direction, projectile.velocity.X * player.direction);
+				projectile.Center += projectile.velocity*2;
+				projectile.netUpdate = true;
+			}
 			if (projectile.soundDelay <= 0) {
 				projectile.soundDelay = 30;
 				if (Charge > 1f) {Main.PlaySound(SoundID.Item15, projectile.position);}
 			}
 		}
 		public override bool ShouldUpdatePosition() => false;
+		public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor) {
+			SpriteEffects spriteEffects = projectile.direction == -1 ? SpriteEffects.FlipVertically : SpriteEffects.None;
+			Texture2D texture = Main.projectileTexture[projectile.type];
+			spriteBatch.Draw(texture, projectile.Center - Main.screenPosition, null, projectile.GetAlpha(Color.White), projectile.rotation, texture.Size()/2f, projectile.scale, spriteEffects, 0);
+			if (Charge < 60f) {return false;}
+			float alpha = (Charge-60f)/60f;
+			texture = ModContent.GetTexture(Texture+"_overlay");
+			spriteBatch.Draw(texture, projectile.Center - Main.screenPosition, null, Color.White*alpha, projectile.rotation, texture.Size()/2f, projectile.scale, spriteEffects, 0);
+			return false;
+		}
 	}
 }

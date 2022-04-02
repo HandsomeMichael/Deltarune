@@ -38,10 +38,28 @@ namespace Deltarune
 		public int TP;
 
 		public float Shortswordatt;
-		public int Shortswordatt_delay;
 
 		public Vector2 soul;
+		public Vector2 soulBox;
+		public int soulBoxWidth;
+		public int soulBoxHeight;
 		public int soulTimer;
+		// no soul ???
+		public void UpdateSoulBox(Vector2 pos, int width = -1, int height = -1) {
+			soulBox = pos;
+			UpdateSoulBox(width,height);
+		}
+		public void UpdateSoulBox(int width = -1, int height = -1) {
+			if (width != -1)soulBoxWidth = width;
+			if (height != -1)soulBoxHeight = height;
+		}
+		public void ExitSoul(int timer, int width = 200, int height = 200) => ExitSoul(player.Center,timer,width,height);
+		public void ExitSoul(Vector2 box, int timer, int width = 200, int height = 200) {
+			soulBox = box;
+			soulTimer = timer;
+			soulBoxWidth = width;
+			soulBoxHeight = height;
+		}
 
 		public int spellAnim;
 		public string spellAnimTex;
@@ -66,12 +84,7 @@ namespace Deltarune
 
 		public override void ResetEffects() {
 			moveSpeed = 0f;
-			Shortswordatt_delay++;
 			sacredrock = false;
-			if (Shortswordatt_delay > 60*3) {
-				Shortswordatt = 0;
-				Shortswordatt_delay = 0;
-			}
 			if (TPCooldown > 0){TPCooldown--;}
 			for (int i = 0; i < spellTimer.Length; i++){if (spellTimer[i] > 0) {spellTimer[i]--;}}
 			TPScale2 = 0;
@@ -91,6 +104,13 @@ namespace Deltarune
 			player.accRunSpeed += moveSpeed;
 		}
 		//public override void SetControls() {}
+		public override void PostItemCheck() {
+			if (player.HeldItem.IsAir || player.HeldItem.modItem == null || !player.HeldItem.GetDelta().Shortsword){Shortswordatt = 0;}
+		}
+		public override bool PreItemCheck() {
+			if (soulTimer > 0) {return false;}
+			return base.PreItemCheck();
+		}
 		public override void PreUpdate() {
 			SoulHandler.Update(player,this);
 		}
@@ -98,11 +118,11 @@ namespace Deltarune
 			SoulHandler.PositionUpdate(player,this);
 
 			if (sacredrock) {
-				player.statDefense += (int)((float)player.statDefense * 0.1f);
+				player.statDefense += (int)((float)player.statDefense * 0.7f);
 			}
 			if (TP > TPMax) {
 				//snd_bell
-				Main.PlaySound(mod.GetLegacySoundSlot(SoundType.Custom, "Sounds/snd_power"),player.Center);
+				Main.PlaySound(Deltarune.GetSound("power"),player.Center);
 				CombatText.NewText(player.getRect(),Color.Yellow,"Max TP");
 				TP = TPMax;
 			}
@@ -126,7 +146,7 @@ namespace Deltarune
 			if (!Graze) {num = num/2;}
 			TP += num+1;
 			if (TP == TPMax) {TP += 1;}
-			Main.PlaySound(mod.GetLegacySoundSlot(SoundType.Custom, "Sounds/snd_graze"),player.Center);
+			Main.PlaySound(Deltarune.GetSound("graze"),player.Center);
 			for (int a = 0; a < Main.rand.Next(10,21); a++) {
 				Vector2 speed = Main.rand.NextVector2CircularEdge(1f, 1f);
 				Dust d = Dust.NewDustPerfect(player.Center, 182, speed * Main.rand.NextFloat(2f,5f), Scale: 0.6f);
@@ -158,7 +178,7 @@ namespace Deltarune
 		public override void Hurt(bool pvp, bool quiet, double damage, int hitDirection, bool crit) {
 			player.CameraShake(2);
 			Content.UI.tensionBar.shake = 3;
-			Main.PlaySound(mod.GetLegacySoundSlot(SoundType.Custom, "Sounds/snd_hurt1"),player.Center);
+			Main.PlaySound(Deltarune.GetSound("hurt1"),player.Center);
 			TPCooldown = 120;
 			TP -= (int)damage*2;
 			if (TP < 0) {TP = 0;}
@@ -225,13 +245,9 @@ namespace Deltarune
 					TPCooldown = 20;
 				}
 				else {
-					if ((type == 0 && Deltarune.KeyMagic1.JustPressed) ||
-						(type == 1 && Deltarune.KeyMagic2.JustPressed) ||
-						(type == 2 && Deltarune.KeyMagic3.JustPressed)) {
-						Content.UI.tensionBar.shake = 3;
-						Main.PlaySound(mod.GetLegacySoundSlot(SoundType.Custom, "Sounds/snd_cantselect"),player.Center);
-						TPCooldown += 1;
-					}
+					Content.UI.tensionBar.shake = 3;
+					Main.PlaySound(mod.GetLegacySoundSlot(SoundType.Custom, "Sounds/snd_cantselect"),player.Center);
+					TPCooldown += 1;
 				}
 				return;
 			}
@@ -262,20 +278,22 @@ namespace Deltarune
 		public override void ProcessTriggers(TriggersSet triggersSet) {
 			//JustPressed
 			//Released
-			if ((Deltarune.KeyMagic1.JustPressed || Deltarune.KeyMagic1.Current) && spellItem[0] != null) {
-				BaseSpell item = spellItem[0];
-				if (item.autoReuse) {if (Deltarune.KeyMagic1.Current) {UseSpell(item,0);}}
-				else {if (Deltarune.KeyMagic1.JustPressed) {UseSpell(item,0);}}
-			}
-			if ((Deltarune.KeyMagic2.JustPressed || Deltarune.KeyMagic2.Current) && spellItem[1] != null) {
-				BaseSpell item = spellItem[1];
-				if (item.autoReuse) {if (Deltarune.KeyMagic2.Current) {UseSpell(item,1);}}
-				else {if (Deltarune.KeyMagic2.JustPressed) {UseSpell(item,1);}}
-			}
-			if ((Deltarune.KeyMagic3.JustPressed || Deltarune.KeyMagic3.Current) && spellItem[2] != null) {
-				BaseSpell item = spellItem[2];
-				if (item.autoReuse) {if (Deltarune.KeyMagic3.Current) {UseSpell(item,2);}}
-				else {if (Deltarune.KeyMagic3.JustPressed) {UseSpell(item,2);}}
+			if (player.GetDelta().soulTimer < 1) {
+				if ((Deltarune.KeyMagic1.JustPressed || Deltarune.KeyMagic1.Current) && spellItem[0] != null) {
+					BaseSpell item = spellItem[0];
+					if (item.autoReuse) {if (Deltarune.KeyMagic1.Current) {UseSpell(item,0);}}
+					else {if (Deltarune.KeyMagic1.JustPressed) {UseSpell(item,0);}}
+				}
+				if ((Deltarune.KeyMagic2.JustPressed || Deltarune.KeyMagic2.Current) && spellItem[1] != null) {
+					BaseSpell item = spellItem[1];
+					if (item.autoReuse) {if (Deltarune.KeyMagic2.Current) {UseSpell(item,1);}}
+					else {if (Deltarune.KeyMagic2.JustPressed) {UseSpell(item,1);}}
+				}
+				if ((Deltarune.KeyMagic3.JustPressed || Deltarune.KeyMagic3.Current) && spellItem[2] != null) {
+					BaseSpell item = spellItem[2];
+					if (item.autoReuse) {if (Deltarune.KeyMagic3.Current) {UseSpell(item,2);}}
+					else {if (Deltarune.KeyMagic3.JustPressed) {UseSpell(item,2);}}
+				}
 			}
 			//if (Deltarune.KeyMagic2.JustPressed && spell[1] > 0) {UseSpell(spell[1],1);}
 			//if (Deltarune.KeyMagic3.JustPressed && spell[2] > 0) {UseSpell(spell[2],2);}
@@ -285,7 +303,7 @@ namespace Deltarune
 		//public override void OnHitByNPC(NPC npc, int damage, bool crit){}
 		public override void OnHitNPCWithProj(Projectile proj, NPC target, int damage, float knockback, bool crit) {
 			if (sacredrock) {
-				Graze(target,damage/10,true);
+				Graze(target,damage/12,true);
 			}
 		}
 		public override void OnHitNPC(Item item, NPC target, int damage, float knockback, bool crit) {
@@ -429,6 +447,9 @@ namespace Deltarune
 
 		public override void ModifyScreenPosition() {
 			Vector2 centerScreen = new Vector2(Main.screenWidth/2,Main.screenHeight/2);
+			if (soulTimer > 0) {
+				Main.screenPosition = soulBox - centerScreen;
+			}
 			if (cameraFocusTimer > -1) {
 				if (cameraFocusTimer == 0) {
 					//Main.NewText(Vector2.Distance(cameraFocusCache,Main.screenPosition));

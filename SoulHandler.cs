@@ -54,15 +54,17 @@ namespace Deltarune
 		public static List<int> needDraw;
 		public static float drawAlpha;
 
-		public static void DrawBorder(SpriteBatch spriteBatch,Player player) {
-			if (drawAlpha <= 0f) return;
-			float rotation;
-			int length = 200;
-			drawAlpha += 0.1f;
-			int borderLength = (int)((float)length*drawAlpha);
-			Vector2 border = player.Center - new Vector2(borderLength,borderLength) - Main.screenPosition;
-			spriteBatch.Draw(Main.magicPixel, new Rectangle((int)border.X, (int)border.Y, borderLength*2, borderLength*2), Color.Black*0.8f);
-			spriteBatch.DrawBorderedRect(border,new Vector2(borderLength*2,borderLength*2),Color.White,5);
+		public static void DrawBorder(SpriteBatch spriteBatch) {
+			Player player = Main.LocalPlayer;
+			if (!player.active || player.dead || drawAlpha <= 0f) return;
+			var p = player.GetDelta();
+			int width = (int)((float)p.soulBoxWidth*drawAlpha);
+			int height = (int)((float)p.soulBoxHeight*drawAlpha);
+			Vector2 border = p.soulBox - new Vector2(width,height) - Main.screenPosition;
+			Rectangle rec = border.QuickRec(new Vector2(width*2,height*2));
+			rec = rec.Resize(5);
+			spriteBatch.Draw(Main.magicPixel, rec, Color.Black*0.9f);
+			spriteBatch.DrawBorderedRect(rec,Color.White,5);
 		}
 
 		public static void Draw(SpriteBatch spriteBatch) {
@@ -107,22 +109,26 @@ namespace Deltarune
 						}
 						player.Center.DustLine(p.soul,114,true);
 					}
-					p.originalBody = player.Center;
 					playerThatHasNoSoulLmao.Add(new PlayerHitboxData(player.whoAmI,player.width,player.height,player.Center,player.gfxOffY));
 					player.width = 10;
 					player.height = 10;
 					player.Center = p.soul;
-					player.invis = true;
 				}
 			}
 		}
 		public static void PositionUpdate(Player player,DeltaPlayer p) {
 			if (p.soulTimer > 0 && p.soul != Vector2.Zero) {
 				// jesse, we need to do math jesse
-				if (player.controlRight) {p.soul.X += 2f;}
-				if (player.controlLeft) {p.soul.X -= 2f;}
-				if (player.controlDown) {p.soul.Y += 2f;}
-				if (player.controlJump || player.controlUp) {p.soul.Y -= 2f;}
+				float speed = 2f;
+				if (player.controlRight) {p.soul.X += speed;}
+				if (player.controlLeft) {p.soul.X -= speed;}
+				if (player.controlDown) {p.soul.Y += speed;}
+				if (player.controlJump || player.controlUp) {p.soul.Y -= speed;}
+				if ((p.soulBox.X + p.soulBoxWidth) < p.soul.X) {p.soul.X -= p.soul.X - (p.soulBox.X + p.soulBoxWidth);}
+				if ((p.soulBox.X - p.soulBoxWidth) > p.soul.X) {p.soul.X += (p.soulBox.X - p.soulBoxWidth) - p.soul.X;}
+				if ((p.soulBox.Y - p.soulBoxHeight) > p.soul.Y) {p.soul.Y +=  (p.soulBox.Y - p.soulBoxHeight) - p.soul.Y;}
+				if ((p.soulBox.Y + p.soulBoxHeight) < p.soul.Y) {p.soul.Y -= p.soul.Y - (p.soulBox.Y + p.soulBoxHeight);}
+
 				player.stepSpeed = 0f;
 				player.velocity = Vector2.Zero;
 				player.Center = p.soul;
@@ -130,7 +136,7 @@ namespace Deltarune
 			}
 			else {
 				p.soul = player.Center;
-				p.originalBody = player.Center;
+				p.soulBox = player.Center;
 				drawAlpha = 0f;
 			}
 		}
@@ -144,6 +150,7 @@ namespace Deltarune
 					player.width = item.width;
 					player.height = item.height;
 					player.Center = item.pos;
+					player.invis = true;
 				}
 			}
 			playerThatHasNoSoulLmao.Clear();

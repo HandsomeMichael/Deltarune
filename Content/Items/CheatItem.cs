@@ -122,7 +122,13 @@ namespace Deltarune.Content.Items
 	public class CHSoulExit : CheatItem{
 		public override string tt => "Soulless lmao";
 		public override void Update(Player player) {
-			player.GetDelta().soulTimer = 60*5;
+			//player.GetDelta().soulTimer = 60*5;
+			var p = player.GetDelta();
+			if (p.soulTimer == 0) {p.ExitSoul(60*5);}
+			else {
+				float num = Main.MouseWorld.Distance(player.Center);
+				p.UpdateSoulBox((int)num,(int)num);
+			}
 		}
 	}
 	public class CHOneHP : CheatItem{

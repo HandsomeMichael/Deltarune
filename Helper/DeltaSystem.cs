@@ -24,7 +24,7 @@ namespace Deltarune.Helper
     public interface IPreSaveAndQuit{void PreSaveAndQuit();}
     public interface ILoadOnly{void Load();}
     public interface ILoadable {void Load();void Unload();}
-    public interface ILoggable {string Log(Action<string> log);}
+    public interface ILoggable {void Log(Action<string> log);}
 
     public static class DeltaSystemLoader
     {
@@ -80,9 +80,9 @@ namespace Deltarune.Helper
         public static void LogAll() {
             foreach (var item in systems){
                 if (item is ILoggable hook) {
-                    void CreateLog(string log) {
-                        Deltarune.get.Logger.InfoFormat(log);
-                        Main.NewText(log);
+                    void CreateLog(string text) {
+                        Deltarune.get.Logger.InfoFormat(text);
+                        Main.NewText(text);
                     }
                     Action<string> log = CreateLog;
                     hook.Log(log);

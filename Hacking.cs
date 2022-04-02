@@ -39,6 +39,7 @@ namespace Deltarune
 			On.Terraria.Main.Update += updateAdd;
 			On.Terraria.Player.AddBuff += AddBuffPatch;
 			On.Terraria.Main.OnCharacterNamed += OnCharacterNamedPatch;
+			On.Terraria.NPC.CanBeChasedBy += MinionChasingPrevent;
 		}
 		public void Unload() {
 			IL.Terraria.Main.UpdateAudio -= Music_Patch;
@@ -46,6 +47,22 @@ namespace Deltarune
 			On.Terraria.Main.Update -= updateAdd;
 			On.Terraria.Player.AddBuff -= AddBuffPatch;
 			On.Terraria.Main.OnCharacterNamed -= OnCharacterNamedPatch;
+			On.Terraria.NPC.CanBeChasedBy -= MinionChasingPrevent;
+		}
+		// disable all minion targetting when you exit ur body.
+		static bool MinionChasingPrevent(On.Terraria.NPC.orig_CanBeChasedBy orig,NPC self,object attacker , bool ignoreDontTakeDamage ) {
+			if (Main.ProjectileUpdateLoopIndex > -1 && Main.ProjectileUpdateLoopIndex < Main.projectile.Length) {
+				Projectile projectile = Main.projectile[Main.ProjectileUpdateLoopIndex];
+				if (projectile.active && projectile.minion && projectile.owner > -1 && projectile.owner < Main.projectile.Length) {
+					Player player = Main.player[projectile.owner];
+					if (player.active && !player.dead) {
+						if (player.GetDelta() != null && player.GetDelta().soulTimer > 0) {
+							return false;
+						}
+					}
+				}
+			}
+			return orig(self,attacker,ignoreDontTakeDamage);
 		}
 		static void updateAdd(On.Terraria.Main.orig_Update orig,Terraria.Main self, GameTime gameTime) {
 			CustomEntity.UpdateAll();
@@ -143,9 +160,7 @@ namespace Deltarune
 			On.Terraria.GameContent.Events.MoonlordDeathDrama.DrawPieces -= PreEntityDraw;
 		}
 		static void PreEntityDraw(On.Terraria.GameContent.Events.MoonlordDeathDrama.orig_DrawPieces orig ,SpriteBatch spriteBatch) {	
-			if (Main.LocalPlayer.active && !Main.LocalPlayer.dead) {
-				SoulHandler.DrawBorder(spriteBatch,Main.LocalPlayer);
-			}
+			SoulHandler.DrawBorder(spriteBatch);
 			orig(spriteBatch);
 		}
 		static void DrawPlayersPatch(On.Terraria.Main.orig_DrawPlayers orig, Main self) {
@@ -544,8 +559,8 @@ namespace Deltarune
 		public delegate void orig_OnChatButtonClicked(bool firstButton);
 		public delegate void Hook_OnChatButtonClicked(orig_OnChatButtonClicked orig, bool firstButton);
 		public static event Hook_OnChatButtonClicked On_OnChatButtonClicked {
-			add => HookEndpointManager.Add<Hook_CanUseItem>(Helpme.GetModMethod("NPCLoader","OnChatButtonClicked"), value);
-			remove => HookEndpointManager.Remove<Hook_CanUseItem>(Helpme.GetModMethod("NPCLoader","OnChatButtonClicked"), value);
+			add => HookEndpointManager.Add<Hook_OnChatButtonClicked>(Helpme.GetModMethod("NPCLoader","OnChatButtonClicked"), value);
+			remove => HookEndpointManager.Remove<Hook_OnChatButtonClicked>(Helpme.GetModMethod("NPCLoader","OnChatButtonClicked"), value);
 		}
 
 		static bool PostCanUseItem (orig_CanUseItem orig,Item item, Player player) {

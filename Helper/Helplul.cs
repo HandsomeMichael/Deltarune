@@ -280,11 +280,12 @@ namespace Deltarune.Helper
 		/// <summary>
 		/// Resize Rectangle
 		/// </summary>
-		public static void Resize(this Rectangle rec, int x) {
+		public static Rectangle Resize(this Rectangle rec, int x) {
 			rec.X -= x;
 			rec.Y -= x;
 			rec.Width += x*2;
 			rec.Height += x*2;
+			return rec;
 		}
 		/// <summary>
 		/// A quick way for getting item default. im too lazy to type
