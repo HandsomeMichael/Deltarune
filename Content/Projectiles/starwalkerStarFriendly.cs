@@ -6,6 +6,7 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using Deltarune;
 using Deltarune.Content;
+using Deltarune.Content.Dusts;
 using Deltarune.Helper;
 using Terraria.UI.Chat;
 using Terraria.UI;
@@ -42,6 +43,11 @@ namespace Deltarune.Content.Projectiles
 			}
 			int i = (int)(projectile.position.X/16);
 			int j = (int)(projectile.position.Y/16);
+
+			if (Main.rand.NextBool(5)) {
+				Vector2 v = projectile.velocity;
+				Dust.NewDust(projectile.position, projectile.width, projectile.height, ModContent.DustType<StarDust>(), v.X, v.Y, 0, Color.White, projectile.scale);
+			}
 			//Main.NewText($"{i} / {Main.maxTilesX} || {j} / {Main.maxTilesY}");
 			// there is this funky bug with tmod where its just spam indexoutofbounds so i need to put this here :(
 			if (i > Main.maxTilesX || j > Main.maxTilesY || i < 0 || j < 0) {
@@ -57,6 +63,7 @@ namespace Deltarune.Content.Projectiles
 		}
 		public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor) {
 			//Redraw the projectile with the color not influenced by light
+			if (projectile.ai[0] == 1) {lightColor = Color.Red;}
 			Vector2 drawOrigin = new Vector2(Main.projectileTexture[projectile.type].Width * 0.5f, projectile.height * 0.5f);
 			for (int k = 0; k < projectile.oldPos.Length; k++) {
 				Vector2 drawPos = projectile.oldPos[k] - Main.screenPosition + drawOrigin + new Vector2(0f, projectile.gfxOffY);
