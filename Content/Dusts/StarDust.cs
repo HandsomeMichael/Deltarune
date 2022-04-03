@@ -8,7 +8,6 @@ namespace Deltarune.Content.Dusts
 	public class StarDust : ModDust
 	{
 		public override void OnSpawn(Dust dust){
-			int frame = 5;
 			dust.noGravity = true;
 			dust.frame = new Rectangle(0, 0, Texture.Width, Texture.Height);
 			dust.scale = dust.scale/2f;

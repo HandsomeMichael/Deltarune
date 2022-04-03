@@ -220,6 +220,10 @@ namespace Deltarune
             }
 		}
 		public override void Kill(double damage, int hitDirection, bool pvp, PlayerDeathReason damageSource) {
+			if (soulTimer > 0) {
+				SoulHandler.BreakSoul(soul);
+				soulTimer = 0;
+			}
 			TP = 0;
 			TPCooldown = 0;
 			spellTimer = new int[3];
@@ -447,9 +451,7 @@ namespace Deltarune
 
 		public override void ModifyScreenPosition() {
 			Vector2 centerScreen = new Vector2(Main.screenWidth/2,Main.screenHeight/2);
-			if (soulTimer > 0) {
-				Main.screenPosition = soulBox - centerScreen;
-			}
+			SoulHandler.Camera(this);
 			if (cameraFocusTimer > -1) {
 				if (cameraFocusTimer == 0) {
 					//Main.NewText(Vector2.Distance(cameraFocusCache,Main.screenPosition));

@@ -18,6 +18,7 @@ using Terraria.UI;
 using Deltarune.Content.UI;
 using Deltarune.Helper;
 using Deltarune.Content.Spell;
+using Deltarune.Content.Dusts;
 
 namespace Deltarune
 {
@@ -50,9 +51,19 @@ namespace Deltarune
 			}
 		}
 
+		public static void BreakSoul(Vector2 pos) {
+			for (int i = 0; i < 6; i++){
+				float x = Main.rand.NextFloat(-3f,3f)*1.5f;
+				float y = Main.rand.NextFloat(-2f,2f)*1.5f;
+				Dust.NewDust(pos, 5, 5, ModContent.DustType<SoulBreak>(), x, y, 0, Color.White, 1f);
+			}
+			Main.PlaySound(Deltarune.GetSound("break2"),pos);
+		}
+
 		public static List<PlayerHitboxData> playerThatHasNoSoulLmao;
 		public static List<int> needDraw;
 		public static float drawAlpha;
+		public static Vector2 animCache;
 
 		public static void DrawBorder(SpriteBatch spriteBatch) {
 			Player player = Main.LocalPlayer;
@@ -73,12 +84,10 @@ namespace Deltarune
 				foreach (var i in needDraw){
 					Player player = Main.player[i];
 					if (player.active && !player.dead) {
-						// draw border clientside
-						if (i == Main.myPlayer) {
-							drawAlpha += 0.1f;
-							if (drawAlpha > 1f) {drawAlpha = 1f;}
-						}
 						Vector2 pos = player.GetDelta().soul;
+						if (player.whoAmI == Main.myPlayer && player.GetDelta().soulTimer < 1) {
+							pos = player.Center.Lerp(animCache,drawAlpha);
+						}
 						spriteBatch.Draw(texture, pos - Main.screenPosition, null, Color.White, 0f, texture.Size()/2f, 1f, SpriteEffects.None, 0);
 					}
 				}
@@ -87,27 +96,33 @@ namespace Deltarune
 				foreach (var i in needDraw){
 					Player player = Main.player[i];
 					if (player.active && !player.dead) {
-						spriteBatch.Draw(texture, player.GetDelta().soul - Main.screenPosition, null, Color.White, 0f, texture.Size()/2f, 1f, SpriteEffects.None, 0);
+						Vector2 pos = player.GetDelta().soul;
+						if (player.whoAmI == Main.myPlayer && player.GetDelta().soulTimer < 1) {
+							pos = player.Center.Lerp(animCache,drawAlpha);
+						}
+						spriteBatch.Draw(texture, pos - Main.screenPosition, null, Color.White, 0f, texture.Size()/2f, 1f, SpriteEffects.None, 0);
 					}
 				}
 				spriteBatch.BeginNormal(true);
 			}
 			needDraw.Clear();
 		}
+		public static void Camera(DeltaPlayer p) {
+			Vector2 centerScreen = new Vector2(Main.screenWidth/2,Main.screenHeight/2);
+			if (p.soulTimer > 0) {
+				Main.screenPosition = p.soulBox - centerScreen;
+			}
+			if (p.soulTimer < 1 && drawAlpha > 0f) {
+				Main.screenPosition = p.player.Center.Lerp(animCache,drawAlpha) - centerScreen;
+			}
+		}
 		public static void Update(Player player , DeltaPlayer p) {
 			if (player.active && !player.dead) {
 				if (p.soulTimer > 0) {
 					p.soulTimer--;
-					if (p.soulTimer == 0) {
-						for (int i = 0; i < 15; i++) {
-							Vector2 vel = Main.rand.NextVector2CircularEdge(1f, 1f);
-							Dust.NewDustPerfect(p.soul, 114, vel * Main.rand.NextFloat(2f), 1);
-						}
-						for (int i = 0; i < 15; i++) {
-							Vector2 vel = Main.rand.NextVector2CircularEdge(1f, 1f);
-							Dust.NewDustPerfect(player.Center, 114, vel * Main.rand.NextFloat(2f), 1);
-						}
-						player.Center.DustLine(p.soul,114,true);
+					if (p.soulTimer == 0) {player.immuneTime += 30;}
+					else if (player.whoAmI == Main.myPlayer) {
+						animCache = p.soul;
 					}
 					playerThatHasNoSoulLmao.Add(new PlayerHitboxData(player.whoAmI,player.width,player.height,player.Center,player.gfxOffY));
 					player.width = 10;
@@ -119,7 +134,7 @@ namespace Deltarune
 		public static void PositionUpdate(Player player,DeltaPlayer p) {
 			if (p.soulTimer > 0 && p.soul != Vector2.Zero) {
 				// jesse, we need to do math jesse
-				float speed = 2f;
+				float speed = 4f;
 				if (player.controlRight) {p.soul.X += speed;}
 				if (player.controlLeft) {p.soul.X -= speed;}
 				if (player.controlDown) {p.soul.Y += speed;}
@@ -135,9 +150,20 @@ namespace Deltarune
 				player.itemAnimation = 0;
 			}
 			else {
-				p.soul = player.Center;
-				p.soulBox = player.Center;
-				drawAlpha = 0f;
+				if (player.whoAmI == Main.myPlayer) {
+					if (drawAlpha > 0f) {
+						drawAlpha -= 0.05f;
+						needDraw.Add(player.whoAmI);
+					}
+					else {
+						p.soulBox = player.Center;
+					}
+					p.soul = player.Center;
+				}
+				else {
+					p.soul = player.Center;
+					p.soulBox = player.Center;
+				}
 			}
 		}
 		public static void Reset() {
@@ -145,6 +171,10 @@ namespace Deltarune
 			if (playerThatHasNoSoulLmao != null && playerThatHasNoSoulLmao.Count > 0) {
 				foreach (var item in playerThatHasNoSoulLmao){
 					needDraw.Add(item.whoAmI);
+					if (item.whoAmI == Main.myPlayer) {
+						drawAlpha += 0.1f;
+						if (drawAlpha > 1f) {drawAlpha = 1f;}
+					}
 					Player player = Main.player[item.whoAmI];
 					player.gfxOffY = item.gfxOffY;
 					player.width = item.width;

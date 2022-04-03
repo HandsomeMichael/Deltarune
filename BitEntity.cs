@@ -35,7 +35,7 @@ namespace Deltarune
 	{
 		public void Log(Action<string> log) {
 			int count = 0;
-			foreach (var item in collection){
+			foreach (var item in bitList){
 				log($"CustomEntity, [{count}] {item}");
 				count++;
 			}
@@ -69,7 +69,7 @@ namespace Deltarune
 		public static void DrawAll() {
 			if (bitList == null || bitList.Count < 1 || Main.mapFullscreen) {return;}
 			Main.spriteBatch.BeginNormal();
-			foreach (var bit in bitList){bit.Draw(Main.spriteBatch));}
+			foreach (var bit in bitList){bit.Draw(Main.spriteBatch);}
 			Main.spriteBatch.BeginGlow(true);
 			foreach (var bit in bitList){
 				if (bit is IAdditive hook) {hook.DrawAdditive(Main.spriteBatch);}
@@ -84,25 +84,28 @@ namespace Deltarune
 		public Vector2 velocity;
 		public float scale;
 		public override bool OnSpawn() {
-			if (type == 1) {
-				velocity = new Vector2(Main.rand.NextFloat(-3f, 4f)*2f,Main.rand.NextFloat(-3f, 4f)*2f);
+			if (type == 2) {
+				velocity = new Vector2(Main.rand.NextFloat(-3f, 4f)*2f,Main.rand.NextFloat(-3f, 4f)*1.5f);
 			}
+			return true;
 		}
 		public override bool Update() {
 			timeLeft--;
 			position += velocity;
 			if (type == 1) {
-				velocity *= 0.998f;
+				velocity *= 0.98f;
 				scale -= 0.01f;
-				if (scale < 0f) {
-					return false;
-				}
+				if (scale < 0f) {return false;}
 			}
 			return timeLeft > 0;
 		}
 		public void DrawAdditive(SpriteBatch spriteBatch){
 			var texture = ModContent.GetTexture(Deltarune.textureExtra+"yourballs");
-			spriteBatch.Draw(texture, position - Main.screenPosition, null, color, 0f, texture.Size()/2f, scale, SpriteEffects.None, 0);
+			float alpha = 1f;
+			if (type == 1) {
+				alpha = scale;
+			}
+			spriteBatch.Draw(texture, position - Main.screenPosition, null, color*alpha, 0f, texture.Size()/2f, scale, SpriteEffects.None, 0);
 		}
 		public Glowers(int type,Color color,float scale,Vector2 velocity) {
 			this.type = type;

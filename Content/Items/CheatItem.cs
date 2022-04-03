@@ -119,10 +119,19 @@ namespace Deltarune.Content.Items
 			MyWorld.hadRalsei = false;
 		}
 	}
+	public class CHSystemLog : CheatItem{
+		public override string tt => "Log Delta Systems";
+		public override void Update(Player player) {
+			DeltaSystemLoader.LogAll();
+		}
+	}
 	public class CHDusts : CheatItem{
 		public override string tt => "Glowers Dusts";
 		public override void Update(Player player) {
-			Glowers.New(1,Main.MouseWorld,Vector2.Zero,Color.White);
+			Vector2 pos = Main.screenPosition;
+			pos.X += Main.rand.Next(0,Main.screenWidth+1);
+			pos.Y += Main.rand.Next(0,Main.screenHeight+1);
+			Glowers.New(1,pos,Main.LocalPlayer.DirectionTo(Main.MouseWorld)*Main.rand.NextFloat(-3f,-8f),Color.White,0.8f);
 		}
 	}
 	public class CHSoulExit : CheatItem{
@@ -132,8 +141,8 @@ namespace Deltarune.Content.Items
 			var p = player.GetDelta();
 			if (p.soulTimer == 0) {p.ExitSoul(60*5);}
 			else {
-				float num = Main.MouseWorld.Distance(player.Center);
-				p.UpdateSoulBox((int)num,(int)num);
+				p.UpdateSoulBox(Main.MouseWorld,200,200);
+				p.soulTimer = 120;
 			}
 		}
 	}

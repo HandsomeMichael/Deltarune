@@ -574,7 +574,19 @@ namespace Deltarune.Content.NPCs.Boss
 			projectile.timeLeft = 600;
 			projectile.tileCollide = false;
 		}
+		int sussyWussy;
+		public override void SendExtraAI(BinaryWriter writer) {
+			writer.Write(sussyWussy);
+		}
+		public override void ReceiveExtraAI(BinaryReader reader) {
+			sussyWussy = reader.ReadInt32();
+		}
 		public override void AI() {
+			if (sussyWussy == 0) {
+				if (projectile.ai[0] != 0f) {sussyWussy = Main.rand.NextBool(8) ? 1 : -1;}
+				else {sussyWussy = Main.rand.NextBool(5) ? 1 : -1;}
+				projectile.netUpdate = true;
+			}
 			//homes after 1 second
 			if (projectile.ai[0] == 1f) {
 				projectile.hostile = false;
@@ -708,6 +720,12 @@ namespace Deltarune.Content.NPCs.Boss
 				}
 			}
 		}
+		public override Color? GetAlpha(Color lightColor) {
+			if (sussyWussy == 1) {
+				return Color.Red*projectile.Opacity;
+			}
+			return null;
+		}
 		public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor) {
 			if (projectile.ai[0] != 0f || projectile.ai[1] != 0f) {lightColor = Color.Red;}
 			//Redraw the projectile with the color not influenced by light
@@ -718,6 +736,16 @@ namespace Deltarune.Content.NPCs.Boss
 				spriteBatch.Draw(Main.projectileTexture[projectile.type], drawPos, null, color, projectile.rotation, drawOrigin, projectile.scale, SpriteEffects.None, 0f);
 			}
 			return true;
+		}
+		public override void ModifyHitPlayer(Player target, ref int damage, ref bool crit) {
+			if (sussyWussy == 1) {
+				damage = 0;
+				if (target.GetDelta().soulTimer < 1) {
+					int width = 100;
+					if (projectile.ai[0] != 0f || projectile.ai[1] != 0f) {width = 150;}
+					target.GetDelta().ExitSoul(60*3,width,width);
+				}
+			}
 		}
 		public override void Kill(int timeLeft) {
 			if (projectile.ai[0] == 4f) {
@@ -760,7 +788,11 @@ namespace Deltarune.Content.NPCs.Boss
 			npc.alpha = 255;
 		}
 		public override void AI() {
-			npc.TargetClosest(true);
+			if (npc.ai[0] == 0f) {
+				npc.ai[0] = Main.rand.NextBool(5) ? 1f : -1f;
+			}
+			if (npc.ai[0] == 2f) {npc.target = (int)npc.ai[1];}
+			else {npc.TargetClosest(true);}
 			Player player = Main.player[npc.target];
 			if (player.dead) {
 				npc.TargetClosest(true);
@@ -771,11 +803,33 @@ namespace Deltarune.Content.NPCs.Boss
 					npc.HitEffect();
 				}
 			}
+			float speed = 3f;
+			if (npc.ai[0] == 2f) {
+				if (player.GetDelta().soulTimer < 1) {
+					npc.life = 0;
+					npc.active = false;
+					npc.HitEffect();
+				}
+				if (player.Distance(npc.Center) > 100f) {
+					speed = 5f;
+					player.GetDelta().soulBox = player.GetDelta().soulBox.Lerp(npc.Center,0.05f);
+				}
+			}
 			npc.alpha -= 10;
 			if (npc.alpha < 0) {npc.alpha = 0;}
-			npc.velocity += new Vector2(Main.rand.NextFloat(-3,3),Main.rand.NextFloat(-3,3));
+			npc.velocity += new Vector2(Main.rand.NextFloat(-speed,speed),Main.rand.NextFloat(-speed,speed));
 			npc.velocity = Vector2.Lerp(npc.velocity,npc.DirectionTo(player.Center + player.velocity*-0.5f)*5f,0.05f);
 			npc.rotation = npc.velocity.X * 0.001f;
+		}
+		public override void ModifyHitPlayer(Player target, ref int damage, ref bool crit) {
+			if (npc.ai[0] == 1f) {
+				damage = 0;
+				if (target.GetDelta().soulTimer < 1) {
+					target.GetDelta().ExitSoul(60*3,150,150);
+					npc.ai[1] = target.whoAmI;
+					npc.ai[0] = 2f;
+				}
+			}
 		}
 		public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor) {
 
@@ -783,13 +837,18 @@ namespace Deltarune.Content.NPCs.Boss
 			Vector2 orig = texture.Size()/2f;
 			spriteBatch.Draw(texture, npc.Center - Main.screenPosition,
 			null, npc.GetAlpha(Color.Black), npc.rotation, orig, npc.scale, SpriteEffects.None, 0f);
-
 			spriteBatch.BeginGlow(true);
 			spriteBatch.Draw(texture, npc.Center - Main.screenPosition,
 			null, npc.GetAlpha(Color.White), npc.rotation, orig, npc.scale, SpriteEffects.None, 0f);
 
 			spriteBatch.BeginNormal(true);
-
+			if (npc.ai[0] == 1f) {lightColor = Color.Red;}
+			if (npc.ai[0] == 2f) {
+				Player player = Main.player[npc.target];
+				if (player.active && !player.dead) {
+					spriteBatch.DrawChain(lightColor,npc.Center,player.GetDelta().soulBox, Deltarune.textureExtra+"chain", true);
+				}
+			}
 			texture = Main.npcTexture[npc.type];
 			orig = texture.Size()/2f;
 			spriteBatch.Draw(texture, npc.Center - Main.screenPosition,
