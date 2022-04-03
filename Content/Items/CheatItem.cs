@@ -119,6 +119,12 @@ namespace Deltarune.Content.Items
 			MyWorld.hadRalsei = false;
 		}
 	}
+	public class CHDusts : CheatItem{
+		public override string tt => "Glowers Dusts";
+		public override void Update(Player player) {
+			Glowers.New(1,Main.MouseWorld,Vector2.Zero,Color.White);
+		}
+	}
 	public class CHSoulExit : CheatItem{
 		public override string tt => "Soulless lmao";
 		public override void Update(Player player) {

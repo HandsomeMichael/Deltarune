@@ -29,10 +29,19 @@ using Deltarune.Helper;
 
 namespace Deltarune
 {
-	public class CustomEntity : ILoadable , IPreSaveAndQuit
+	public interface IAdditive{void DrawAdditive(SpriteBatch spritebatch);}
+	
+	public class CustomEntity : ILoadable , IPreSaveAndQuit , ILoggable
 	{
-		public static List<BitEntity> bitList;
+		public void Log(Action<string> log) {
+			int count = 0;
+			foreach (var item in collection){
+				log($"CustomEntity, [{count}] {item}");
+				count++;
+			}
+		}
 
+		public static List<BitEntity> bitList;
 		public void PreSaveAndQuit() => Load();
 		public void Unload() => bitList = null;
 		public void Load() => bitList = new List<BitEntity>();
@@ -50,25 +59,59 @@ namespace Deltarune
 				bitList.Add(entity);
 			}
 		}
-
 		public static void UpdateAll()
 		{
 			if (bitList == null) {return;}
 			var ded = new List<BitEntity>();
-			foreach (var bit in bitList){
-				if (!bit.Update()) {ded.Add(bit);}
-			}
-			foreach (var dead in ded) {
-				bitList.Remove(dead);
-			}
+			foreach (var bit in bitList){if (!bit.Update()) {ded.Add(bit);}}
+			foreach (var dead in ded) {bitList.Remove(dead);}
 		}
 		public static void DrawAll() {
-			if (bitList == null) {return;}
+			if (bitList == null || bitList.Count < 1 || Main.mapFullscreen) {return;}
 			Main.spriteBatch.BeginNormal();
+			foreach (var bit in bitList){bit.Draw(Main.spriteBatch));}
+			Main.spriteBatch.BeginGlow(true);
 			foreach (var bit in bitList){
-				bit.Draw();
+				if (bit is IAdditive hook) {hook.DrawAdditive(Main.spriteBatch);}
 			}
 			Main.spriteBatch.End();
+		}
+	}
+	public class Glowers : BitEntity , IAdditive
+	{
+		public int type;
+		public Color color;
+		public Vector2 velocity;
+		public float scale;
+		public override bool OnSpawn() {
+			if (type == 1) {
+				velocity = new Vector2(Main.rand.NextFloat(-3f, 4f)*2f,Main.rand.NextFloat(-3f, 4f)*2f);
+			}
+		}
+		public override bool Update() {
+			timeLeft--;
+			position += velocity;
+			if (type == 1) {
+				velocity *= 0.998f;
+				scale -= 0.01f;
+				if (scale < 0f) {
+					return false;
+				}
+			}
+			return timeLeft > 0;
+		}
+		public void DrawAdditive(SpriteBatch spriteBatch){
+			var texture = ModContent.GetTexture(Deltarune.textureExtra+"yourballs");
+			spriteBatch.Draw(texture, position - Main.screenPosition, null, color, 0f, texture.Size()/2f, scale, SpriteEffects.None, 0);
+		}
+		public Glowers(int type,Color color,float scale,Vector2 velocity) {
+			this.type = type;
+			this.color = color;
+			this.scale = scale;
+			this.velocity = velocity;
+		}
+		public static void New(int type,Vector2 pos,Vector2 velocity,Color color,float scale = 1f,int timeLeft = 60) {
+			CustomEntity.New(new Glowers(type,color,scale,velocity),pos,timeLeft);
 		}
 	}
 	public class LancerIntro : BitEntity
@@ -84,11 +127,11 @@ namespace Deltarune
 			}
 			return true;
 		}
-		public override void Draw() {
+		public override void Draw(SpriteBatch spriteBatch) {
 			int frame = timeLeft % (frameCounter*maxFrame);
 			frame = frame / frameCounter;
 			Texture2D tt = ModContent.GetTexture("Deltarune/Content/NPCs/Lancer_Bike");
-			Main.spriteBatch.Draw(tt, position, tt.GetFrame(frame,maxFrame), Color.White, 0f, tt.GetFrame(frame,maxFrame).Size()/2, 2f, SpriteEffects.None, 0f);
+			spriteBatch.Draw(tt, position, tt.GetFrame(frame,maxFrame), Color.White, 0f, tt.GetFrame(frame,maxFrame).Size()/2, 2f, SpriteEffects.None, 0f);
 			//Main.spriteBatch.Draw(tt, position, null, Color.White, 0, tt.Size()/2, 1f, SpriteEffects.None, 0f);
 		}
 		public static void New() {
@@ -109,14 +152,14 @@ namespace Deltarune
 			}
 			return true;
 		}
-		public override void Draw() {
+		public override void Draw(SpriteBatch spriteBatch) {
 			int frame = timeLeft / frameCounter;
 			Texture2D tt = ModContent.GetTexture(Deltarune.textureExtra+"Explode_ButBad");
 			if (scale == -1f) {
-				Main.spriteBatch.Draw(tt, new Vector2(Main.screenWidth/2,Main.screenHeight/2), tt.GetFrame(frame,maxFrame), Color.White, 0, tt.GetFrame(frame,maxFrame).Size()/2, 3f, SpriteEffects.None, 0f);
+				spriteBatch.Draw(tt, new Vector2(Main.screenWidth/2,Main.screenHeight/2), tt.GetFrame(frame,maxFrame), Color.White, 0, tt.GetFrame(frame,maxFrame).Size()/2, 3f, SpriteEffects.None, 0f);
 				return;
 			}
-			Main.spriteBatch.Draw(tt, position - Main.screenPosition, tt.GetFrame(frame,maxFrame), Color.White, 0, tt.GetFrame(frame,maxFrame).Size()/2, scale, SpriteEffects.None, 0f);
+			spriteBatch.Draw(tt, position - Main.screenPosition, tt.GetFrame(frame,maxFrame), Color.White, 0, tt.GetFrame(frame,maxFrame).Size()/2, scale, SpriteEffects.None, 0f);
 		}
 		public static void BoomScreen() {
 			var bit = new Explode();
@@ -137,9 +180,11 @@ namespace Deltarune
 	{
 		public Vector2 position;
 		public int timeLeft = 0;
-
+		public override string ToString() {
+			return $"time : {timeLeft}, position : {position}";
+		}
 		public virtual bool Update() => true;
-		public virtual void Draw() {}
+		public virtual void Draw(SpriteBatch spriteBatch) {}
 		public virtual bool OnSpawn() => true;
 	}
 	
