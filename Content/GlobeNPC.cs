@@ -32,8 +32,9 @@ namespace Deltarune.Content
 	{
 		public override bool InstancePerEntity => true;
 
-		bool Graze;
+		public bool Graze;
 		public double ShortswordBleed;
+		public bool maidenless;
 		int MegaShortswordBleed;
 		public bool fatalbleed;
 		bool hasBell;
@@ -44,6 +45,7 @@ namespace Deltarune.Content
 
 		public override void ResetEffects(NPC npc) {
 			fatalbleed = false;
+			maidenless = false;
 		}
 		//public int[] Timer = new int[3];
 		public override void SetDefaults(NPC npc) {
@@ -170,6 +172,11 @@ namespace Deltarune.Content
 				Dust dust = Main.dust[Dust.NewDust(npc.position, npc.width, npc.height, 87, 0f, 0f, 0, Color.White, 1f)];
 				dust.noGravity = true;
 			}
+			if (maidenless) {
+				var dust = Main.dust[Dust.NewDust(npc.position, npc.width, npc.height, 60, 0f, 0f, 0, Color.White, 0.5f)];
+				dust.noGravity = true;
+				dust.noLight = true;
+			}
 			if (fatalbleed) {
 				Vector2 v = npc.velocity*0.3f;
 				v.RotatedByRandom(MathHelper.ToRadians(90));
@@ -179,7 +186,7 @@ namespace Deltarune.Content
 			if (ShortswordBleed > 6 && Main.rand.NextBool(3)) {
 				Dust.NewDust(npc.position, npc.width, npc.height, 5, 0f, 0f, 0, new Color(255,255,255), 1f);	
 			}
-			if (!npc.friendly && npc.damage > 0 && npc.type != ModContent.NPCType<Content.NPCs.RalseiDummy.ralseidummy>()) {
+			if (npc.CanBeChasedBy() && npc.type != ModContent.NPCType<Content.NPCs.RalseiDummy.ralseidummy>()) {
 				for (int i = 0; i < Main.maxPlayers; i++)
 				{
 					Player player = Main.player[i];
@@ -277,7 +284,13 @@ namespace Deltarune.Content
 				}
 			}
 		}
-		public override void OnHitByProjectile(NPC npc,Projectile projectile, int damage, float knockback, bool crit) {
+		public override void ModifyHitPlayer(NPC npc,Player target, ref int damage, ref bool crit) {
+			if (maidenless) {
+				damage /= 2;
+			}
+		}
+		public override void OnHitByProjectile(NPC npc,Projectile projectile, int damage, float knockBack, bool crit) {
+			if (projectile.melee) {knockBack*= 2f;}
 			Player player = Main.player[projectile.owner];
 			if (npc.townNPC && projectile.type == ProjectileID.RottenEgg && !Main.player[projectile.owner].dead) {
 				if (!customCheck.Contains("ThrowedEgg")){customCheck.Add("ThrowedEgg");}

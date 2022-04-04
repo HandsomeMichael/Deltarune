@@ -36,18 +36,23 @@ namespace Deltarune
 		public void Load() {
 			IL.Terraria.Main.UpdateAudio += Music_Patch;
 			IL.Terraria.Main.UpdateAudio += Music_Autodisable_Patch;
-			On.Terraria.Main.Update += updateAdd;
+			Main.OnTick += PostUpdate;
 			On.Terraria.Player.AddBuff += AddBuffPatch;
 			On.Terraria.Main.OnCharacterNamed += OnCharacterNamedPatch;
 			On.Terraria.NPC.CanBeChasedBy += MinionChasingPrevent;
 		}
 		public void Unload() {
+			Main.OnTick -= PostUpdate;
 			IL.Terraria.Main.UpdateAudio -= Music_Patch;
 			IL.Terraria.Main.UpdateAudio -= Music_Autodisable_Patch;
-			On.Terraria.Main.Update -= updateAdd;
 			On.Terraria.Player.AddBuff -= AddBuffPatch;
 			On.Terraria.Main.OnCharacterNamed -= OnCharacterNamedPatch;
 			On.Terraria.NPC.CanBeChasedBy -= MinionChasingPrevent;
+		}
+		public static void PostUpdate() {
+			CustomEntity.UpdateAll();
+			if (Deltarune.intro < 0) {UpdateHook.UpdateHim();}
+			if (MyConfig.get.showDebug) {UpdateHook.UpdateDebug();}
 		}
 		// disable all minion targetting when you exit ur body.
 		static bool MinionChasingPrevent(On.Terraria.NPC.orig_CanBeChasedBy orig,NPC self,object attacker , bool ignoreDontTakeDamage ) {
@@ -63,12 +68,6 @@ namespace Deltarune
 				}
 			}
 			return orig(self,attacker,ignoreDontTakeDamage);
-		}
-		static void updateAdd(On.Terraria.Main.orig_Update orig,Terraria.Main self, GameTime gameTime) {
-			CustomEntity.UpdateAll();
-			if (Deltarune.intro < 0) {UpdateHim();}
-			orig(self,gameTime);
-			if (MyConfig.get.showDebug) {UpdateDebug();}
 		}
 		static void OnCharacterNamedPatch(On.Terraria.Main.orig_OnCharacterNamed orig, Main self,string text) {
 			Deltarune.selectedMenu = 0;

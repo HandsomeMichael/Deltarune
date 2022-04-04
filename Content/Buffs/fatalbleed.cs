@@ -18,4 +18,17 @@ namespace Deltarune.Content.Buffs
             npc.GetDelta().fatalbleed = true;
 		}
     }
+    public class maidenless : ModBuff
+    {
+        public override void SetDefaults()
+        {
+            DisplayName.SetDefault("Lamebuf");
+            Description.SetDefault("Reduced damage dealt by 50%");
+            Main.buffNoTimeDisplay[Type] = false;
+            Main.debuff[Type] = true; //Add this so the nurse doesn't remove the buff when healing
+        }
+        public override void Update(NPC npc, ref int buffIndex) {
+            npc.GetDelta().maidenless = true;
+		}
+    }
 }

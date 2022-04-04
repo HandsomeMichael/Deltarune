@@ -16,10 +16,12 @@ namespace Deltarune.Content.Items
 		}
 
 		public override void SetDefaults() {
+			item.autoReuse = true;
 			item.channel = true; //Channel so that you can hold the weapon [Important]
 			item.damage = 80;
 			item.ranged = true;
 			item.noMelee = true;
+			item.knockBack = 1f;
 			item.noUseGraphic = true;
 			item.width = 40;
 			item.height = 40;

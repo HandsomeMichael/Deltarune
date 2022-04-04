@@ -94,6 +94,10 @@ namespace Deltarune
 			if (battleAlpha < 0f) {battleAlpha = 0f;}
 		}
 		public override void MidUpdateProjectileItem() => SoulHandler.Reset();
+		public override void PostUpdateEverything() {
+			UpdateHook.PostUpdate();
+		}
+
 
 		//DynamicSpriteFont[] font = new DynamicSpriteFont[5];
 

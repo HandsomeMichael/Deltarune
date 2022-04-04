@@ -59,6 +59,7 @@ namespace Deltarune
 			soulTimer = timer;
 			soulBoxWidth = width;
 			soulBoxHeight = height;
+			player.immuneTime += 60;
 		}
 
 		public int spellAnim;
@@ -118,7 +119,7 @@ namespace Deltarune
 			SoulHandler.PositionUpdate(player,this);
 
 			if (sacredrock) {
-				player.statDefense += (int)((float)player.statDefense * 0.7f);
+				player.statDefense += (int)((float)player.statDefense * 0.3f);
 			}
 			if (TP > TPMax) {
 				//snd_bell
@@ -130,8 +131,9 @@ namespace Deltarune
 			if (TP < 0) {TP = 0;}
 			if (TP > TPMax) {TP = TPMax;}
 		}
-		public void Graze(Entity entity,int damage,bool Graze = true) {
-			TPCooldown = 5;
+		public void Graze(Entity entity,int damage,bool Graze = true,int cooldown = 5,bool visual = true) {
+			// 5 tick each graze
+			TPCooldown = cooldown;
 			//cannot be bigger than 1%
 			if (damage > TPMax*0.01) {
 				damage = (int)(TPMax*0.01);
@@ -146,11 +148,13 @@ namespace Deltarune
 			if (!Graze) {num = num/2;}
 			TP += num+1;
 			if (TP == TPMax) {TP += 1;}
-			Main.PlaySound(Deltarune.GetSound("graze"),player.Center);
-			for (int a = 0; a < Main.rand.Next(10,21); a++) {
-				Vector2 speed = Main.rand.NextVector2CircularEdge(1f, 1f);
-				Dust d = Dust.NewDustPerfect(player.Center, 182, speed * Main.rand.NextFloat(2f,5f), Scale: 0.6f);
-				d.noGravity = true;
+			if (visual) {
+				Main.PlaySound(Deltarune.GetSound("graze"),player.Center);
+				for (int a = 0; a < Main.rand.Next(10,21); a++) {
+					Vector2 speed = Main.rand.NextVector2CircularEdge(1f, 1f);
+					Dust d = Dust.NewDustPerfect(player.Center, 182, speed * Main.rand.NextFloat(2f,5f), Scale: 0.6f);
+					d.noGravity = true;
+				}
 			}
 			//Rectangle rec = TPBox();
 			//Dust.QuickBox(new Vector2(rec.X,rec.Y),new Vector2(rec.Width+rec.X,rec.Height+rec.Y), 2, Color.Pink, null);
@@ -306,13 +310,14 @@ namespace Deltarune
 		}
 		//public override void OnHitByNPC(NPC npc, int damage, bool crit){}
 		public override void OnHitNPCWithProj(Projectile proj, NPC target, int damage, float knockback, bool crit) {
-			if (sacredrock) {
-				Graze(target,damage/12,true);
+			if (sacredrock && TP < TPMax && TPCooldown < 1) {
+				Graze(target,damage/12,target.GetDelta().Graze,10,false);
 			}
 		}
 		public override void OnHitNPC(Item item, NPC target, int damage, float knockback, bool crit) {
-			if (sacredrock) {
-				Graze(target,damage/10,true);
+			if (sacredrock && TP < TPMax && TPCooldown < 1) {
+				Graze(target,damage/10,target.GetDelta().Graze,10,false);
+				
 			}
 		}
 		//public override bool Shoot(Item item, ref Vector2 position, ref float speedX, ref float speedY, ref int type, ref int damage, ref float knockBack){return true;}

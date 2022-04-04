@@ -387,8 +387,9 @@ namespace Deltarune.Content.Spell
 			}
 			else {
 				player.velocity = player.DirectionTo(Main.MouseWorld)*10f;
-				//Main.PlaySound(mod.GetLegacySoundSlot(SoundType.Custom, "Sounds/snd_cantselect"),player.Center);
 			}
+			Main.SetCameraLerp(0.1f, 15);
+			Main.screenPosition -= player.velocity*0.5f;
 		}
 	}
 	public class Farting : BaseSpell

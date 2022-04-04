@@ -14,7 +14,7 @@ namespace Deltarune.Content.Items
 	{
 		public override void SetStaticDefaults() {
 			DisplayName.SetDefault("Sacred rock");
-			Tooltip.SetDefault("Increases damage by 8%\nMultiply armor by 70%\namongus\n*insert vine boom sound effect*");
+			Tooltip.SetDefault("Increases damage by 10%\nMultiply armor by 30%\namongus\n*insert vine boom sound effect*");
 		}
 		public override void SetDefaults() {
             item.width = 14;
@@ -24,16 +24,18 @@ namespace Deltarune.Content.Items
 			item.expert = true;
 		}
 		public override void UpdateAccessory(Player player,bool hide) {
-			player.allDamage += 0.08f;
+			player.allDamage += 0.1f;
 			player.GetDelta().sacredrock = true;
 		}
 		public static bool hovering;
 		public static bool hovering2;
+		public static bool therock;
 		public override void UpdateInventory(Player player) {
 			if (hovering) {
 				if (!hovering2) {
-					if (Main.rand.NextBool(20)) {
+					if (Main.rand.NextBool(20) || !therock) {
 						Main.PlaySound(Deltarune.GetSound("therock"));
+						therock = true;
 					}
 					hovering2 = true;
 				}
