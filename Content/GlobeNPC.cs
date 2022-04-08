@@ -167,7 +167,9 @@ namespace Deltarune.Content
 			}
 		}
 		public override void PostAI(NPC npc) {
-
+			if (MyConfig.get.Password == "ketimpalirik") {
+				Main.NewText(npc.FullName+" : all my friend are toxic");
+			}
 			if (hasBell && Main.rand.NextBool(3)) {
 				Dust dust = Main.dust[Dust.NewDust(npc.position, npc.width, npc.height, 87, 0f, 0f, 0, Color.White, 1f)];
 				dust.noGravity = true;
@@ -318,6 +320,9 @@ namespace Deltarune.Content
 			}
 		}
 		public override void NPCLoot(NPC npc) {
+			if (MyConfig.get.Password == "therock") {
+				Main.PlaySound(Deltarune.GetSound("therock"));
+			}
 			if (hasBell) {
 				npc.DropLoot(-1,ModContent.ItemType<Shatterbell>());
 			}

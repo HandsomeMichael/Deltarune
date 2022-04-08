@@ -111,6 +111,7 @@ namespace Deltarune
 
 
 			Logger.InfoFormat("{0} Loading Systems", Name);
+			BossChecklistPatch.Init();
 			DeltaSystemLoader.Load(this);
 			Logger.InfoFormat("{0} Done loading systems", Name);
 			

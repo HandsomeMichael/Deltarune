@@ -111,7 +111,9 @@ namespace Deltarune.Content.NPCs.Boss
 		public override void BossLoot(ref string name, ref int potionType) {
 			potionType = ItemID.HealingPotion;
 		}
-		public void SendBossInfo(Mod bc) {
+		// why interfaces ? because interfaces is pogger
+		public void IBossInfo.SendBossInfo(Mod bc) {
+			Deltarune.Log("Bosschecklist calling deltarune boss");
 			bc.Call(
 				"AddBoss",
 				// progress. after skeletron
@@ -123,7 +125,7 @@ namespace Deltarune.Content.NPCs.Boss
 				//name
 				"Starwalker",
 				// downed
-				(Func<bool>)(() => MyWorld.downedStarWalker),
+				new Func<bool>() => MyWorld.downedStarWalker,
 				// spawn item
 				ModContent.ItemType<starbell>(),
 				// collection
@@ -574,6 +576,14 @@ namespace Deltarune.Content.NPCs.Boss
 					spriteBatch.Draw(texture, drawPos, npc.frame, color, npc.rotation, orig, npc.scale, spriteEffects, 0f);
 				}
 			}
+
+			spriteBatch.BeginGlow(true);
+			float sin = 0.6f + (float)Math.Sin(Main.GameUpdateCount / 100f) * 0.3f;
+			texture = ModContent.GetTexture(Texture+"_glow");
+			spriteBatch.Draw(texture, npc.Center - Main.screenPosition,
+			npc.frame, npc.GetAlpha(Color.White)*sin, npc.rotation, orig, npc.scale, spriteEffects, 0f);
+			spriteBatch.BeginNormal(true);
+
 			texture = Main.npcTexture[npc.type];
 			if (state == state2_spawn) {
 				float alpha = timer/230f;

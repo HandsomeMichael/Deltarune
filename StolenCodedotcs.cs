@@ -56,7 +56,6 @@ namespace Deltarune
 		public const float DukeFishron = 12f;
 		public const float LunaticCultist = 13f;
 		public static void Add(IBossInfo info) {
-			Deltarune.Log("Adding boss info");
 			bossInfo.Add(info);
 		}
 		public static List<IBossInfo> bossInfo;
@@ -64,7 +63,7 @@ namespace Deltarune
 		public static void Load(){
 			Mod mod = ModLoader.GetMod("BossChecklist");
 			if (mod == null) return;
-
+			Deltarune.Log("Bosschecklist detected , sending boss info ");
 			if (bossInfo == null) {
 				Deltarune.Log("Bosschecklist error, couldnt get any boss info, try reloading mods");
 				return;
@@ -72,7 +71,7 @@ namespace Deltarune
 			foreach (var item in bossInfo){item.SendBossInfo(mod);}
 			bossInfo = null;
 
-			Deltarune.Log("Boss checklist detected, applying patches");
+			Deltarune.Log("Bosschecklist , applying patches");
 
 			var typeInfo = mod.Code.GetType("BossChecklist.UIElements.BossLogUIElements").GetNestedType("BossLogPanel", BindingFlags.NonPublic);
 			if (typeInfo == null) {Deltarune.Log("Bosschecklist Couldnt get typeInfo from boss checklist, skipped");return;}
