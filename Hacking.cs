@@ -50,9 +50,12 @@ namespace Deltarune
 			On.Terraria.NPC.CanBeChasedBy -= MinionChasingPrevent;
 		}
 		public static void PostUpdate() {
-			CustomEntity.UpdateAll();
-			if (Deltarune.intro < 0) {UpdateHook.UpdateHim();}
-			if (MyConfig.get.showDebug) {UpdateHook.UpdateDebug();}
+			// these are all clientside and just for pure graphic
+			if (!Main.dedServ) {
+				CustomEntity.UpdateAll();
+				if (Deltarune.intro < 0) {UpdateHook.UpdateHim();}
+				if (MyConfig.get.showDebug) {UpdateHook.UpdateDebug();}
+			}
 		}
 		// disable all minion targetting when you exit ur body.
 		static bool MinionChasingPrevent(On.Terraria.NPC.orig_CanBeChasedBy orig,NPC self,object attacker , bool ignoreDontTakeDamage ) {

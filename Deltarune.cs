@@ -94,13 +94,13 @@ namespace Deltarune
 			if (battleAlpha < 0f) {battleAlpha = 0f;}
 		}
 		public override void MidUpdateProjectileItem() => SoulHandler.Reset();
-		public override void PostUpdateEverything() {
-			UpdateHook.PostUpdate();
+		public override void PostDrawInterface(SpriteBatch spriteBatch) {
+			BossChecklistPatch.Reset();
 		}
 
-
-		//DynamicSpriteFont[] font = new DynamicSpriteFont[5];
-
+		public static void Log(string text = "test") {
+			Deltarune.get.Logger.InfoFormat("Deltarune "+text);
+		}
 		public override void Load() {
 
 			Logger.InfoFormat("{0} loading epic mod. haha very epic", Name);
@@ -178,7 +178,7 @@ namespace Deltarune
 			base.Close();
 		}
 		public override void Unload() {
-
+			BossChecklistPatch.Unload();
 			DeltaSystemLoader.Unload();
 
 			TitleMusic = 0;
@@ -205,6 +205,7 @@ namespace Deltarune
 					Main.logo2Texture = ModContent.GetTexture(textureExtra+"Title"+Main.rand.Next(1,6));
 				}
 			}
+			BossChecklistPatch.Load();
 		}
 		public override void HandlePacket(BinaryReader reader, int whoAmI) => NetCode.HandlePacket(reader,whoAmI);
 		public override void UpdateMusic(ref int music, ref MusicPriority priority) {

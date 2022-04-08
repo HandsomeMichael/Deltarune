@@ -88,7 +88,8 @@ namespace Deltarune
 						if (player.whoAmI == Main.myPlayer && player.GetDelta().soulTimer < 1) {
 							pos = player.Center.Lerp(animCache,drawAlpha);
 						}
-						spriteBatch.Draw(texture, pos - Main.screenPosition, null, Color.White, 0f, texture.Size()/2f, 1f, SpriteEffects.None, 0);
+						float rot = 0f ;//player.velocity.X * 0.1f;
+						spriteBatch.Draw(texture, pos - Main.screenPosition, null, Color.White, rot, texture.Size()/2f, 1f, SpriteEffects.None, 0);
 					}
 				}
 				spriteBatch.BeginGlow(true);
@@ -100,7 +101,8 @@ namespace Deltarune
 						if (player.whoAmI == Main.myPlayer && player.GetDelta().soulTimer < 1) {
 							pos = player.Center.Lerp(animCache,drawAlpha);
 						}
-						spriteBatch.Draw(texture, pos - Main.screenPosition, null, Color.White, 0f, texture.Size()/2f, 1f, SpriteEffects.None, 0);
+						float rot = 0f;//player.velocity.X * 0.1f;
+						spriteBatch.Draw(texture, pos - Main.screenPosition, null, Color.White, rot, texture.Size()/2f, 1f, SpriteEffects.None, 0);
 					}
 				}
 				spriteBatch.BeginNormal(true);
@@ -134,9 +136,18 @@ namespace Deltarune
 		public static void PositionUpdate(Player player,DeltaPlayer p) {
 			if (p.soulTimer > 0 && p.soul != Vector2.Zero) {
 				// jesse, we need to do math jesse
+
 				float speed = 4f;
-				if (player.controlRight) {p.soul.X += speed;}
-				if (player.controlLeft) {p.soul.X -= speed;}
+				player.velocity = Vector2.Zero;
+
+				if (player.controlRight) {
+					p.soul.X += speed;
+					player.velocity.X = 1f;
+				}
+				if (player.controlLeft) {
+					p.soul.X -= speed;
+					player.velocity.X = -1f;
+				}
 				if (player.controlDown) {p.soul.Y += speed;}
 				if (player.controlJump || player.controlUp) {p.soul.Y -= speed;}
 				if ((p.soulBox.X + p.soulBoxWidth) < p.soul.X) {p.soul.X -= p.soul.X - (p.soulBox.X + p.soulBoxWidth);}
@@ -145,7 +156,6 @@ namespace Deltarune
 				if ((p.soulBox.Y + p.soulBoxHeight) < p.soul.Y) {p.soul.Y -= p.soul.Y - (p.soulBox.Y + p.soulBoxHeight);}
 
 				player.stepSpeed = 0f;
-				player.velocity = Vector2.Zero;
 				player.Center = p.soul;
 				player.itemAnimation = 0;
 			}
@@ -205,16 +215,16 @@ namespace Deltarune
 		}
 		static void PulleyPrevent(On.Terraria.Player.orig_FindPulley orig, Player player) {
 			if (player.GetDelta().soulTimer > 0) {return;}
-			orig(player);
+			if (orig != null) orig(player);
 		}
 		static void MountPrevent(On.Terraria.Player.orig_QuickMount orig,Player player) {
 			if (player.GetDelta().soulTimer > 0) {player.frozen = true;}
-			orig(player);
+			if (orig != null) orig(player);
 			if (player.GetDelta().soulTimer > 0) {player.frozen = false;}
 		}
 		static void GrapplePrevent(On.Terraria.Player.orig_QuickGrapple orig,Player player) {
 			if (player.GetDelta().soulTimer > 0) {return;}
-			orig(player);
+			if (orig != null) orig(player);
 		}
 	}
 }

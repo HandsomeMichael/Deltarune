@@ -20,6 +20,34 @@ using Deltarune.Content;
 
 namespace Deltarune.Helper
 {
+    /*
+
+    I will be bacc and actualy implement this
+
+    public enum DrawStage {
+        BackGround,
+        NPC,
+        Tiles,
+        Projectile,
+        Dust,
+        Player,
+        Soul,
+        UI
+    }
+    public enum DrawContext{
+        PrePreDraw,
+        PreDraw,
+        AdditivePreDraw,
+        Draw,
+        AdditiveDraw,
+        PostDraw,
+        AdditivePostDraw,
+        PostPostDraw
+    }
+    public interface IDrawable{
+        Action<SpriteBatch> GetDrawAction(DrawContext context, DrawStage stage,bool requireReset);
+    }
+    */
     public interface ISoundText
     {
         void CustomSound(ref int textsound);

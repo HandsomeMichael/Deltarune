@@ -44,8 +44,11 @@ namespace Deltarune.Helper
                 // dont do anything with abstract classes
 				if (type.IsAbstract){continue;}
 
+                // Get interfaces
+                var interfaces = type.GetInterfaces();
+
                 // load ILoadable and cache it at systems
-                if (type.GetInterfaces().Contains(typeof(ILoadable))) {
+                if (interfaces.Contains(typeof(ILoadable))) {
                     var instance = (ILoadable)Activator.CreateInstance(type);
                     mod.Logger.InfoFormat($"{mod.Name} Loading System : {type.Name}");
                     instance.Load();
@@ -53,11 +56,17 @@ namespace Deltarune.Helper
                     continue;
                 }
 
-                // load ILoadOnly once
-                if (type.GetInterfaces().Contains(typeof(ILoadOnly))) {
+                // load ILoadOnly once and dont cache it
+                if (interfaces.Contains(typeof(ILoadOnly))) {
                     var instance = (ILoadOnly)Activator.CreateInstance(type);
                     mod.Logger.InfoFormat($"{mod.Name} Load Only System : {type.Name}");
                     instance.Load();
+                }
+                
+                // Load Boss Info for boss checklist
+                if (interfaces.Contains(typeof(IBossInfo))) {
+                    IBossInfo instance = (IBossInfo)Activator.CreateInstance(type);
+                    BossChecklistPatch.Add(instance);
                 }
                 //type.GetConstructor(Type.EmptyTypes)
                 

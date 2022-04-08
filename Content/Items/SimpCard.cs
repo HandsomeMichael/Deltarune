@@ -18,6 +18,7 @@ namespace Deltarune.Content.Items
             item.width = 14;
             item.height = 14;
             item.rare = 3;
+			item.accessory = true;
 		}
 	}
 }

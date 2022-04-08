@@ -27,6 +27,7 @@ namespace Deltarune.Content.Items
 			player.allDamage += 0.1f;
 			player.GetDelta().sacredrock = true;
 		}
+		// insert vine boom noises
 		public static bool hovering;
 		public static bool hovering2;
 		public static bool therock;

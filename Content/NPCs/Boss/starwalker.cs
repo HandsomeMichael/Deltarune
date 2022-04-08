@@ -695,6 +695,25 @@ namespace Deltarune.Content.NPCs.Boss
 					projectile.ai[0] = 0f;
 				}
 			}
+			// handles projectile hitting
+			if (sussyWussy == 1) {
+				// no ai
+				projectile.ai[0] = 0f;
+				projectile.ai[1] = 1f;
+				// gives melee users freedom to hit projectiles and dealt damage
+				for (int p = 0; p < Main.maxPlayers; p++){
+					Player player = Main.player[p];
+					if (player.active && !player.dead && player.HeldItem.damage > 0) {
+						if (player.GetDelta().meleeHitbox.Intersects(projectile.Hitbox)) {
+							sussyWussy = 2;
+							projectile.damage = player.HeldItem.damage;
+							projectile.friendly = true;
+							projectile.hostile = true;
+							projectile.velocity *= -2f;
+						}
+					}
+				}
+			}
 
 			projectile.scale -= 0.005f;
 			if (projectile.scale <= 0.45f) {

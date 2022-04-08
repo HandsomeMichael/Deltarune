@@ -36,6 +36,7 @@ namespace Deltarune
 		public int TPMax => player.statLifeMax2*5;
 		public float TPDisplay => (float)TP/(float)TPMax;
 		public int TP;
+		public Rectangle meleeHitbox;
 
 		public float Shortswordatt;
 
@@ -82,8 +83,8 @@ namespace Deltarune
 		}
 
 		public float moveSpeed;
-
 		public override void ResetEffects() {
+			meleeHitbox = new Rectangle(0,0,0,0);
 			moveSpeed = 0f;
 			sacredrock = false;
 			if (TPCooldown > 0){TPCooldown--;}
@@ -319,6 +320,9 @@ namespace Deltarune
 				Graze(target,damage/10,target.GetDelta().Graze,10,false);
 				
 			}
+		}
+		public override void MeleeEffects(Item item, Rectangle hitbox) {
+			meleeHitbox = hitbox;
 		}
 		//public override bool Shoot(Item item, ref Vector2 position, ref float speedX, ref float speedY, ref int type, ref int damage, ref float knockBack){return true;}
 		//public override bool CanBuyItem(NPC vendor, Item[] shopInventory, Item item) {return base.CanBuyItem(vendor,shopInventory,item);}
