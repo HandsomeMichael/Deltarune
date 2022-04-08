@@ -23,6 +23,32 @@ namespace Deltarune
 {
 	/*
 
+    I will be bacc and actualy implement this
+
+    public enum DrawStage {
+        BackGround,
+        NPC,
+        Tiles,
+        Projectile,
+        Dust,
+        Player,
+        Soul,
+        UI
+    }
+    public enum DrawContext{
+        PrePreDraw,
+        PreDraw,
+        AdditivePreDraw,
+        Draw,
+        AdditiveDraw,
+        PostDraw,
+        AdditivePostDraw,
+        PostPostDraw
+    }
+    public interface IDrawable{
+        Action<SpriteBatch> GetDrawAction(DrawContext context, DrawStage stage,bool requireReset);
+    }
+
 	Has a lot of errors, revisited soon when i am bored
 
 	public interface IDrawAdditive

@@ -42,6 +42,23 @@ namespace Deltarune
 	}
 	public class BossChecklistPatch
 	{
+		public const float KingSlime = 1f;
+		public const float EyeOfCthulhu = 2f;
+		public const float EaterOfWorlds = 3f;
+		public const float QueenBee = 4f;
+		public const float Skeletron = 5f;
+		public const float WallOfFlesh = 6f;
+		public const float TheTwins = 7f;
+		public const float TheDestroyer = 8f;
+		public const float SkeletronPrime = 9f;
+		public const float Plantera = 10f;
+		public const float Golem = 11f;
+		public const float DukeFishron = 12f;
+		public const float LunaticCultist = 13f;
+		public static void Add(IBossInfo info) {
+			Deltarune.Log("Adding boss info");
+			bossInfo.Add(info);
+		}
 		public static List<IBossInfo> bossInfo;
 		public static void Init() => bossInfo = new List<IBossInfo>();
 		public static void Load(){

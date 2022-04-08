@@ -6,6 +6,7 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using Deltarune;
 using Deltarune.Content;
+using Deltarune.Content.Items;
 using Deltarune.Content.Projectiles;
 using Deltarune.Helper;
 using Terraria.UI.Chat;
@@ -16,7 +17,7 @@ using System.IO;
 
 namespace Deltarune.Content.NPCs.Boss
 {
-	public class starwalker : ModNPC
+	public class starwalker : ModNPC , IBossInfo
 	{
 		public override void SetStaticDefaults() {
 			DisplayName.SetDefault("Star Walker");
@@ -109,6 +110,37 @@ namespace Deltarune.Content.NPCs.Boss
 		}
 		public override void BossLoot(ref string name, ref int potionType) {
 			potionType = ItemID.HealingPotion;
+		}
+		public void SendBossInfo(Mod bc) {
+			bc.Call(
+				"AddBoss",
+				// progress. after skeletron
+				BossChecklistPatch.Skeletron + 0.5f,         
+				// npc type
+				ModContent.NPCType<starwalker>(),
+				// ur mod
+				mod,
+				//name
+				"Starwalker",
+				// downed
+				(Func<bool>)(() => MyWorld.downedStarWalker),
+				// spawn item
+				ModContent.ItemType<starbell>(),
+				// collection
+				0,
+				// loot
+				new List<int>{                               
+					ModContent.ItemType<StarBreaker>(),
+					ModContent.ItemType<StarAbsorber>(),
+					ModContent.ItemType<SacredRocks>()
+				},
+				// spawn info
+				$"Use the [i:{ModContent.ItemType<starbell>()}] starbell to summon him",
+				// despawn message . insert funny meme here. its required :pe:
+				"refuses to elaborate and leaves",
+				// texture
+				Deltarune.textureExtra+"Boss_starwalker"
+			);
 		}
 		public override void NPCLoot() {
 			
