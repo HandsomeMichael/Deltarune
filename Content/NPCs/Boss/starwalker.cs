@@ -17,7 +17,7 @@ using System.IO;
 
 namespace Deltarune.Content.NPCs.Boss
 {
-	public class starwalker : ModNPC , IBossInfo
+	public class starwalker : ModNPC , IBossInfo , IBossInfoExtra
 	{
 		public override void SetStaticDefaults() {
 			DisplayName.SetDefault("Star Walker");
@@ -111,21 +111,38 @@ namespace Deltarune.Content.NPCs.Boss
 		public override void BossLoot(ref string name, ref int potionType) {
 			potionType = ItemID.HealingPotion;
 		}
+
 		// why interfaces ? because interfaces is pogger
-		public void IBossInfo.SendBossInfo(Mod bc) {
-			Deltarune.Log("Bosschecklist calling deltarune boss");
-			bc.Call(
-				"AddBoss",
+		public void CustomDraw(SpriteBatch spriteBatch,UIElement self) {
+			BossChecklistPatch.patchDrawStringDye = ItemID.SolarDye;
+			float sin = 0.6f + (float)Math.Sin(Main.GameUpdateCount / 100f) * 0.3f;
+			var tex = ModContent.GetTexture(Deltarune.textureExtra+"Boss_starwalker_glow");
+			var tex2 = ModContent.GetTexture(Deltarune.textureExtra+"myballs");
+			Vector2 pos = self.GetDimensions().Center();
+			Rectangle rec = self.GetDimensions().ToRectangle();
+			spriteBatch.BeginImmediate(true,true);
+			GameShaders.Misc["WaveWrap"].UseOpacity((float)Main.GameUpdateCount/500f).Apply();
+			spriteBatch.Draw(tex2, rec, null, Color.Black * 0.6f, 0, Vector2.UnitY * 2, 0, 0);
+			spriteBatch.BeginGlow(true,true);
+			spriteBatch.Draw(tex, pos, null, Color.White * sin, 0,tex.Size()/2f, 1, 0, 0);
+			spriteBatch.BeginNormal(true,true);
+		}
+
+		public bool TypeCheck(List<int> type) => type.Contains(ModContent.NPCType<starwalker>());
+		public bool GetInfoTexture() => Deltarune.textureExtra+"Boss_starwalker";
+
+		public object SendBossInfo(Mod bc,Mod caller) {
+			return bc.Call("AddBoss",
 				// progress. after skeletron
 				BossChecklistPatch.Skeletron + 0.5f,         
 				// npc type
 				ModContent.NPCType<starwalker>(),
 				// ur mod
-				mod,
+				caller,
 				//name
 				"Starwalker",
 				// downed
-				new Func<bool>() => MyWorld.downedStarWalker,
+				(Func<bool>)(()=>MyWorld.downedStarWalker),
 				// spawn item
 				ModContent.ItemType<starbell>(),
 				// collection
@@ -141,22 +158,14 @@ namespace Deltarune.Content.NPCs.Boss
 				// despawn message . insert funny meme here. its required :pe:
 				"refuses to elaborate and leaves",
 				// texture
-				Deltarune.textureExtra+"Boss_starwalker"
+				GetInfoTexture()
 			);
 		}
 		public override void NPCLoot() {
-			
 			if (!MyWorld.downedStarWalker) {
 				Main.NewText("Monster are starting to be normal",Color.LightGreen);
 			}
-
-			Gore.NewGore(npc.position, npc.velocity, mod.GetGoreSlot("Gores/starwalk0"), 1f);
-			Gore.NewGore(npc.position, npc.velocity, mod.GetGoreSlot("Gores/starwalk1"), 1f);
-			Gore.NewGore(npc.position, npc.velocity, mod.GetGoreSlot("Gores/starwalk2"), 1f);
-			Gore.NewGore(npc.position, npc.velocity, mod.GetGoreSlot("Gores/starwalk3"), 1f);
-			Gore.NewGore(npc.Center, npc.velocity, mod.GetGoreSlot("Gores/wing1"), 1f);
-			Gore.NewGore(npc.Center, npc.velocity, mod.GetGoreSlot("Gores/wing2"), 1f);
-
+			npc.SpawnGores("starwalk0","starwalk1","starwalk2","starwalk3","wing1","wing2");
 			MyWorld.downedStarWalker = true;
 		}
 

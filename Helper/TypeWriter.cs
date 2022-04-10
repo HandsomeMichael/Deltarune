@@ -23,9 +23,8 @@ using ReLogic.OS;
 
 namespace Deltarune.Helper
 {
-	public class TypeWriter
+	public class TypeWriter : ILoggable
 	{
-
 		byte frameMax;
 		int timeLeft;
 		LegacySoundStyle sound = null;
@@ -52,6 +51,9 @@ namespace Deltarune.Helper
 				}
 				if (text.Length != wanted.Length) {text += wanted[text.Length];}
 			}
+		}
+		public void Log(Action<string> log) {
+			log($"TypeWriter , [m:{frameMax}][t:{timeLeft}][{text}/{wanted}]");
 		}
 
 		public override string ToString() => text;

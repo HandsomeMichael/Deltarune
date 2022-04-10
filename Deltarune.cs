@@ -206,7 +206,7 @@ namespace Deltarune
 					Main.logo2Texture = ModContent.GetTexture(textureExtra+"Title"+Main.rand.Next(1,6));
 				}
 			}
-			BossChecklistPatch.Load();
+			BossChecklistPatch.Load(this);
 		}
 		public override void HandlePacket(BinaryReader reader, int whoAmI) => NetCode.HandlePacket(reader,whoAmI);
 		public override void UpdateMusic(ref int music, ref MusicPriority priority) {

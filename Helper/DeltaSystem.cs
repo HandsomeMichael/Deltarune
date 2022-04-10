@@ -64,10 +64,8 @@ namespace Deltarune.Helper
                 }
                 
                 // Load Boss Info for boss checklist
-                if (interfaces.Contains(typeof(IBossInfo))) {
-                    IBossInfo instance = (IBossInfo)Activator.CreateInstance(type);
-                    BossChecklistPatch.Add(instance);
-                }
+                BossChecklistPatch.HandleInterface(type,interfaces,mod);
+                
                 //type.GetConstructor(Type.EmptyTypes)
                 
 			}

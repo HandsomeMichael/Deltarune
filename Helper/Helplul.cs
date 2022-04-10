@@ -548,6 +548,11 @@ namespace Deltarune.Helper
 		public static void AddBuff<T> (this NPC player,int time) where T : ModBuff {
 			player.AddBuff(ModContent.BuffType<T>(),time);
 		}
+		public static void SpawnGores(this Entity entity,params string[] textures) {
+			foreach (string item in textures){
+				Gore.NewGore(entity.position, entity.velocity, Deltarune.get.GetGoreSlot("Gores/"+item), 1f);
+			}
+		}
 		
 		/// <summary>
 		/// Get Item stack from player inventory

@@ -36,9 +36,14 @@ using Microsoft.Xna.Framework.Input;
 namespace Deltarune
 {
 	// referenced from https://github.com/ProjectStarlight/StarlightRiver/blob/master/Compat/BossChecklist/PortraitPatch.cs
-	// patches : added reflection , and also error check to prevent bosschecklist error
+	// patches : added reflection , and also error check to prevent bosschecklist error , and also loading systems
+	public interface IBossInfoExtra {
+		void CustomDraw(SpriteBatch spritebatch,UIElement ui);
+		bool TypeCheck(List<int> type);
+		bool GetInfoTexture();
+	}
 	public interface IBossInfo{
-		void SendBossInfo(Mod mod);
+		object SendBossInfo(Mod mod,Mod caller);
 	}
 	public class BossChecklistPatch
 	{
@@ -55,12 +60,26 @@ namespace Deltarune
 		public const float Golem = 11f;
 		public const float DukeFishron = 12f;
 		public const float LunaticCultist = 13f;
-		public static void Add(IBossInfo info) {
-			bossInfo.Add(info);
+
+		// handles interfaces loading
+		public static void HandleInterface(Type type,Type[] interfaces,Mod mod) {
+			if (interfaces.Contains(typeof(IBossInfo))) {
+				IBossInfo instance = (IBossInfo)Activator.CreateInstance(type);
+				bossInfo.Add(instance);
+			}
+			if (interfaces.Contains(typeof(IBossInfoExtra))) {
+				IBossInfoExtra instance = (IBossInfoExtra)Activator.CreateInstance(type);
+				bossInfoExtra.Add(instance);
+			}
 		}
+
 		public static List<IBossInfo> bossInfo;
-		public static void Init() => bossInfo = new List<IBossInfo>();
-		public static void Load(){
+		public static List<IBossInfoExtra> bossInfoExtra;
+		public static void Init() {
+			bossInfo = new List<IBossInfo>();
+			bossInfoExtra = new List<IBossInfoExtra>();
+		}
+		public static void Load(Mod caller){
 			Mod mod = ModLoader.GetMod("BossChecklist");
 			if (mod == null) return;
 			Deltarune.Log("Bosschecklist detected , sending boss info ");
@@ -68,7 +87,12 @@ namespace Deltarune
 				Deltarune.Log("Bosschecklist error, couldnt get any boss info, try reloading mods");
 				return;
 			}
-			foreach (var item in bossInfo){item.SendBossInfo(mod);}
+			foreach (var item in bossInfo){
+				string name = item.GetType().Name;
+				object call = item.SendBossInfo(mod,caller);
+				if (call is string p) {if (p != "Success")Deltarune.Log($"Bosschecklist {name} info failed to load");}
+				else {Deltarune.Log($"Bosschecklist {name} info failed to load");}
+			}
 			bossInfo = null;
 
 			Deltarune.Log("Bosschecklist , applying patches");
@@ -79,7 +103,7 @@ namespace Deltarune
 			if (method == null) {Deltarune.Log("Bosschecklist Couldnt get method from boss checklist, skipped");return;}
 
 			applyPatchDrawString = true;
-			patchDrawString = false;
+			patchDrawStringDye = -1;
 
 			SetupGetBossInfos(mod);
 
@@ -96,6 +120,8 @@ namespace Deltarune
 			On.Terraria.Utils.DrawBorderString -= CoolNameLol;
 			field = null;
 			method = null;
+			bossInfo = null;
+			bossInfoExtra = null;
 		}
 		public static void Reset() {
 			if (patchDrawString) {
@@ -104,7 +130,7 @@ namespace Deltarune
 				if (!Main.gameMenu) {
 					Main.NewText("[Deltarune] sorry but there is some error lol, just ignore this and keep playing",Color.Pink);
 				}
-				patchDrawString = false;
+				patchDrawStringDye = -1;
 			}
 		}
 		public static void PatchDraw(ILContext il){
@@ -115,42 +141,30 @@ namespace Deltarune
 			c.Emit(OpCodes.Ldarg_0);
 			c.EmitDelegate<Action<Texture2D, UIElement>>(newDraw);
 		}
-		public static bool patchDrawString;
+		public static int patchDrawStringDye = -1;
+		public static bool patchDrawString => patchDrawStringDye > 0;
 		public static bool applyPatchDrawString;
-		public static void newDraw(Texture2D drawnTexture, UIElement self)
-		{
+		public static void newDraw(Texture2D drawnTexture, UIElement self){
 			var spriteBatch = Main.spriteBatch;
-
-			string modSource = "";
-			List<int> npcIDs = null;
-			int type = -1;
-			if (success) {GetBossInfos(out modSource,out npcIDs);}
-			else {
-				if (drawnTexture == ModContent.GetTexture(Deltarune.textureExtra+"Boss_starwalker")) {
-					type = 1;
+			patchDrawStringDye = -1;
+			if (success) {
+				GetBossInfos(out string modSource,out List<int> npcIDs);
+				if (modSource == "Deltarune" && npcIDs != null) {
+					foreach (var item in bossInfoExtra){
+						if (item.TypeCheck(npcIDs)) {
+							item.CustomDraw(spriteBatch,self);
+							return;
+						}
+					}
 				}
 			}
-			//if (drawnTexture == ModContent.GetTexture("StarlightRiver/Assets/BossChecklist/VitricBoss"))
-
-			if ((modSource != "Deltarune" || npcIDs == null) || type != -1) return;
-
-			if (success) {
-				if (npcIDs.Contains(ModContent.NPCType<starwalker>())) {type = 1;}
-			}
-
-			if (type == 1){
-				patchDrawString = true;
-				float sin = 0.6f + (float)Math.Sin(Main.GameUpdateCount / 100f) * 0.3f;
-				var tex = ModContent.GetTexture(Deltarune.textureExtra+"Boss_starwalker_glow");
-				var tex2 = ModContent.GetTexture(Deltarune.textureExtra+"myballs");
-				Vector2 pos = self.GetDimensions().Center();
-				Rectangle rec = self.GetDimensions().ToRectangle();
-				spriteBatch.BeginImmediate(true,true);
-				GameShaders.Misc["WaveWrap"].UseOpacity((float)Main.GameUpdateCount/500f).Apply();
-				spriteBatch.Draw(tex2, rec, null, Color.Black * 0.6f, 0, Vector2.UnitY * 2, 0, 0);
-				spriteBatch.BeginGlow(true,true);
-				spriteBatch.Draw(tex, pos, null, Color.White * sin, 0,tex.Size()/2f, 1, 0, 0);
-				spriteBatch.BeginNormal(true,true);
+			else {
+				foreach (var item in bossInfoExtra){
+					if (drawnTexture == ModContent.GetTexture(item.GetInfoTexture())) {
+						item.CustomDraw(spriteBatch,self);
+						return;
+					}
+				}
 			}
 		}
 		public static FieldInfo[] field;
@@ -204,18 +218,19 @@ namespace Deltarune
 			modSource = (string)field[3].GetValue(bossInfo);
 			npcIDs = (List<int>)field[4].GetValue(bossInfo);
 			// the goal of this reflection is to get the current boss info :
-			//BossInfo selectedBoss = BossChecklist.bossTracker.SortedBosses[BossLogUI.PageNum];
+			// BossInfo selectedBoss = BossChecklist.bossTracker.SortedBosses[BossLogUI.PageNum];
+			// selectedBoss.modSource && selectedBoss.npcIDs
 		}
 		public static Vector2 CoolNameLol(On.Terraria.Utils.orig_DrawBorderString orig,SpriteBatch sb, 
 		string text, Vector2 pos, Color color, float scale , float anchorx , float anchory, int maxCharactersDisplayed ) {
-			if (patchDrawString && applyPatchDrawString && text == "Starwalker") {
-				sb.BeginDyeShader(ItemID.SolarDye, new Item(),true,true);
+			if (patchDrawString && applyPatchDrawString) {
+				sb.BeginDyeShader(patchDrawStringDye, new Item(),true,true);
 			}
 			Vector2 piss = Vector2.Zero;
 			if (orig != null) {piss = orig(sb,text,pos,color,scale,anchorx,anchory,maxCharactersDisplayed);}
-			if (patchDrawString && applyPatchDrawString && text == "Starwalker") {
+			if (patchDrawString && applyPatchDrawString) {
 				sb.BeginNormal(true,true);
-				patchDrawString = false;
+				patchDrawStringDye = -1;
 			}
 			return piss;
 		}
