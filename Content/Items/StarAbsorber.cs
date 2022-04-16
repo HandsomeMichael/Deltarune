@@ -125,7 +125,7 @@ namespace Deltarune.Content.Items
 		public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor) {
 			SpriteEffects spriteEffects = projectile.direction == -1 ? SpriteEffects.FlipVertically : SpriteEffects.None;
 			Texture2D texture = Main.projectileTexture[projectile.type];
-			spriteBatch.Draw(texture, projectile.Center - Main.screenPosition, null, projectile.GetAlpha(Color.White), projectile.rotation, texture.Size()/2f, projectile.scale, spriteEffects, 0);
+			spriteBatch.Draw(texture, projectile.Center - Main.screenPosition, null, projectile.GetAlpha(lightColor), projectile.rotation, texture.Size()/2f, projectile.scale, spriteEffects, 0);
 			float HalfCharge = MaxCharge/2f;
 			if (Charge < HalfCharge) {return false;}
 			float alpha = (Charge-HalfCharge)/HalfCharge;

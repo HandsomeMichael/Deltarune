@@ -28,9 +28,7 @@ using Newtonsoft.Json.Linq;
 using Deltarune.Helper;
 
 namespace Deltarune
-{
-	public interface IAdditive{void DrawAdditive(SpriteBatch spritebatch);}
-	
+{	
 	public class CustomEntity : ILoadable , IPreSaveAndQuit , ILoggable
 	{
 		public void Log(Action<string> log) {

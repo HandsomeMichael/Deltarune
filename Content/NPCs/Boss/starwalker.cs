@@ -17,6 +17,7 @@ using System.IO;
 
 namespace Deltarune.Content.NPCs.Boss
 {
+	// interfaces for boss checklist
 	public class starwalker : ModNPC , IBossInfo , IBossInfoExtra
 	{
 		public override void SetStaticDefaults() {
@@ -112,29 +113,56 @@ namespace Deltarune.Content.NPCs.Boss
 			potionType = ItemID.HealingPotion;
 		}
 
-		// why interfaces ? because interfaces is pogger
+		#region Boss checklist
+		// Fancy Boss Checklist draw
 		public void CustomDraw(SpriteBatch spriteBatch,UIElement self) {
-			BossChecklistPatch.patchDrawStringDye = ItemID.SolarDye;
-			float sin = 0.6f + (float)Math.Sin(Main.GameUpdateCount / 100f) * 0.3f;
+			// custom draw
+			float sin = 0.6f + (float)Math.Sin(Main.GameUpdateCount / 90f) * 0.2f;
 			var tex = ModContent.GetTexture(Deltarune.textureExtra+"Boss_starwalker_glow");
-			var tex2 = ModContent.GetTexture(Deltarune.textureExtra+"myballs");
+			var tex2 = ModContent.GetTexture("Deltarune/Content/NPCs/Portal_alt");//Deltarune.textureExtra+"myballs"
 			Vector2 pos = self.GetDimensions().Center();
 			Rectangle rec = self.GetDimensions().ToRectangle();
 			spriteBatch.BeginImmediate(true,true);
 			GameShaders.Misc["WaveWrap"].UseOpacity((float)Main.GameUpdateCount/500f).Apply();
-			spriteBatch.Draw(tex2, rec, null, Color.Black * 0.6f, 0, Vector2.UnitY * 2, 0, 0);
+			//rec = rec.Resize(-20);
+			//spriteBatch.Draw(tex2, rec, null, Color.White, 0, Vector2.UnitY * 2, 0, 0);
+			spriteBatch.Draw(tex2, pos, null, Color.White, MathHelper.ToRadians(Main.GameUpdateCount)/10 ,tex2.Size()/2f, 0.9f + sin, 0, 0);
 			spriteBatch.BeginGlow(true,true);
-			spriteBatch.Draw(tex, pos, null, Color.White * sin, 0,tex.Size()/2f, 1, 0, 0);
+			Vector2 offset = default(Vector2);
+			offset.X = (float)Math.Sin(Main.GameUpdateCount / 90f)*10f;
+			offset.Y = (float)Math.Sin(Main.GameUpdateCount / 180f)*15f;
+			spriteBatch.Draw(tex, pos + offset, null, Color.White * (sin + 0.2f), 0,tex.Size()/2f, 1f, 0, 0);
+			offset = offset * -2f;
+			spriteBatch.Draw(tex, pos + offset, null, Color.White * (sin + 0.2f), 0,tex.Size()/2f, 1.5f, 0, 0);
 			spriteBatch.BeginNormal(true,true);
+
+			// custom text :
+			// this will create custom text patch, it will automaticly unloaded so you wont have to unload it
+			BossChecklistPatch.PreText = ExampleText;
+			// custom text dye :
+			// for just custom shader text / dye , use the already existing patchDrawStringDye
+			BossChecklistPatch.patchDrawStringDye = ItemID.SolarDye;
 		}
+		// example text method
+		public static bool ExampleText(SpriteBatch spriteBatch, string text, Vector2 pos, Color color, float scale , float anchorx , float anchory, int maxCharactersDisplayed) {
+			Vector2 messageSize = Helpme.MeasureString(text);
+			Rectangle rec = new Rectangle(pos.X-40,pos.Y-2,(int)messageSize.X + 88,(int)messageSize.Y);
 
+			spriteBatch.BeginImmediate(true,true);
+			GameShaders.Misc["WaveWrap"].UseOpacity((float)Main.GameUpdateCount/500f).Apply();
+			spriteBatch.Draw(ModContent.GetTexture(Deltarune.textureExtra+"yourballs"), rec, Color.Black);
+			spriteBatch.BeginImmediate(true,true,true);
+			GameShaders.Misc["WaveWrap"].UseOpacity((float)Main.GameUpdateCount/500f).Apply();
+			spriteBatch.Draw(ModContent.GetTexture(Deltarune.textureExtra+"yourballs"), rec, Helpme.CycleColor(Color.Red,Color.Orange));
+			// with patchDrawStringDye , it automaticly end spriteBatch. and dye the text
+			return true;
+		}
 		public bool TypeCheck(List<int> type) => type.Contains(ModContent.NPCType<starwalker>());
-		public bool GetInfoTexture() => Deltarune.textureExtra+"Boss_starwalker";
-
+		public string GetInfoTexture() => Deltarune.textureExtra+"Boss_starwalker";
 		public object SendBossInfo(Mod bc,Mod caller) {
 			return bc.Call("AddBoss",
 				// progress. after skeletron
-				BossChecklistPatch.Skeletron + 0.5f,         
+				BossChecklistPatch.Skeletron + 0.5f,  
 				// npc type
 				ModContent.NPCType<starwalker>(),
 				// ur mod
@@ -161,11 +189,14 @@ namespace Deltarune.Content.NPCs.Boss
 				GetInfoTexture()
 			);
 		}
+		#endregion
+
 		public override void NPCLoot() {
 			if (!MyWorld.downedStarWalker) {
 				Main.NewText("Monster are starting to be normal",Color.LightGreen);
 			}
-			npc.SpawnGores("starwalk0","starwalk1","starwalk2","starwalk3","wing1","wing2");
+			NPC.NewNPC((int)npc.Center.X, (int)npc.Center.Y, ModContent.NPCType<starwalkerNaked>());
+			npc.SpawnGores("wing1","wing2");
 			MyWorld.downedStarWalker = true;
 		}
 
@@ -175,7 +206,11 @@ namespace Deltarune.Content.NPCs.Boss
 			//startup
 			npc.TargetClosest(true);
 			Player player = Main.player[npc.target];
-			var sound = mod.GetLegacySoundSlot(SoundType.Custom, "Sounds/FakeStarwalker").WithVolume(.7f).WithPitchVariance(.5f);	
+			LegacySoundStyle sound = null;
+			// server breaks sound effect for some reason
+			if (!Main.dedServ) {
+				sound = Deltarune.GetSound("FakeStarwalker",false).WithVolume(.7f).WithPitchVariance(.5f);
+			}
 			Vector2 dir = npc.DirectionTo(player.Center);
 			Vector2 proDir = npc.DirectionTo(player.Center+player.velocity);
 			//graphics
@@ -587,7 +622,7 @@ namespace Deltarune.Content.NPCs.Boss
 			}
 
 			spriteBatch.BeginGlow(true);
-			float sin = 0.6f + (float)Math.Sin(Main.GameUpdateCount / 100f) * 0.3f;
+			float sin = 0.6f + (float)Math.Sin(Main.GameUpdateCount / 70f) * 0.2f;
 			texture = ModContent.GetTexture(Texture+"_glow");
 			spriteBatch.Draw(texture, npc.Center - Main.screenPosition,
 			npc.frame, npc.GetAlpha(Color.White)*sin, npc.rotation, orig, npc.scale, spriteEffects, 0f);
@@ -606,7 +641,77 @@ namespace Deltarune.Content.NPCs.Boss
 		}
 		//public override void PostDraw(SpriteBatch spriteBatch, Color lightColor) {}
 	}
-	public class starwalkerStar : ModProjectile
+	// IProjBlinder add CanBeSeen method, all code executed at Hacking.cs
+	public class starwalkerNaked : ModNPC , IProjBlinder
+	{
+		public override void SetStaticDefaults() {
+			DisplayName.SetDefault("Supreme Starwalker");
+			Main.npcFrameCount[npc.type] = 6;
+		}
+
+		public override void SetDefaults() {
+			npc.width = 18;
+			npc.height = 40;
+			npc.damage = 1;
+			npc.defense = 1;
+			npc.lifeMax = 5;
+			npc.HitSound = SoundID.NPCHit1;
+			npc.DeathSound = SoundID.NPCDeath2;
+			npc.value = 60f;
+			npc.knockBackResist = 0.5f;
+			npc.aiStyle = -1;
+		}
+		public override void FindFrame(int frameHeight) {
+			npc.frameCounter += 0.40f;
+			npc.frameCounter %= Main.npcFrameCount[npc.type];
+			int frame = (int)npc.frameCounter;
+			npc.frame.Y = frame * frameHeight;
+		}
+		// lmaoooo , cannot be seen
+		public bool CanBeSeen(bool normalReturn,Projectile projectile) {
+			// minion or other projectile cannot "home" into this, note that some modded projectile may not do this
+			return false;
+		}
+		public override bool CanHitPlayer(Player target, ref int cooldownSlot) => false;
+		public override void NPCLoot() {
+			npc.SpawnGores("starwalk0","starwalk1","starwalk2","starwalk3");
+		}
+		public float state {get => npc.ai[0];set => npc.ai[0] = value;}
+		public float timer {get => npc.ai[1];set => npc.ai[1] = value;}
+		public override void AI() {
+			LegacySoundStyle sound = null;
+			// server breaks sound effect for some reason
+			if (!Main.dedServ) {
+				sound = Deltarune.GetSound("FakeStarwalker",false).WithVolume(.7f).WithPitchVariance(.5f);
+			}
+			if (state == 0f || timer > 60*8) {
+				state = Main.rand.NextBool() ? 1f : -1f;
+				string text = Main.rand.NextString("Pls dont kill me","I am a harmless star pls dont hit me","Nonononononoono"
+				,"Please dont destroy me pls","Dont kil pls i beg");
+				npc.GetDelta().textOverhead = new TypeWriter(text,sound,3);
+				timer = 0f
+			}
+			timer++;
+			npc.TargetClosest(true);
+			Player player = Main.player[npc.target];
+			if (!player.dead) {
+				state = npc.Center.X > player.Center.X ? 1f : -1f;
+			}
+			float speed = 8f;
+			npc.velocity.X += MathHelper.Lerp(npc.velocity.X,state*speed,0.1f);
+			for (int i = 0; i < Main.maxProjectiles; i++){
+				Projectile projectile = Main.projectile[i];
+				if (projectile.active && projectile.friendly && Vector2.Distance(projectile.Center,npc.Center) < 400f) {
+					if (timer % 20 == 0 && npc.velocity.Y == 0f) {
+						npc.velocity.Y = -5f;
+					}
+					break;
+				}
+			}
+			Collision.StepUp(ref npc.position, ref npc.velocity, npc.width, npc.height, ref npc.stepSpeed, ref npc.gfxOffY);
+		}
+	}
+	public class starwalkerStar : ModProjectile , IProjhittable
 	{
 		public override void SetStaticDefaults() {
 			DisplayName.SetDefault("Starwalker Star");
@@ -631,6 +736,18 @@ namespace Deltarune.Content.NPCs.Boss
 		}
 		public override void ReceiveExtraAI(BinaryReader reader) {
 			sussyWussy = reader.ReadInt32();
+		}
+		// gives melee users freedom to hit projectiles and dealt damage
+		// comes from IProjhittable interface
+		// code executed in GlobeProj , thats why it has Globeproj instance
+		public bool OwnerMeleeCount(GlobeProj proj) => true;
+        public bool CanMeleeCollide(GlobeProj proj) => sussyWussy == 1;
+		public void OnMeleeCollide(GlobeProj proj,Player player,Item item) {
+			sussyWussy = 2;
+			projectile.damage = item.damage;
+			projectile.friendly = true;
+			projectile.hostile = true;
+			projectile.velocity *= -2f;
 		}
 		public override void AI() {
 			if (sussyWussy == 0) {
@@ -751,19 +868,6 @@ namespace Deltarune.Content.NPCs.Boss
 				// no ai
 				projectile.ai[0] = 0f;
 				projectile.ai[1] = 1f;
-				// gives melee users freedom to hit projectiles and dealt damage
-				for (int p = 0; p < Main.maxPlayers; p++){
-					Player player = Main.player[p];
-					if (player.active && !player.dead && player.HeldItem.damage > 0) {
-						if (player.GetDelta().meleeHitbox.Intersects(projectile.Hitbox)) {
-							sussyWussy = 2;
-							projectile.damage = player.HeldItem.damage;
-							projectile.friendly = true;
-							projectile.hostile = true;
-							projectile.velocity *= -2f;
-						}
-					}
-				}
 			}
 
 			projectile.scale -= 0.005f;
@@ -835,8 +939,9 @@ namespace Deltarune.Content.NPCs.Boss
 			}
 		}
 	}
-	public class starwalkerStarNPC : ModNPC
+	public class starwalkerStarNPC : ModNPC , ILittleTrolling
 	{
+		public void Troll() {(npc.ai[0] = 1f;}
 		public override string Texture => "Deltarune/Content/NPCs/Boss/starwalkerStar";
 		public override void SetStaticDefaults() {
 			DisplayName.SetDefault("Star Runner");

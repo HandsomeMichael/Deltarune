@@ -9,8 +9,8 @@ related to "Deltarune Music" mod and "explosion.gif" mod
 
 This mod add :
 
-- 1 Boss
-- 3 Enemies !!
+- 2 Boss
+- 10 Enemies !!
 - 100+ Items !!
 - A New Custom Currency  [ kromer ]
 - Deltarune dialog system
@@ -20,10 +20,10 @@ This mod add :
 - Tension Point (TP) / Grazing system from Deltarune
 - Customizable Ralsei dummy that had dps and knockback counter
 - Customizable Starting items in character creation menu ! 
-- Spell Magic Things with over 10+ spells ( yes , there is a fart spell )
+- Spell Magic Things with with over 20+ spells ( yes , there is a fart spell )
 - tottaly not poorly optimized code
-- Annoying intro ( you can disable in config )
 - some other stuff that i forgor
+- explosion
 - sans
 
 planned feature :

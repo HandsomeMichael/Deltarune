@@ -47,8 +47,7 @@ namespace Deltarune.Content.Items
 		public override bool PreDrawTooltipLine(DrawableTooltipLine line, ref int yOffset) {
 			hovering = true;
 			if (line.mod == "Terraria" && line.Name == "ItemName") {
-				TextSnippet[] snippets = ChatManager.ParseMessage(line.text, Color.White).ToArray();
-				Vector2 messageSize = ChatManager.GetStringSize(Main.fontMouseText, snippets, Vector2.One);
+				Vector2 messageSize = Helpme.MeasureString(line.text);
 				Rectangle rec = new Rectangle(line.X-40,line.Y-2,(int)messageSize.X + 88,(int)messageSize.Y);
 				//Main.spriteBatch.Draw(ModContent.GetTexture(Deltarune.textureExtra+"yourballs"), rec, Color.Black);
 				Main.spriteBatch.BeginImmediate(true,true);

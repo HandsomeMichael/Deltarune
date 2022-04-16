@@ -63,6 +63,19 @@ namespace Deltarune.Content
 					}
 				}
 			}
+			if (projectile.modProjectile is IProjhittable hittable) {
+				if (hittable.CanMeleeCollide(this)) {
+					for (int p = 0; p < Main.maxPlayers; p++){
+						Player player = Main.player[p];
+						bool flag = (p == projectile.owner && hittable.OwnerMeleeCount(this)) || p != projectile.owner;
+						if (flag && player.active && !player.dead && player.HeldItem.damage > 0) {
+							if (player.GetDelta().meleeHitbox.Intersects(projectile.Hitbox)) {
+								hittable.OnMeleeCollide(this,player,player.HeldItem);
+							}
+						}
+					}
+				}
+			}
 			//AdditiveHandler.Proj(projectile);
 		}
 	}

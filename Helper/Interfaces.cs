@@ -20,18 +20,29 @@ using Deltarune.Content;
 
 namespace Deltarune.Helper
 {
-    public interface ISoundText
-    {
+    public interface IAdditive{
+        void DrawAdditive(SpriteBatch spritebatch);
+    }
+    public interface ILittleTrolling {
+        void Troll();
+    }
+    public interface IProjBlinder{
+        bool CanBeSeen(bool normalReturn,Projectile projectile);
+    }
+    public interface IProjhittable{
+        bool OwnerMeleeCount(GlobeProj proj);
+        bool CanMeleeCollide(GlobeProj proj);
+        void OnMeleeCollide(GlobeProj proj,Player player,Item item);
+    }
+    public interface ISoundText{
         void CustomSound(ref int textsound);
     }
 
-    public interface ICustomglow
-    {
+    public interface ICustomglow{
         void UseGlow(ref Vector2 pos, ref Rectangle? rec, ref Color color,ref float rotation,ref Vector2 orig,ref float scale);
     }
 
-    public interface ICustomHead
-    {
+    public interface ICustomHead{
         void CustomHead(ref int expression,ref float scale);
     }
     

@@ -229,11 +229,11 @@ namespace Deltarune.Helper
 		/// </summary>
 		public static string DestroyChatTags(string text) {
 			var snippetList = ChatManager.ParseMessage(text, Color.White);
-			string funni = "";
+			string outputText = "";
 			foreach (var i in snippetList){
-				if (!i.TextOriginal.Contains("[i")) {funni += i.Text;}
+				if (!i.TextOriginal.Contains("[i")) {outputText += i.Text;}
 			}
-			return funni;
+			return outputText;
 		}
 		
 		/// <summary>

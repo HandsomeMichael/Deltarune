@@ -61,7 +61,12 @@ namespace Deltarune
 		static bool MinionChasingPrevent(On.Terraria.NPC.orig_CanBeChasedBy orig,NPC self,object attacker , bool ignoreDontTakeDamage ) {
 			if (Main.ProjectileUpdateLoopIndex > -1 && Main.ProjectileUpdateLoopIndex < Main.projectile.Length) {
 				Projectile projectile = Main.projectile[Main.ProjectileUpdateLoopIndex];
-				if (projectile.active && projectile.minion && projectile.owner > -1 && projectile.owner < Main.projectile.Length) {
+				if (self.modNPC != null && self.modNPC is IProjBlinder blind) {
+					bool fart = false;
+					if (orig != null) {fart = orig(self,attacker,ignoreDontTakeDamage);}
+					return blind.CanBeSeen(fart,projectile);
+				}
+				if (projectile.active && projectile.minion && projectile.owner > -1 && projectile.owner < Main.player.Length) {
 					Player player = Main.player[projectile.owner];
 					if (player.active && !player.dead) {
 						if (player.GetDelta() != null && player.GetDelta().soulTimer > 0) {

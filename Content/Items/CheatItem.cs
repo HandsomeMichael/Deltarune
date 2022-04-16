@@ -134,6 +134,19 @@ namespace Deltarune.Content.Items
 			Glowers.New(1,pos,Main.LocalPlayer.DirectionTo(Main.MouseWorld)*Main.rand.NextFloat(-3f,-8f),Color.White,0.8f);
 		}
 	}
+	public class CHLittleTrolling : CheatItem{
+		public override string tt => "Just a little trolling";
+		public override void Update(Player player) {
+			for (int i = 0; i < Main.maxProjectiles; i++){
+				Projectile projectile = Main.projectile[i];
+				if (projectile.active && projectile.modProjectile is ILittleTrolling troll) {troll.Troll();}
+			}
+			for (int i = 0; i < Main.maxNPCs; i++){
+				NPC npc = Main.npc[i];
+				if (npc.active && npc.modNPC is ILittleTrolling troll) {troll.Troll();}
+			}
+		}
+	}
 	public class CHSoulExit : CheatItem{
 		public override string tt => "Soulless lmao";
 		public override void Update(Player player) {

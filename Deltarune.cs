@@ -207,6 +207,10 @@ namespace Deltarune
 				}
 			}
 			BossChecklistPatch.Load(this);
+			Mod censusMod = ModLoader.GetMod("Census");
+			if(censusMod != null){
+				censusMod.Call("TownNPCCondition", ModContent.NPCType<ralsei>(),"Defeat eye of cthulhu");
+			}
 		}
 		public override void HandlePacket(BinaryReader reader, int whoAmI) => NetCode.HandlePacket(reader,whoAmI);
 		public override void UpdateMusic(ref int music, ref MusicPriority priority) {

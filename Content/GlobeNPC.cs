@@ -185,7 +185,7 @@ namespace Deltarune.Content
 				Dust dust = Main.dust[Dust.NewDust(npc.position, npc.width, npc.height, 88, v.X, v.Y, 0, Color.White, 0.7f)];
 				dust.noGravity = true;
 			}
-			if (ShortswordBleed > 6 && Main.rand.NextBool(3)) {
+			if (ShortswordBleed > 3 && Main.rand.NextBool(3)) {
 				Dust.NewDust(npc.position, npc.width, npc.height, 5, 0f, 0f, 0, new Color(255,255,255), 1f);	
 			}
 			if (npc.CanBeChasedBy() && npc.type != ModContent.NPCType<Content.NPCs.RalseiDummy.ralseidummy>()) {
