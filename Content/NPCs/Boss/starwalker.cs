@@ -670,6 +670,7 @@ namespace Deltarune.Content.NPCs.Boss
 		// lmaoooo , cannot be seen
 		public bool CanBeSeen(bool normalReturn,Projectile projectile) {
 			// minion or other projectile cannot "home" into this, note that some modded projectile may not do this
+			// for summoner to kill this npc, just right click on it
 			return false;
 		}
 		public override bool CanHitPlayer(Player target, ref int cooldownSlot) => false;
@@ -941,7 +942,7 @@ namespace Deltarune.Content.NPCs.Boss
 	}
 	public class starwalkerStarNPC : ModNPC , ILittleTrolling
 	{
-		public void Troll() {(npc.ai[0] = 1f;}
+		public void Troll() => npc.ai[0] = 1f;
 		public override string Texture => "Deltarune/Content/NPCs/Boss/starwalkerStar";
 		public override void SetStaticDefaults() {
 			DisplayName.SetDefault("Star Runner");

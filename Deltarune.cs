@@ -206,10 +206,12 @@ namespace Deltarune
 					Main.logo2Texture = ModContent.GetTexture(textureExtra+"Title"+Main.rand.Next(1,6));
 				}
 			}
+			// boss checklist had custom stuff so it need a specific class to handle it
 			BossChecklistPatch.Load(this);
+			// census mod only has 1 line
 			Mod censusMod = ModLoader.GetMod("Census");
 			if(censusMod != null){
-				censusMod.Call("TownNPCCondition", ModContent.NPCType<ralsei>(),"Defeat eye of cthulhu");
+				censusMod.Call("TownNPCCondition", ModContent.NPCType<ralsei>(),"Can be found after defeating eye of cthulhu");
 			}
 		}
 		public override void HandlePacket(BinaryReader reader, int whoAmI) => NetCode.HandlePacket(reader,whoAmI);
