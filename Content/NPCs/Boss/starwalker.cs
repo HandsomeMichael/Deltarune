@@ -146,7 +146,7 @@ namespace Deltarune.Content.NPCs.Boss
 		// example text method
 		public static bool ExampleText(SpriteBatch spriteBatch, string text, Vector2 pos, Color color, float scale , float anchorx , float anchory, int maxCharactersDisplayed) {
 			Vector2 messageSize = Helpme.MeasureString(text);
-			Rectangle rec = new Rectangle(pos.X-40,pos.Y-2,(int)messageSize.X + 88,(int)messageSize.Y);
+			Rectangle rec = new Rectangle((int)pos.X-40,(int)pos.Y-2,(int)messageSize.X + 88,(int)messageSize.Y);
 
 			spriteBatch.BeginImmediate(true,true);
 			GameShaders.Misc["WaveWrap"].UseOpacity((float)Main.GameUpdateCount/500f).Apply();
@@ -206,7 +206,7 @@ namespace Deltarune.Content.NPCs.Boss
 			//startup
 			npc.TargetClosest(true);
 			Player player = Main.player[npc.target];
-			LegacySoundStyle sound = null;
+			Terraria.Audio.LegacySoundStyle sound = null;
 			// server breaks sound effect for some reason
 			if (!Main.dedServ) {
 				sound = Deltarune.GetSound("FakeStarwalker",false).WithVolume(.7f).WithPitchVariance(.5f);
@@ -680,7 +680,7 @@ namespace Deltarune.Content.NPCs.Boss
 		public float state {get => npc.ai[0];set => npc.ai[0] = value;}
 		public float timer {get => npc.ai[1];set => npc.ai[1] = value;}
 		public override void AI() {
-			LegacySoundStyle sound = null;
+			Terraria.Audio.LegacySoundStyle sound = null;
 			// server breaks sound effect for some reason
 			if (!Main.dedServ) {
 				sound = Deltarune.GetSound("FakeStarwalker",false).WithVolume(.7f).WithPitchVariance(.5f);
@@ -690,7 +690,7 @@ namespace Deltarune.Content.NPCs.Boss
 				string text = Main.rand.NextString("Pls dont kill me","I am a harmless star pls dont hit me","Nonononononoono"
 				,"Please dont destroy me pls","Dont kil pls i beg");
 				npc.GetDelta().textOverhead = new TypeWriter(text,sound,3);
-				timer = 0f
+				timer = 0f;
 			}
 			timer++;
 			npc.TargetClosest(true);

@@ -60,7 +60,6 @@ namespace Deltarune.Content
 						npc.damage += npc.damage/2;
 						npc.life *= 2;
 						npc.lifeMax *= 2;
-						Sync();
 					}
 				}
 				NewDefault = true;
@@ -205,6 +204,10 @@ namespace Deltarune.Content
 			Dialoging(npc);
 			//AdditiveHandler.NPC(npc);
 		}
+		/*
+
+		netcode removed 
+
 		public void Sync() {
 			var packet = mod.GetPacket();
 			packet.Write((byte)NetType.GlobalNPC);
@@ -217,6 +220,7 @@ namespace Deltarune.Content
 		public void HandlePacket(BinaryReader reader) {
 			hasBell = reader.ReadBoolean();
 		}
+		*/
 		public int funnyDialog;
 		void Dialoging(NPC npc) {
 			if (npc.type == NPCID.BoundGoblin || npc.type == NPCID.BoundMechanic || npc.type == NPCID.BoundWizard) {

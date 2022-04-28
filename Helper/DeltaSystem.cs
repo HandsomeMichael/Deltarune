@@ -31,6 +31,7 @@ namespace Deltarune.Helper
         // the caches , used for Unload and other hook
         public static List<ILoadable> systems = new List<ILoadable>();
 
+        // load the systems
         public static void Load(Mod mod) {
             // this is required
             if (mod.Code == null)
@@ -70,25 +71,52 @@ namespace Deltarune.Helper
                 
 			}
         }
+
+        // get the iloadable instance from systems, returns null if it doesnt find one
+        public static ILoadable Get<T>() where T : ILoadable {
+            if (systems == null) {
+                Deltarune.Log("Couldnt get systems because it was unloading");
+                return null;
+            }
+            foreach (var item in systems){
+                if (item is T output) {return output;}
+            }
+            Deltarune.Log("Couldnt get the system of '"+typeof(T).Name+"'");
+            return null;
+        }
+        // unload stuff
+        public static void Unload() {
+            foreach (var item in systems){item.Unload();}
+            systems = null;
+        }
+        // reset stuff
         public static void PreSaveAndQuit() {
             foreach (var item in systems){
                 if (item is IPreSaveAndQuit hook) {
-                    Deltarune.get.Logger.InfoFormat($"PreSaveQuit System : {hook.GetType().Name}");
+                    Deltarune.Log($"PreSaveQuit System : {hook.GetType().Name}");
                     hook.PreSaveAndQuit();
                 }
             }
         }
-        public static void Unload() {
-            foreach (var item in systems){
-                item.Unload();
-            }
-            systems = null;
-        }
+        // log all system
         public static void LogAll() {
             foreach (var item in systems){
                 if (item is ILoggable hook) {
                     void CreateLog(string text) {
-                        Deltarune.get.Logger.InfoFormat(text);
+                        Deltarune.Log(text);
+                        Main.NewText(text);
+                    }
+                    Action<string> log = CreateLog;
+                    hook.Log(log);
+                }
+            }
+        }
+        // log specific system
+        public static void GetLog<T>() where T : ILoggable {
+            foreach (var item in systems){
+                if (item is T hook) {
+                    void CreateLog(string text) {
+                        Deltarune.Log(text);
                         Main.NewText(text);
                     }
                     Action<string> log = CreateLog;

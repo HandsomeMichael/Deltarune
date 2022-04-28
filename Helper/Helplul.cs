@@ -235,7 +235,39 @@ namespace Deltarune.Helper
 			}
 			return outputText;
 		}
-		
+
+		/// <summary>
+		/// for quickly setting item static defaults
+		/// </summary>
+		public static void StaticDefaults(this ModItem item,string DisplayName,params string[] tooltip) {
+			if (DisplayName != "") {item.DisplayName.SetDefault(DisplayName);}
+			string tt = "";
+			for (int i = 0; i < tooltip.Length; i++){
+				if (tooltip.Length == 1 || (tooltip.Length - 1) == i ) {tt += tooltip[i];}
+				else {tt += tooltip[i] + "\n";}
+			}
+            item.Tooltip.SetDefault(tt);
+		}
+		/// <summary>
+		/// Get Dictionary data using Dictionary Key
+		/// </summary>
+		public static bool ContainsKey<TValue>(Dictionary<string,TValue> dict,string key) {
+			if (dict.Count == 0) {return false;}
+			foreach (var item in dict){
+				if (item.Key == key) {
+					return true;
+				}
+			}
+			return false;
+		}
+		/// <summary>
+		/// Clone a list
+		/// </summary>
+		public static List<T> CloneList <T>(this List<T> clone) {
+			var list = new List<T>();
+			foreach (var item in clone){list.Add(item);}
+			return list;
+		}
 		/// <summary>
 		/// Shorthand for Vector2.Lerp
 		/// </summary>
@@ -331,6 +363,7 @@ namespace Deltarune.Helper
 		}
 		/// <summary>
 		/// get the rectangle of a texture
+		/// this is centered
 		/// </summary>
 		public static Rectangle getRect(this Texture2D texture2, Vector2 pos) {
 			return new Rectangle((int)pos.X - texture2.Width/2,(int)pos.Y - texture2.Width/2,texture2.Width,texture2.Height);
@@ -742,9 +775,7 @@ namespace Deltarune.Helper
 		/// <summary>
 		/// owner
 		/// </summary>
-		public static Player Owner(this Projectile projectile) {
-			return Main.player[projectile.owner];
-		}
+		public static Player Owner(this Projectile projectile) => Main.player[projectile.owner];
 		/// <summary>
 		/// A quick way getting tmod methodbase
 		/// </summary>
@@ -754,9 +785,7 @@ namespace Deltarune.Helper
 		/// <summary>
 		/// Check if this type has an attribute
 		/// </summary>
-		public static bool HasAttribute<T>(this Type type) {
-			return Attribute.GetCustomAttribute(type,typeof(T)) != null;
-		}
+		public static bool HasAttribute<T>(this Type type) => Attribute.GetCustomAttribute(type,typeof(T)) != null;
         /// <summary>
 		/// Draw Chains. ported from example mod
 		/// </summary>

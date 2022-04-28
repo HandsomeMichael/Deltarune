@@ -15,9 +15,11 @@ using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.UI;
-using Deltarune.Content.UI;
 using Deltarune.Helper;
+using Deltarune.Content.UI;
+using Deltarune.Content.NPCs;
 using Deltarune.Content.Spell;
+using Deltarune.Content.Dyes;
 
 
 namespace Deltarune
@@ -98,8 +100,10 @@ namespace Deltarune
 			BossChecklistPatch.Reset();
 		}
 
-		public static void Log(string text = "test") {
-			Deltarune.get.Logger.InfoFormat("Deltarune "+text);
+		public static void Log(string text,int context = 1) {
+			if (context == 1) {
+				Deltarune.get.Logger.InfoFormat("Deltarune "+text);
+			}
 		}
 		public override void Load() {
 
@@ -164,6 +168,10 @@ namespace Deltarune
 				GameShaders.Misc["WaveWrap"] = new MiscShaderData(shaderRef, "WaveWrap");
 				Filters.Scene["WaveWrap"] = new Filter(new ScreenShaderData(shaderRef, "WaveWrap"), EffectPriority.Medium);
 				//UseOpacity (from 0 to 2048 and then to 0)
+
+				//WaveWrap for armor
+				shaderRef = new Ref<Effect>(GetEffect("Effects/WaveWrapArmor"));
+				GameShaders.Armor.BindShader(ModContent.ItemType<WaveWrapDye>(), new ArmorShaderData(shaderRef, "WaveWrapArmor"));
 
 				shaderRef = new Ref<Effect>(GetEffect("Effects/DeathAnimation"));
 				GameShaders.Misc["DeathAnimation"] = new MiscShaderData(shaderRef, "DeathAnimation").UseImage("Images/Misc/Perlin");

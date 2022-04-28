@@ -27,7 +27,7 @@ namespace Deltarune
 		Player,
 		Teleport,
 		KillRalsei,
-		GlobalNPC
+		//GlobalNPC
 	}
 	public class NetCode
 	{
@@ -45,6 +45,10 @@ namespace Deltarune
 				case NetType.Player:
 					Main.player[reader.ReadByte()].GetDelta().HandlePacket(reader);
 					break;
+				/*
+				
+				removed 
+
 				case NetType.GlobalNPC:
 					// honestly idk what am doing
 					int index = reader.ReadByte();
@@ -56,6 +60,7 @@ namespace Deltarune
 						packet.Send(-1, whoAmI);
 					}
 					break;
+				*/
 				case NetType.Teleport:
 					int playernumber = reader.ReadByte();
 					Player player = Main.player[playernumber];
