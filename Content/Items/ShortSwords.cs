@@ -27,8 +27,8 @@ namespace Deltarune.Content.Items
 			item.knockBack = 1f;
 		}
 		public override void ModifyHitNPC(Player player,NPC  npc,ref int damage, ref float knockback, ref bool crit) {
-			float vel = (player.velocity.X > 0 ? player.velocity.X : player.velocity.X*-1) + (player.velocity.Y > 0 ? player.velocity.Y : player.velocity.Y*-1);
-			knockback += vel/4f;
+			float vel = player.velocity.Length();
+			knockback += (float)Math.Round(vel/5f);
 		}
 		public override void AddRecipes() {
 			ModRecipe recipe = new ModRecipe(mod);

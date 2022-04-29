@@ -132,19 +132,29 @@ namespace Deltarune.Content.Projectiles
 			}*/
 			return false;
 		}
-		public override void ModifyHitNPC(NPC target, ref int damage, ref float knockback, ref bool crit, ref int hitDirection) {
+
+		// for mod support idk
+		public override void ModifyHitNPC(NPC target, ref int damage, ref float knockBack, ref bool crit, ref int hitDirection) {
 			Player player = Main.player[projectile.owner];
+			// calculate damage increment
+			var p = player.GetDelta();
 			damage /= 2;
-			damage += (int)((float)damage*(player.GetDelta().Shortswordatt/5f));
-			player.GetDelta().Shortswordatt += 1f;
-			if (player.GetDelta().Shortswordatt > 5f) {
-				player.GetDelta().Shortswordatt = 5f;
-			}
-			ItemLoader.ModifyHitNPC(player.HeldItem,player,target,ref damage, ref knockback, ref crit);
+			damage += (int)((float)damage*(p.Shortswordatt/5f));
+			p.Shortswordatt += 1f;
+			if (p.Shortswordatt > 5f) {p.Shortswordatt = 5f;}
+			//allow armor penetration
+			if (player.armorPenetration > 0){damage += target.checkArmorPenetration(player.armorPenetration);}
+			// call modloader stuff because there are no vanilla modifyhitnpc code
+			ItemLoader.ModifyHitNPC(player.HeldItem,player,target,ref damage, ref knockBack, ref crit);
+			NPCLoader.ModifyHitByItem(target, player, player.HeldItem, ref damage, ref knockBack, ref crit);
+			PlayerHooks.ModifyHitNPC(player, player.HeldItem, target, ref damage, ref knockBack, ref crit);
 		}
+		// for mod support idk
 		public override void OnHitNPC(NPC target, int damage, float knockBack, bool crit) {
-			Player player = Main.player[projectile.owner];
-			ItemLoader.OnHitNPC(player.HeldItem,player, target, damage, knockBack, crit);
+			Player player = projectile.Owner();
+			Item item = player.HeldItem;
+			// run OnHitNPC for vanilla and modded
+			VanillaMethod.OnHitNPC(item,player,target,projectile.Hitbox,damage,knockBack,true,crit);
 		}
 	}
 	public class ItemProj : ModProjectile
@@ -168,6 +178,7 @@ namespace Deltarune.Content.Projectiles
 		public override void AI() {
 			projectile.alpha += 10;
 			if (projectile.alpha >= 255) {
+				projectile.Recreate();
 				projectile.Kill();
 			}
 			projectile.rotation = projectile.velocity.ToRotation();

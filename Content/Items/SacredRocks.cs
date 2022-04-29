@@ -86,10 +86,18 @@ namespace Deltarune.Content.Items
 			}
 			return true;
 		}
+		public override bool PreDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, ref float rotation, ref float scale, int whoAmI) {
+			Color color = Color.Red;
+			color.A = 0;
+			Vector2 position = item.Center - Main.screenPosition;
+			spriteBatch.Draw(ModContent.GetTexture(Texture+"_Glow"), position, null, color, rotation, origin, scale, SpriteEffects.None, 0);
+			spriteBatch.Draw(Main.itemTexture[item.type], position, null, lightColor, rotation, origin, scale, SpriteEffects.None, 0);
+			return false;
+		}
 		public override bool PreDrawInInventory(SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor,Color itemColor, Vector2 origin, float scale) {
-			spriteBatch.BeginGlow(true,true);
-			spriteBatch.Draw(ModContent.GetTexture(Texture+"_Glow"), position, null, Color.White, 0f, origin, scale, SpriteEffects.None, 0);
-			spriteBatch.BeginNormal(true,true);
+			Color color = Color.Red;
+			color.A = 0;
+			spriteBatch.Draw(ModContent.GetTexture(Texture+"_Glow"), position, null, color, 0f, origin, scale, SpriteEffects.None, 0);
 			return true;
 		}
 	}

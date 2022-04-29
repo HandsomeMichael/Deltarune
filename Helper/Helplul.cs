@@ -173,6 +173,19 @@ namespace Deltarune.Helper
             if (coins[0] > 0) {coinsText = coinsText + $"[i:{ItemID.CopperCoin}] [c/" + Colors.AlphaDarken(Colors.CoinCopper).Hex3() + ":" + coins[0] + " " + Language.GetTextValue("LegacyInterface.18") + "] ";}
             return coinsText;
         }
+		/// <summary>
+		/// Destroy color alpha
+		/// </summary>
+		public static int NoAlpha(this Color color) {
+			color.A = 0;
+			return color;
+		}
+		/// <summary>
+		/// Recreate the projectile
+		/// </summary>
+		public static int Recreate(this Projectile projectile,int damage = 0,Vector2? velocity = null) {
+			return Projectile.NewProjectile(projectile.position,velocity ?? projectile.velocity,projectile.type,damage == 0 ? projectile.damage : damage,projectile.knockBack, projectile.owner,projectile.ai[0],projectile.ai[1]);
+		}
         /// <summary>
 		/// get best pick
 		/// </summary>

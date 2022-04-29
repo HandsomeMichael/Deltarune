@@ -51,7 +51,9 @@ namespace Deltarune.Content
 				add += vel/8f;
 			}
 		}
-		public static void PostCanUseItem(Item item, Player player) {	
+		bool requireResetMelee;
+		public static void PostCanUseItem(Item item, Player player) {
+			HeldSword.PostCanUseItem(item,player);
 			if (item.type == ItemID.Muramasa) {
 				if (player.altFunctionUse == 2) {
 					player.velocity = player.DirectionTo(Main.MouseWorld)*20f;
