@@ -151,7 +151,7 @@ namespace Deltarune.Content.Projectiles
 		}
 		// for mod support idk
 		public override void OnHitNPC(NPC target, int damage, float knockBack, bool crit) {
-			Player player = projectile.Owner();
+			Player player = Main.player[projectile.owner];
 			Item item = player.HeldItem;
 			// run OnHitNPC for vanilla and modded
 			VanillaMethod.OnHitNPC(item,player,target,projectile.Hitbox,damage,knockBack,true,crit);

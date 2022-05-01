@@ -51,7 +51,7 @@ namespace Deltarune.Content
 				add += vel/8f;
 			}
 		}
-		bool requireResetMelee;
+		public bool requireResetMelee;
 		public static void PostCanUseItem(Item item, Player player) {
 			HeldSword.PostCanUseItem(item,player);
 			if (item.type == ItemID.Muramasa) {

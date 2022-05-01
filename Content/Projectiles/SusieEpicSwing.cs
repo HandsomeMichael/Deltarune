@@ -43,16 +43,19 @@ namespace Deltarune.Content.Projectiles
 			player.itemAnimation = 2;
 			player.direction = projectile.direction;
 			projectile.Center = player.Center;
+
 			if (projectile.owner == Main.myPlayer) {
 				//player.itemRotation = player.AngleTo(Main.MouseWorld);
-				projectile.rotation = projectile.AngleTo(Main.MouseWorld);
 				projectile.velocity = projectile.DirectionTo(Main.MouseWorld)*10f;
 				player.itemRotation = (float)Math.Atan2(projectile.velocity.Y * player.direction, projectile.velocity.X * player.direction);
 				projectile.Center += projectile.velocity;
 				projectile.netUpdate = true;
 			}
 			// if i lose it all. lose it all. lose it all
-			// i will never look away
+
+			projectile.rotation = projectile.velocity.ToRotation();
+
+			// aanimation
 			projectile.frameCounter++;
 			if (projectile.frameCounter >= 4) {
 				projectile.frameCounter = 0;
@@ -65,11 +68,7 @@ namespace Deltarune.Content.Projectiles
 		}
 		public override bool ShouldUpdatePosition() => false;
 		public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor) {
-			SpriteEffects spriteEffects = SpriteEffects.None;
-			if (projectile.direction == -1) {
-				//spriteEffects = SpriteEffects.FlipHorizontally;
-				spriteEffects = SpriteEffects.FlipVertically;
-			}
+			SpriteEffects spriteEffects = projectile.direction == -1 ? SpriteEffects.FlipVertically : SpriteEffects.None;
 			Texture2D texture = Main.projectileTexture[projectile.type];
 			Rectangle rec = texture.GetFrame(projectile.frame,Main.projFrames[projectile.type]);
 			spriteBatch.Draw(texture, projectile.Center - Main.screenPosition, rec, projectile.GetAlpha(Color.White), projectile.rotation, rec.Size()/2f, projectile.scale, spriteEffects, 0);

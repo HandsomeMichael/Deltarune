@@ -25,10 +25,11 @@ namespace Deltarune.Content.Items
 			item.rare = 3;
 			item.useAnimation = 20; // the rotation degree
 		}
-		public override void InitializeRot(Player player,Projectile projectile,ref int minRot,ref int maxRot) {
-			projectile.extraUpdates = 1;
+		public override void Initialize(Player player,Projectile projectile) {
+			projectile.extraUpdates = 2;
 		}
 	}
+	// contains a smol amount of hooks
 	public abstract class HeldSwordItem : ModItem
 	{
 		public override void SetDefaults() {
@@ -73,14 +74,30 @@ namespace Deltarune.Content.Items
 
 		}
 		/// <summary>
-		/// Initialize maximum and minimum rotation
+		/// Change projectile rotation direction. called after Initialize and rotation checking
 		/// </summary>
 		/// <param name="player"> the projectile owner </param>
 		/// <param name="projectile"> the held sword </param>
 		/// <param name="minRot"> the minimum swing rotation, in degree </param>
 		/// <param name="maxRot"> the maximum swing rotation, in degree</param>
-		public virtual void InitializeRot(Player player,Projectile projectile,ref int minRot,ref int maxRot) {
+		public virtual void ChangeRotation(Player player,Projectile projectile,ref int minRot,ref int maxRot) {
 
+		}
+		/// <summary>
+		/// Initialize stuff
+		/// </summary>
+		/// <param name="player"> the projectile owner </param>
+		/// <param name="projectile"> the held sword </param>
+		public virtual void Initialize(Player player,Projectile projectile) {
+
+		}
+		/// <summary>
+		/// Should draw trails or not 
+		/// </summary>
+		/// <param name="player"> the projectile owner </param>
+		/// <param name="projectile"> the held sword </param>
+		public virtual bool ShouldDrawTrails(Player player,Projectile projectile) {
+			return true;
 		}
 		/// <summary>
 		/// Draw something after the sword is drawn
@@ -148,30 +165,28 @@ namespace Deltarune.Content.Items
 		}
 		// for mod support idk
 		public override void OnHitNPC(NPC target, int damage, float knockBack, bool crit) {
-			Player player = projectile.Owner();
+			Player player = Main.player[projectile.owner];
 			Item item = player.HeldItem;
 			// run OnHitNPC for vanilla and modded
 			VanillaMethod.OnHitNPC(item,player,target,projectile.Hitbox,damage,knockBack,true,crit);
 		}
 
 		// we do a huge amount of trolling in variable naming
-		// yes i only use 1 variable :pe:
 		public float Balls {get => projectile.ai[0];set => projectile.ai[0] = value;} // the max rot
-		public float Distance {
-			get => new Vector2(0,MathHelper.ToDegrees(projectile.rotation)).Distance(new Vector2(0,MathHelper.ToDegrees(Balls)));
-		}
+		Trail trailsDeezNuts = new Trail(); // trail deez nuts in your mouth
 		
 		public override void AI(){
 			// player
-			Player player = projectile.Owner();
+			Player player = Main.player[projectile.owner];
 
 			// kill if player is ded or rotation is reached the limit
 			bool shouldDed = false;
 			if (projectile.melee) {
-				shouldDed = Distance < 15f;
+				shouldDed = Helpme.RotationDistance(projectile.rotation,Balls) < 15f;
 			}
 
-			if (!player.active || player.dead || player.noItems || player.CCed || player.HeldItem.IsAir || shouldDed) {
+			// all of the crap is handled in Helpme.cs 
+			if (player.CanHeldProj(false) || shouldDed) {
 				projectile.Kill();
 				return;
 			}
@@ -188,12 +203,18 @@ namespace Deltarune.Content.Items
 				//setting rotation
 				projectile.rotation = projectile.velocity.ToRotation();
 				// rotation is based on item animation
-				int minRot = player.HeldItem.useAnimation*4;
-				int maxRot = player.HeldItem.useAnimation*4;
+				int minRot = player.HeldItem.useAnimation*3;
+				int maxRot = player.HeldItem.useAnimation*3;
+				// give extra rotation to fast weapons
+				if (player.HeldItem.useAnimation < 25) {
+					minRot += 20;
+					maxRot += 20;
+				}
 
 				// use hook that modify rotation
 				if (item != null) {
-					item.InitializeRot(player,projectile,ref minRot,ref maxRot);
+					item.ChangeRotation(player,projectile,ref minRot,ref maxRot);
+					item.Initialize(player,projectile);
 				}
 
 				// setting max and min rot
@@ -214,7 +235,11 @@ namespace Deltarune.Content.Items
 			player.direction = projectile.direction;
 
 			// use hook
-			float speed = 0.2f;
+			float speed = 0.1f;
+			// calculate speed for speedy weapon
+			if (player.HeldItem.useAnimation < 25) {
+				speed = (1f - ((float)player.HeldItem.useAnimation/25f))*0.4f;
+			}
 			if (item != null) {
 				item.PreUpdateCenter(player,projectile,ref speed);
 			}
@@ -247,18 +272,36 @@ namespace Deltarune.Content.Items
 		public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor) {
 
 			//get player
-			Player player = projectile.Owner();
+			Player player = Main.player[projectile.owner];
 			if (!player.active || player.dead || player.HeldItem.IsAir || player.noItems || player.CCed) {return false;}
 			HeldSwordItem item = player.HeldItem.modItem as HeldSwordItem;
 
 			// var setup
-			SpriteEffects spriteEffects = projectile.spriteDirection == -1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
-			Texture2D texture = Main.itemTexture[item.type];
-			float rot = projectile.velocity.ToRotation() + (MathHelper.ToRadians(30) * projectile.spriteDirection);
+			int dir = projectile.spriteDirection;
+			if (!player.HeldItem.isBeingGrabbed) {dir = -1;}
+			SpriteEffects spriteEffects = dir == -1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
+			Texture2D texture = Main.itemTexture[player.HeldItem.type];
+			float rot = projectile.velocity.ToRotation() + (MathHelper.ToRadians(30) * dir);
 			// rotate 180 degree if the sword is when its the right side.
-			if (projectile.spriteDirection == -1) {rot += MathHelper.ToRadians(180);}
+			if (dir == -1) {rot += MathHelper.ToRadians(180);}
 			Vector2 pos = player.Center + projectile.velocity - Main.screenPosition;
 			Color color = projectile.GetAlpha(lightColor);
+
+			// calculate orig
+			Vector2 orig = dir == 1 ? new Vector2(0,texture.Height) : new Vector2(texture.Width,texture.Height);
+
+			// draw trails
+			bool shouldTrail = true;
+			if (item != null) {shouldTrail = item.ShouldDrawTrails(player,projectile);}
+			if (shouldTrail) {
+				for (int k = 0; k < trailsDeezNuts.Count; k++) {
+					float alpha = (float)k / (float)trailsDeezNuts.Count;
+					Color amoogs = (projectile.GetAlpha(lightColor)*alpha)*0.2f;
+					var eff = trailsDeezNuts[k].direction == -1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
+					Vector2 orig2 = trailsDeezNuts[k].direction == 1 ? new Vector2(0,texture.Height) : new Vector2(texture.Width,texture.Height);
+					spriteBatch.Draw(texture, trailsDeezNuts[k].position, null, amoogs, trailsDeezNuts[k].rotation, orig2, projectile.scale, eff, 0f);
+				}
+			}
 
 			// use hook
 			if (item != null) {
@@ -266,13 +309,15 @@ namespace Deltarune.Content.Items
 			}
 
 			// draw
-			Vector2 orig = projectile.spriteDirection == 1 ? new Vector2(0,texture.Height) : new Vector2(texture.Width,texture.Height);
 			spriteBatch.Draw(texture, pos, null, color, rot, orig, projectile.scale, spriteEffects, 0);
 
 			// use hoook
 			if (item != null) {
 				item.PostDrawSword(spriteBatch,projectile,pos,rot);
 			}
+
+			//store deez nuts
+			trailsDeezNuts.Update(pos,rot,dir,50,1);
 
 			// dont draw vanilla way
 			return false;
@@ -297,7 +342,7 @@ namespace Deltarune.Content.Items
 				Vector2 vel = player.DirectionTo(Main.MouseWorld)*speed;
 				int damage = player.GetWeaponDamage(item);
 				int type = ModContent.ProjectileType<HeldSword>();
-				Projectile.NewProjectile(player.Center,vel, type, damage, player.GetWeaponknockBack(item,item.knockBack), player.whoAmI, 0, 0);
+				Projectile.NewProjectile(player.Center,vel, type, damage, player.GetWeaponKnockback(item,item.knockBack), player.whoAmI, 0, 0);
 			}
 		}
 	}

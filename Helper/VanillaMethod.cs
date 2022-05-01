@@ -42,12 +42,13 @@ namespace Deltarune.Helper
 	{
 		/// <summary>
 		/// Melee effects for item, can be found in ItemCheck method at Player.cs
+		/// Plus some of it are getting id
 		/// </summary>
 		public static void MeleeEffects(Item item,Player player,Rectangle hitbox, bool modstuff = true) {
 
 			#region Specific item type check
 
-			if (item.type == 989 && Main.rand.Next(5) == 0)
+			if (item.type == ItemID.EnchantedSword && Main.rand.Next(5) == 0)
 			{
 				int pushYUp4 = Main.rand.Next(3);
 
@@ -58,18 +59,18 @@ namespace Deltarune.Helper
 				int num186 = Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, dustType, player.direction * 2, 0f, 150, default(Color), 1.3f);
 				Main.dust[num186].velocity *= 0.2f;
 			}
-			if (item.type == 2880 && Main.rand.Next(2) == 0)
+			if (item.type == ItemID.InfluxWaver && Main.rand.Next(2) == 0)
 			{
 				int type18 = Utils.SelectRandom<int>(Main.rand, 226, 229);
 				int num188 = Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, type18, player.direction * 2, 0f, 150);
 				Main.dust[num188].velocity *= 0.2f;
 				Main.dust[num188].noGravity = true;
 			}
-			if ((item.type == 44 || item.type == 45 || item.type == 46 || item.type == 103 || item.type == 104) && Main.rand.Next(15) == 0)
+			if ((item.type == ItemID.DemonBow || item.type == ItemID.WarAxeoftheNight || item.type == ItemID.LightsBane || item.type == ItemID.NightmarePickaxe || item.type == ItemID.TheBreaker) && Main.rand.Next(15) == 0)
 			{
 				Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, 14, player.direction * 2, 0f, 150, default(Color), 1.3f);
 			}
-			if (item.type == 273 || item.type == 675)
+			if (item.type == ItemID.NightsEdge || item.type == ItemID.TrueNightsEdge)
 			{
 				if (Main.rand.Next(5) == 0)
 				{
@@ -80,12 +81,12 @@ namespace Deltarune.Helper
 				Main.dust[num189].velocity.X /= 2f;
 				Main.dust[num189].velocity.Y /= 2f;
 			}
-			if (item.type == 723 && Main.rand.Next(2) == 0)
+			if (item.type == ItemID.BeamSword && Main.rand.Next(2) == 0)
 			{
 				int num190 = Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, 64, 0f, 0f, 150, default(Color), 1.2f);
 				Main.dust[num190].noGravity = true;
 			}
-			if (item.type == 65)
+			if (item.type == ItemID.Starfury)
 			{
 				if (Main.rand.Next(5) == 0)
 				{
@@ -96,7 +97,7 @@ namespace Deltarune.Helper
 					Gore.NewGore(new Vector2(hitbox.X, hitbox.Y), default(Vector2), Main.rand.Next(16, 18));
 				}
 			}
-			if (item.type == 3065)
+			if (item.type == ItemID.StarWrath)
 			{
 				int num191 = Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, 58, 0f, 0f, 150, default(Color), 1.2f);
 				Main.dust[num191].velocity *= 0.5f;
@@ -107,17 +108,17 @@ namespace Deltarune.Helper
 					Main.gore[num192].velocity += new Vector2(player.direction, 0f);
 				}
 			}
-			if (item.type == 190)
+			if (item.type == ItemID.BladeofGrass)
 			{
 				int num193 = Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, 40, player.velocity.X * 0.2f + (float)(player.direction * 3), player.velocity.Y * 0.2f, 0, default(Color), 1.2f);
 				Main.dust[num193].noGravity = true;
 			}
-			else if (item.type == 213)
+			else if (item.type == ItemID.StaffofRegrowth)
 			{
 				int num194 = Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, 3, player.velocity.X * 0.2f + (float)(player.direction * 3), player.velocity.Y * 0.2f, 0, default(Color), 1.2f);
 				Main.dust[num194].noGravity = true;
 			}
-			if (item.type == 121)
+			if (item.type == ItemID.FieryGreatsword)
 			{
 				for (int num195 = 0; num195 < 2; num195++)
 				{
@@ -127,50 +128,51 @@ namespace Deltarune.Helper
 					Main.dust[num196].velocity.Y *= 2f;
 				}
 			}
-			if (item.type == 122 || item.type == 217)
+			if (item.type == ItemID.MoltenPickaxe || item.type == ItemID.MoltenHamaxe)
 			{
 				int num197 = Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, 6, player.velocity.X * 0.2f + (float)(player.direction * 3), player.velocity.Y * 0.2f, 100, default(Color), 1.9f);
 				Main.dust[num197].noGravity = true;
 			}
-			if (item.type == 155)
+			if (item.type == ItemID.Muramasa)
 			{
 				int num199 = Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, 172, player.velocity.X * 0.2f + (float)(player.direction * 3), player.velocity.Y * 0.2f, 100, default(Color), 0.9f);
 				Main.dust[num199].noGravity = true;
 				Main.dust[num199].velocity *= 0.1f;
 			}
-			if (item.type == 676 && Main.rand.Next(3) == 0)
+			if (item.type == ItemID.Frostbrand && Main.rand.Next(3) == 0)
 			{
 				int num200 = Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, 67, player.velocity.X * 0.2f + (float)(player.direction * 3), player.velocity.Y * 0.2f, 90, default(Color), 1.5f);
 				Main.dust[num200].noGravity = true;
 				Main.dust[num200].velocity *= 0.2f;
 			}
-			if (item.type == 3063)
+			if (item.type == ItemID.Meowmere)
 			{
 				int num201 = Dust.NewDust(hitbox.TopLeft(), hitbox.Width, hitbox.Height, 66, 0f, 0f, 150, Color.Transparent, 0.85f);
 				Main.dust[num201].color = Main.hslToRgb(Main.rand.NextFloat(), 1f, 0.5f);
 				Main.dust[num201].noGravity = true;
 				Main.dust[num201].velocity /= 2f;
 			}
-			if (item.type == 3823)
+			if (item.type == ItemID.DD2SquireDemonSword)
 			{
 				Dust dust2 = Dust.NewDustDirect(hitbox.TopLeft(), hitbox.Width, hitbox.Height, 6, player.velocity.X * 0.2f + (float)(player.direction * 3), player.velocity.Y * 0.2f, 100, Color.Transparent, 0.7f);
 				dust2.noGravity = true;
 				dust2.velocity *= 2f;
 				dust2.fadeIn = 0.9f;
 			}
-			if (item.type == 724 && Main.rand.Next(5) == 0)
+			if (item.type == ItemID.IceBlade && Main.rand.Next(5) == 0)
 			{
 				int num202 = Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, 67, player.velocity.X * 0.2f + (float)(player.direction * 3), player.velocity.Y * 0.2f, 90, default(Color), 1.5f);
 				Main.dust[num202].noGravity = true;
 				Main.dust[num202].velocity *= 0.2f;
 			}
+			// basically every crimson items from BloodButcherer to TheRottedFork
 			if (item.type >= 795 && item.type <= 802 && Main.rand.Next(3) == 0)
 			{
 				int num203 = Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, 115, player.velocity.X * 0.2f + (float)(player.direction * 3), player.velocity.Y * 0.2f, 140, default(Color), 1.5f);
 				Main.dust[num203].noGravity = true;
 				Main.dust[num203].velocity *= 0.25f;
 			}
-			if (item.type == 367 || item.type == 368 || item.type == 674)
+			if (item.type == ItemID.Pwnhammer || item.type == ItemID.Excalibur || item.type == ItemID.TrueExcalibur)
 			{
 				int num204 = 0;
 				if (Main.rand.Next(3) == 0)
@@ -187,6 +189,7 @@ namespace Deltarune.Helper
 					Main.dust[num204].velocity *= 0f;
 				}
 			}
+			// every phaseblade, and its upgrade
 			if ((item.type >= 198 && item.type <= 203) || (item.type >= 3764 && item.type <= 3769))
 			{
 				float num205 = 0.5f;
@@ -352,30 +355,31 @@ namespace Deltarune.Helper
 		}
 		/// <summary>
 		/// OnHitNPC for item, can be found in ItemCheck method at Player.cs
+		/// Plus some of it are getting id
 		/// </summary>
 		public static void OnHitNPC(Item item,Player player,NPC npc,Rectangle r2,int damage,float knockBack,bool modstuff = true,bool crit = false) {
 			bool isTargetMortal = !npc.immortal;
 
 			#region Specific item type check
 
-			if (item.type == 1826 && (npc.value > 0f || (npc.damage > 0 && !npc.friendly))){
-				player.pumpkinSword(npc.whoAmI, (int)((double)damage * 1.5), knockBack);
+			if (item.type == ItemID.TheHorsemansBlade && (npc.value > 0f || (npc.damage > 0 && !npc.friendly))){
+				PumpkinSword(player,npc.position, (int)((double)damage * 1.5), knockBack,321,npc.whoAmI);
 			}
-			if (item.type == 3211){
+			if (item.type == ItemID.Bladetongue){
 				Vector2 velocity = new Vector2(player.direction * 100 + Main.rand.Next(-25, 26), Main.rand.Next(-75, 76));
 				velocity.Normalize();
 				velocity *= (float)Main.rand.Next(30, 41) * 0.1f;
 				Vector2 pos = new Vector2(r2.X + Main.rand.Next(r2.Width), r2.Y + Main.rand.Next(r2.Height));
 				pos = (pos + npc.Center * 2f) / 3f;
-				Projectile.NewProjectile(pos, pos, velocity, 524, (int)((double)damage * 0.7), knockBack * 0.7f, player.whoAmI);
+				Projectile.NewProjectile(pos, velocity, 524, (int)((double)damage * 0.7), knockBack * 0.7f, player.whoAmI);
 			}
-			if (item.type == 3106){
+			if (item.type == ItemID.PsychoKnife){
 				player.stealth = 1f;
 				if (Main.netMode == 1){
 					NetMessage.SendData(84, -1, -1, null, player.whoAmI);
 				}
 			}
-			if (item.type == 1123 && isTargetMortal){
+			if (item.type == ItemID.BeeKeeper && isTargetMortal){
 				int count = Main.rand.Next(1, 4);
 				if (player.strongBees && Main.rand.Next(3) == 0){count++;}
 				for (int i = 0; i < count; i++){
@@ -383,7 +387,7 @@ namespace Deltarune.Helper
 					float speedY = (float)Main.rand.Next(-35, 36) * 0.02f;
 					speedX *= 0.2f;
 					speedY *= 0.2f;
-					Projectile.NewProjectile(r2.X + r2.Width / 2, r2.Y + r2.Height / 2, speedX, speedY, player.beeType(), player.beeDamage(num234 / 3), player.beeKB(0f), i);
+					Projectile.NewProjectile(r2.X + r2.Width / 2, r2.Y + r2.Height / 2, speedX, speedY, player.beeType(), player.beeDamage(damage / 3), player.beeKB(0f), i);
 				}
 			}
 
@@ -421,6 +425,29 @@ namespace Deltarune.Helper
 				NPCLoader.OnHitByItem(npc, player, item, damage, knockBack, crit);
 				PlayerHooks.OnHitNPC(player, item, npc, damage, knockBack, crit);
 			}
+		}
+		/// <summary>
+		/// Pumpkin sword method from Player.cs
+		/// Rewrited aaaaah my hand hurt when typing this uhhh awa 
+		/// what the hell happened to my hands help what
+		/// ok. seems like it stopped after 1 minute. i should stop writing codes for a while now :pe:
+		/// </summary>
+		public static int PumpkinSword(Player player,Vector2 pos, int dmg, float kb,int type = 321,int i = 0){
+			int logicCheckScreenHeight = Main.LogicCheckScreenHeight;
+			int logicCheckScreenWidth = Main.LogicCheckScreenWidth;
+			int x = Main.rand.Next(100, 300);
+			int y = Main.rand.Next(100, 300);
+			x = ((Main.rand.Next(2) != 0) ? (x + (logicCheckScreenWidth / 2 - x)) : (x - (logicCheckScreenWidth / 2 + x)));
+			y = ((Main.rand.Next(2) != 0) ? (y + (logicCheckScreenHeight / 2 - y)) : (y - (logicCheckScreenHeight / 2 + y)));
+			x += (int)player.position.X;
+			y += (int)player.position.Y;
+			float speedX = pos.X - x;
+			float speedY = pos.Y - y;
+			float speedFactor = (float)Math.Sqrt(speedX * speedX + speedY * speedY);
+			speedFactor = 8f / speedFactor;
+			speedX *= speedFactor;
+			speedY *= speedFactor;
+			return Projectile.NewProjectile(x, y, speedX, speedY, type, dmg, kb, player.whoAmI, i);
 		}
 	}
 }

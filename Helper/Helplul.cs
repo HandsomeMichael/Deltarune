@@ -176,15 +176,28 @@ namespace Deltarune.Helper
 		/// <summary>
 		/// Destroy color alpha
 		/// </summary>
-		public static int NoAlpha(this Color color) {
+		public static Color NoAlpha(this Color color) {
 			color.A = 0;
 			return color;
+		}
+		/// <summary>
+		/// Check if the player can do heldproj amogos
+		/// </summary>
+		public static bool CanHeldProj(this Player player,bool checkChanneling = false) {
+			return !player.active || player.dead || player.noItems || player.CCed || player.HeldItem.IsAir || (checkChanneling && !player.channel);
 		}
 		/// <summary>
 		/// Recreate the projectile
 		/// </summary>
 		public static int Recreate(this Projectile projectile,int damage = 0,Vector2? velocity = null) {
 			return Projectile.NewProjectile(projectile.position,velocity ?? projectile.velocity,projectile.type,damage == 0 ? projectile.damage : damage,projectile.knockBack, projectile.owner,projectile.ai[0],projectile.ai[1]);
+		}
+		/// <summary>
+		/// get the distance rotation of an object
+		/// the point has to be radians
+		/// </summary>
+		public static float RotationDistance(float point,float point2) {
+			return new Vector2(0,MathHelper.ToDegrees(point)).Distance(new Vector2(0,MathHelper.ToDegrees(point2)));
 		}
         /// <summary>
 		/// get best pick
@@ -197,24 +210,6 @@ namespace Deltarune.Helper
             }
             return item;
         }
-		/// <summary>
-		/// save int32 array
-		/// </summary>
-		public static void AddIntArray(this TagCompound tag, int[] array, string name = "array") {
-			for (int i = 0; i < array.Length; i++){
-				tag.Add(name+i,array[i]);
-			}
-		}
-		/// <summary>
-		/// load int32 array
-		/// </summary>
-		public static int[] GetIntArray(this TagCompound tag, int length, string name = "array") {
-			int[] num = new int[length];
-			for (int i = 0; i < length; i++){
-				num[i] = tag.GetInt(name+i);
-			}
-			return num;
-		}
 
 		/// <summary>
 		/// get rarity color. contains "wall of ifs"
@@ -386,6 +381,46 @@ namespace Deltarune.Helper
 		/// </summary>
 		public static void SaveConfig<T>() where T : ModConfig{
 			typeof(ConfigManager).GetMethod("Save", BindingFlags.Static | BindingFlags.NonPublic).Invoke(null, new object[1] { ModContent.GetInstance<T>()});
+		}
+		/// <summary>
+		/// save int32 array
+		/// </summary>
+		public static void AddIntArray(this TagCompound tag, int[] array, string name = "array") {
+			for (int i = 0; i < array.Length; i++){
+				tag.Add(name+i,array[i]);
+			}
+		}
+		/// <summary>
+		/// load int32 array
+		/// </summary>
+		public static int[] GetIntArray(this TagCompound tag, int length, string name = "array") {
+			int[] num = new int[length];
+			for (int i = 0; i < length; i++){
+				num[i] = tag.GetInt(name+i);
+			}
+			return num;
+		}
+		/// <summary>
+		/// Read intreger array
+		/// </summary>
+		public static int[] ReadArrayInt32(this BinaryReader reader) {
+			int length = reader.ReadInt32();
+			int[] array = new int[length];
+			for (int i = 0; i < length; i++)
+			{
+				array[i] = reader.ReadInt32();
+			}
+			return array;
+		}
+		/// <summary>
+		/// Write intreger array
+		/// </summary>
+		public static void WriteArrayInt32(this BinaryWriter writer, int[] array) {
+			writer.Write(array.Length);
+			for (int i = 0; i < array.Length; i++)
+			{
+				writer.Write(array[i]);
+			}
 		}
 		/// <summary>
 		/// check if player is in forest.
@@ -609,18 +644,6 @@ namespace Deltarune.Helper
 			return stack;
 		}
 		/// <summary>
-		/// cut down floats , example : 8.9212 to 8.9
-		/// thanks screen shdaers for making this :)
-		/// </summary>
-		public static float DecRound(this float f) {
-			//f += 1f;
-			float num = f*10f;
-			int num2 = (int)f;
-			num = (float)num2/10f;
-			//num -= 1f;
-			return num;
-		}
-		/// <summary>
 		/// Get nearest npc from a position
 		/// </summary>
 		public static int NearestNPC(this Vector2 pos,float distanceFromTarget = 700f, bool friendly = false) {
@@ -737,28 +760,6 @@ namespace Deltarune.Helper
 			return new Rectangle(0, startY, Texture.Width, frameHeight);
 		}
 
-        /// <summary>
-		/// Read intreger array
-		/// </summary>
-		public static int[] ReadArrayInt32(this BinaryReader reader) {
-			int length = reader.ReadInt32();
-			int[] array = new int[length];
-			for (int i = 0; i < length; i++)
-			{
-				array[i] = reader.ReadInt32();
-			}
-			return array;
-		}
-		/// <summary>
-		/// Write intreger array
-		/// </summary>
-		public static void WriteArrayInt32(this BinaryWriter writer, int[] array) {
-			writer.Write(array.Length);
-			for (int i = 0; i < array.Length; i++)
-			{
-				writer.Write(array[i]);
-			}
-		}
 		/// <summary>
 		/// Cycle between color smoothly
 		/// </summary>
@@ -785,10 +786,6 @@ namespace Deltarune.Helper
 				dustPos += dustPos.DirectionTo(pos)*5f;
 			}
 		}
-		/// <summary>
-		/// owner
-		/// </summary>
-		public static Player Owner(this Projectile projectile) => Main.player[projectile.owner];
 		/// <summary>
 		/// A quick way getting tmod methodbase
 		/// </summary>
