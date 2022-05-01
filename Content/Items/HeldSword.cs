@@ -23,10 +23,14 @@ namespace Deltarune.Content.Items
 			item.knockBack = 6;
 			item.value = 10000;
 			item.rare = 3;
-			item.useAnimation = 20; // the rotation degree
+			item.useAnimation = 20;
+		}
+		public override void ChangeRotation(Player player,Projectile projectile,ref int minRot,ref int maxRot) {
+			minRot = 80;
+			maxRot = 80;
 		}
 		public override void Initialize(Player player,Projectile projectile) {
-			projectile.extraUpdates = 2;
+			projectile.extraUpdates = 1;
 		}
 	}
 	// contains a smol amount of hooks
@@ -45,10 +49,6 @@ namespace Deltarune.Content.Items
 			item.shoot = ModContent.ProjectileType<HeldSword>();
 			SafeSetDefaults();
 			item.useTime = item.useAnimation;
-		}
-		public void AddAI(Projectile projectile,float Piss = 0f,float Balls = 0f) {
-			projectile.ai[0] += Piss;
-			projectile.ai[1] += Balls;
 		}
 		/// <summary>
 		/// for setdefaults
@@ -171,6 +171,15 @@ namespace Deltarune.Content.Items
 			VanillaMethod.OnHitNPC(item,player,target,projectile.Hitbox,damage,knockBack,true,crit);
 		}
 
+		public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox){
+			Player player = Main.player[projectile.owner];
+			Vector2 end = projectile.Center + projectile.velocity*projectile.height;
+			float point = 0f;
+			if (!Collision.CanHit(player.Center, 1, 1, end, 1, 1)) {return false;}
+			return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), player.Center, end);
+			//return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), player.Center, projectile.Center + projectile.velocity*projectile.height, 24f,ref point);
+		}
+
 		// we do a huge amount of trolling in variable naming
 		public float Balls {get => projectile.ai[0];set => projectile.ai[0] = value;} // the max rot
 		Trail trailsDeezNuts = new Trail(); // trail deez nuts in your mouth
@@ -197,19 +206,12 @@ namespace Deltarune.Content.Items
 			if (!projectile.melee) {
 				projectile.melee = true;
 				// setting direction
-				projectile.spriteDirection = player.direction;
-				projectile.spriteDirection = (player.HeldItem.isBeingGrabbed ? 1 : -1) * projectile.spriteDirection;
+				projectile.spriteDirection = (player.HeldItem.isBeingGrabbed ? -1 : 1) * projectile.spriteDirection;
 
 				//setting rotation
 				projectile.rotation = projectile.velocity.ToRotation();
-				// rotation is based on item animation
-				int minRot = player.HeldItem.useAnimation*3;
-				int maxRot = player.HeldItem.useAnimation*3;
-				// give extra rotation to fast weapons
-				if (player.HeldItem.useAnimation < 25) {
-					minRot += 20;
-					maxRot += 20;
-				}
+				int minRot = 80 + player.HeldItem.useAnimation;
+				int maxRot = 80 + player.HeldItem.useAnimation;
 
 				// use hook that modify rotation
 				if (item != null) {
@@ -235,10 +237,10 @@ namespace Deltarune.Content.Items
 			player.direction = projectile.direction;
 
 			// use hook
-			float speed = 0.1f;
+			float speed = 0.15f;
 			// calculate speed for speedy weapon
 			if (player.HeldItem.useAnimation < 25) {
-				speed = (1f - ((float)player.HeldItem.useAnimation/25f))*0.4f;
+				speed = (1f - ((float)player.HeldItem.useAnimation/25f));
 			}
 			if (item != null) {
 				item.PreUpdateCenter(player,projectile,ref speed);
@@ -248,9 +250,11 @@ namespace Deltarune.Content.Items
 			projectile.scale = player.HeldItem.scale;
 
 			// make hitbox based on width and height
+			float width = Main.itemTexture[player.HeldItem.type].Width;
+			float height = Main.itemTexture[player.HeldItem.type].Height;
 			var cache = projectile.Center;
-			projectile.width = (int)((float)projectile.width*projectile.scale);
-			projectile.height = (int)((float)projectile.height*projectile.scale);
+			projectile.width = (int)(width*projectile.scale);
+			projectile.height = (int)(height*projectile.scale);
 			projectile.Center = cache;
 
 			// run melee effects after hitbox is properly calculated
@@ -268,6 +272,13 @@ namespace Deltarune.Content.Items
 
 			// update player rotation based on velocity
 			player.itemRotation = (float)Math.Atan2(projectile.velocity.Y * player.direction, projectile.velocity.X * player.direction);
+
+			//store deez nuts
+			int dir = projectile.spriteDirection;
+			if (player.HeldItem.isBeingGrabbed) {dir = -1;}
+			float rot = projectile.velocity.ToRotation() + (MathHelper.ToRadians(30) * dir);
+			if (dir == -1) {rot += MathHelper.ToRadians(180);}
+			trailsDeezNuts.Update(player.Center + projectile.velocity,rot,dir,20,1);
 		}
 		public override bool PreDraw(SpriteBatch spriteBatch, Color lightColor) {
 
@@ -277,8 +288,8 @@ namespace Deltarune.Content.Items
 			HeldSwordItem item = player.HeldItem.modItem as HeldSwordItem;
 
 			// var setup
-			int dir = projectile.spriteDirection;
-			if (!player.HeldItem.isBeingGrabbed) {dir = -1;}
+			int dir = (player.HeldItem.isBeingGrabbed ? -1 : 1) * projectile.spriteDirection;
+			//if (player.HeldItem.isBeingGrabbed) {dir = dir*-1;}
 			SpriteEffects spriteEffects = dir == -1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
 			Texture2D texture = Main.itemTexture[player.HeldItem.type];
 			float rot = projectile.velocity.ToRotation() + (MathHelper.ToRadians(30) * dir);
@@ -299,7 +310,7 @@ namespace Deltarune.Content.Items
 					Color amoogs = (projectile.GetAlpha(lightColor)*alpha)*0.2f;
 					var eff = trailsDeezNuts[k].direction == -1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
 					Vector2 orig2 = trailsDeezNuts[k].direction == 1 ? new Vector2(0,texture.Height) : new Vector2(texture.Width,texture.Height);
-					spriteBatch.Draw(texture, trailsDeezNuts[k].position, null, amoogs, trailsDeezNuts[k].rotation, orig2, projectile.scale, eff, 0f);
+					spriteBatch.Draw(texture, trailsDeezNuts[k].position - Main.screenPosition, null, amoogs, trailsDeezNuts[k].rotation, orig2, projectile.scale, eff, 0f);
 				}
 			}
 
@@ -315,9 +326,6 @@ namespace Deltarune.Content.Items
 			if (item != null) {
 				item.PostDrawSword(spriteBatch,projectile,pos,rot);
 			}
-
-			//store deez nuts
-			trailsDeezNuts.Update(pos,rot,dir,50,1);
 
 			// dont draw vanilla way
 			return false;
